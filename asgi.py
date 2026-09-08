@@ -8,6 +8,7 @@ from starlette.routing import Route
 
 from src.asgi_middleware import OAuthQuerySanitizerMiddleware
 from src.asgi_routes import healthz, instagram_start, logout, oauth_callback
+from src.token_refresh_route import token_refresh
 
 APP_SCRIPT = Path(__file__).with_name("app.py")
 
@@ -18,6 +19,7 @@ app = st.App(
         Route("/auth/instagram/start", instagram_start, methods=["GET", "POST"]),
         Route("/auth/logout", logout, methods=["GET"]),
         Route("/healthz", healthz, methods=["GET"]),
+        Route("/internal/token-refresh", token_refresh, methods=["GET"]),
     ],
     middleware=[Middleware(OAuthQuerySanitizerMiddleware)],
 )

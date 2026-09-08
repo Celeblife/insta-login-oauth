@@ -21,7 +21,6 @@ def test_vercel_preview_config_keeps_runtime_surface_minimal():
 
     assert "framework" not in vercel
     assert "functions" not in vercel
-    assert "crons" not in vercel
     assert "builds" not in vercel
 
 

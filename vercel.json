@@ -13,6 +13,12 @@
       "destination": "/api/instagram_start"
     }
   ],
+  "crons": [
+    {
+      "path": "/internal/token-refresh",
+      "schedule": "23 0 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/__canary/login-static",

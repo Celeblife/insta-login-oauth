@@ -51,6 +51,7 @@ def test_asgi_entrypoint_exposes_preview_routes():
         "/auth/instagram/start",
         "/auth/logout",
         "/healthz",
+        "/internal/token-refresh",
     }
 
 
