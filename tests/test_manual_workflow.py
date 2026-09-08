@@ -35,7 +35,7 @@ def test_manual_workflow_db_jobs_require_execute_true():
     assert "github.event.inputs.job == 'refresh'" in workflow
     assert "github.event.inputs.execute == 'true'" in workflow
     assert "uv run collect-insights" in workflow
-    assert "uv run refresh-tokens" in workflow
+    assert "uv run python jobs/refresh_tokens.py" in workflow
 
 
 def test_manual_workflow_connectivity_runs_tests_and_db_jobs_are_serialized():

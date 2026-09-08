@@ -114,7 +114,7 @@ jobs:
         run: uv sync --locked
 
       - name: Refresh tokens
-        run: uv run refresh-tokens
+        run: uv run python jobs/refresh_tokens.py
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
