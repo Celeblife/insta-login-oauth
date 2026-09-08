@@ -29,6 +29,13 @@ from .models import InstagramAccount
 _STATE_TTL_SECONDS = 600
 _STATE_FUTURE_SKEW_SECONDS = 60
 _STATE_VERSION = 1
+_HTTP_TIMEOUT_SECONDS = 10
+
+
+class TokenRefreshError(RuntimeError):
+    """Secret-safe token refresh failure."""
+
+    pass
 
 
 class StateError(ValueError):
@@ -343,17 +350,47 @@ def get_long_lived_token(short_lived_token: str) -> dict:
 
 def refresh_long_lived_token(token: str) -> dict:
     """Refresh a long-lived token (extends expiration)."""
+    if not isinstance(token, str) or not token:
+        raise TokenRefreshError("token_refresh_invalid_token")
+
     url = f"{config.INSTAGRAM_API_BASE_URL}/refresh_access_token"
     params = {
         "grant_type": "ig_refresh_token",
         "access_token": token,
     }
 
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    data = response.json()
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            timeout=_HTTP_TIMEOUT_SECONDS,
+            allow_redirects=False,
+        )
+    except requests.RequestException:
+        raise TokenRefreshError("token_refresh_http_error") from None
 
-    expires_in = data.get("expires_in", 5184000)
+    if 300 <= response.status_code < 400:
+        raise TokenRefreshError("token_refresh_redirect_rejected")
+    try:
+        response.raise_for_status()
+    except requests.HTTPError:
+        raise TokenRefreshError("token_refresh_http_error") from None
+
+    try:
+        data = response.json()
+    except ValueError:
+        raise TokenRefreshError("token_refresh_invalid_json") from None
+
+    if not isinstance(data, dict):
+        raise TokenRefreshError("token_refresh_invalid_response")
+
+    access_token = data.get("access_token")
+    if not isinstance(access_token, str) or not access_token:
+        raise TokenRefreshError("token_refresh_missing_token")
+
+    expires_in = data.get("expires_in")
+    if isinstance(expires_in, bool) or not isinstance(expires_in, int) or expires_in <= 0:
+        raise TokenRefreshError("token_refresh_invalid_expires_in")
     data["expires_at"] = datetime.now(timezone.utc) + timedelta(seconds=expires_in)
 
     return data
