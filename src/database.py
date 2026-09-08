@@ -183,19 +183,45 @@ def save_token(
 ):
     """Save or update a token."""
     client = get_client()
-    # Delete existing token of same type
-    client.table("tokens").delete().eq("user_id", user_id).eq(
-        "token_type", token_type
-    ).execute()
-    # Insert new token
-    client.table("tokens").insert(
+    client.table("tokens").upsert(
         {
             "user_id": user_id,
             "token_type": token_type,
             "access_token": access_token,
             "expires_at": expires_at.isoformat() if expires_at else None,
-        }
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        },
+        on_conflict="user_id,token_type",
     ).execute()
+
+
+def save_refreshed_token_if_current(
+    *,
+    token: Token,
+    access_token: str,
+    expires_at: datetime,
+) -> bool:
+    """Save a refreshed token only if the row still matches the read snapshot."""
+    if token.id is None:
+        raise ValueError("save_refreshed_token_if_current requires token.id")
+
+    client = get_client()
+    update_data = {
+        "access_token": access_token,
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    query = client.table("tokens").update(update_data).eq("id", token.id)
+    query = _filter_nullable_datetime(query, "created_at", token.created_at)
+    query = _filter_nullable_datetime(query, "expires_at", token.expires_at)
+    result = query.execute()
+    return bool(result.data)
+
+
+def _filter_nullable_datetime(query: Any, column: str, value: Optional[datetime]) -> Any:
+    if value is None:
+        return query.is_(column, "null")
+    return query.eq(column, value.isoformat())
 
 
 def complete_instagram_onboarding(
@@ -334,15 +360,23 @@ def get_user_token(user_id: int, token_type: str) -> Optional[Token]:
 def get_expiring_tokens(days: int = 7) -> list[tuple[User, Token]]:
     """Get tokens expiring within specified days."""
     client = get_client()
-    threshold = (datetime.now(timezone.utc) + timedelta(days=days)).isoformat()
+    threshold = datetime.now(timezone.utc) + timedelta(days=days)
+    threshold_iso = threshold.isoformat()
 
     result = (
         client.table("tokens")
         .select("*, users(*)")
         .eq("token_type", "user")
-        .lt("expires_at", threshold)
+        .or_(f"expires_at.lt.{threshold_iso},expires_at.is.null")
         .execute()
     )
+
+    rows = []
+    for row in result.data:
+        expires_at = _parse_datetime(row.get("expires_at"))
+        if expires_at is not None and expires_at >= threshold:
+            continue
+        rows.append((row, expires_at))
 
     return [
         (
@@ -357,10 +391,11 @@ def get_expiring_tokens(days: int = 7) -> list[tuple[User, Token]]:
                 user_id=r["user_id"],
                 token_type=r["token_type"],
                 access_token=r["access_token"],
-                expires_at=_parse_datetime(r.get("expires_at")),
+                expires_at=expires_at,
+                created_at=_parse_datetime(r.get("created_at")),
             ),
         )
-        for r in result.data
+        for r, expires_at in rows
     ]
 
 
