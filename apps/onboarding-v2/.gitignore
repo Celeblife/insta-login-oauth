@@ -1,0 +1,12 @@
+.next/
+coverage/
+node_modules/
+playwright-report/
+test-results/
+evidence/generated/
+.env
+.env.local
+.env.*.local
+!.env.example
+supabase/.branches/
+supabase/.temp/

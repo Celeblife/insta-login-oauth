@@ -1,0 +1,52 @@
+{
+  "name": "@celeblife/onboarding-v2",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.20.0 <25"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit tests/integration",
+    "test:db": "vitest run tests/db",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test --grep @a11y",
+    "test:visual": "playwright test --grep @visual",
+    "test:reference": "node --test ../../handoff/celeblife-v2/tests/*.test.mjs",
+    "verify:artifacts": "node scripts/verify-production-artifacts.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run verify:artifacts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.116.0",
+    "next": "16.3.4",
+    "nodemailer": "10.0.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "4.6.2"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "22.20.2",
+    "@types/pg": "8.20.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "@vitest/coverage-v8": "5.0.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.4",
+    "jsdom": "29.1.1",
+    "pg": "8.23.0",
+    "typescript": "6.0.3",
+    "vite": "8.3.0",
+    "vitest": "5.0.0"
+  }
+}
