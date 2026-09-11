@@ -13,6 +13,14 @@ npm run dev
 
 Local defaults use the mock provider, disabled mail, and disabled jobs. Never place real credentials in tracked files.
 
+To inspect the loading screen without creating an onboarding attempt, run `npm run dev` and open:
+
+```text
+http://127.0.0.1:3000/connecting?preview=loading
+```
+
+That preview URL is development-only; production still requires the normal bound session and `attemptId`.
+
 ## Verify
 
 ```bash

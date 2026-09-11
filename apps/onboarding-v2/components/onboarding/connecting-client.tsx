@@ -9,14 +9,25 @@ import type { PublicErrorCode, StartResponse, StatusResponse } from "./types";
 
 const stageLabels = ["인스타그램 계정 확인", "신청 정보 안전하게 저장", "AI 분석 신청 접수"] as const;
 
-export function ConnectingClient({ attemptId }: { attemptId: string }) {
+function previewStatus(attemptId: string): Extract<StatusResponse, { status: "processing" }> {
+  return {
+    status: "processing",
+    attemptId,
+    revision: 0,
+    stage: "account",
+    retryAfterMs: 60_000,
+    submissionIntent: "unknown",
+  };
+}
+
+export function ConnectingClient({ attemptId, preview = false }: { attemptId: string; preview?: boolean }) {
   const router = useRouter();
-  const [status, setStatus] = useState<StatusResponse | null>(null);
+  const [status, setStatus] = useState<StatusResponse | null>(() => (preview ? previewStatus(attemptId) : null));
   const [longWait, setLongWait] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [restartError, setRestartError] = useState<PublicErrorCode | null>(null);
   const [restarting, setRestarting] = useState(false);
-  const currentRef = useRef<StatusResponse | null>(null);
+  const currentRef = useRef<StatusResponse | null>(preview ? previewStatus(attemptId) : null);
   const csrfRef = useRef("");
   const restartKeyRef = useRef<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -65,6 +76,7 @@ export function ConnectingClient({ attemptId }: { attemptId: string }) {
   }, [accept, attemptId, router]);
 
   useEffect(() => {
+    if (preview) return;
     if (!isUuid(attemptId)) {
       router.replace("/connection-error?code=INVALID_STATE");
       return;
@@ -88,9 +100,10 @@ export function ConnectingClient({ attemptId }: { attemptId: string }) {
       window.clearTimeout(longWaitTimer);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [attemptId, complete, router]);
+  }, [attemptId, complete, preview, router]);
 
   useEffect(() => {
+    if (preview) return;
     if (!status || status.status !== "processing") return;
     if (document.visibilityState === "hidden") return;
     timeoutRef.current = setTimeout(() => {
@@ -99,9 +112,10 @@ export function ConnectingClient({ attemptId }: { attemptId: string }) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [fetchStatus, status]);
+  }, [fetchStatus, preview, status]);
 
   useEffect(() => {
+    if (preview) return;
     const onVisible = () => {
       if (document.visibilityState === "visible" && currentRef.current?.status === "processing") {
         void fetchStatus().catch(() => setLongWait(true));
@@ -113,7 +127,7 @@ export function ConnectingClient({ attemptId }: { attemptId: string }) {
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("pageshow", onVisible);
     };
-  }, [fetchStatus]);
+  }, [fetchStatus, preview]);
 
   const activeStage = status?.status === "processing" ? stageIndex(status.stage, status.submissionIntent) : 0;
   const account = status?.status === "account_confirmation_required" ? `@${status.connectedUsername}` : "계정 확인 중";

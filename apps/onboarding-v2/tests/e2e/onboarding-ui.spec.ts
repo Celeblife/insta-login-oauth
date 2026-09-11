@@ -18,6 +18,20 @@ test("UI01 AUDIT production intro has approved shell without preview toolbar or 
   await expect(page.getByRole("link", { name: "인스타그램 연결 시작하기" })).toHaveAttribute("href", "/apply");
 });
 
+test("UI01 loading preview renders without onboarding API calls", async ({ page }) => {
+  let apiCalls = 0;
+  await page.route("**/api/onboarding/**", async (route) => {
+    apiCalls += 1;
+    await route.fulfill({ status: 500, body: "preview must not call onboarding APIs" });
+  });
+
+  await page.goto("/connecting?preview=loading");
+  await expect(page.getByRole("heading", { name: "셀럽님과 연결하고 있어요." })).toBeVisible();
+  await expect(page.getByText("인스타그램 계정을 확인하고 있어요.")).toBeVisible();
+  await expect(page.getByLabel("연동 진행 상황")).toBeVisible();
+  expect(apiCalls).toBe(0);
+});
+
 test("UI02 apply validates fields, syncs consent indeterminate, and posts real start API", async ({ page }) => {
   let posted: unknown;
   await page.route("**/api/onboarding/start", async (route) => {
