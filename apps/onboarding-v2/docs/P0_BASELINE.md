@@ -50,6 +50,8 @@ All packages are exact-pinned in `package.json` and `package-lock.json`. `npm au
 - Supabase local workflow: <https://supabase.com/docs/guides/local-development/cli-workflows>
 - Supabase API key boundary: <https://supabase.com/docs/guides/getting-started/migrating-to-new-api-keys>
 - Instagram Business Login: <https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/business-login/>
+- Instagram Login getting started and `/me` fields: <https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/get-started/>
+- Instagram long-lived access token exchange: <https://developers.facebook.com/docs/instagram-platform/reference/access_token/>
 - Instagram platform changelog: <https://developers.facebook.com/docs/instagram-platform/changelog/>
 - Graph API versioning: <https://developers.facebook.com/docs/graph-api/guides/versioning>
 - Vercel Cron behavior and authentication: <https://vercel.com/docs/cron-jobs/manage-cron-jobs>
@@ -60,6 +62,7 @@ All packages are exact-pinned in `package.json` and `package-lock.json`. `npm au
 - Next 16 request APIs such as `cookies()` are asynchronous. Route handlers are dynamic when they inspect request/cookie/header/DB data. All v2 handlers explicitly use the Node runtime and no-store behavior where relevant.
 - Supabase is moving legacy `anon`/`service_role` keys toward publishable/secret keys. V2 accepts a server secret key name and never exposes it to a client bundle. The deployed project remains an operator gate.
 - Meta documentation currently lists Graph API v26.0, but the checked-in app uses v22.0 and the target app's dashboard version, app ID type, redirect URI, review status, enabled features, and scopes are not available locally. V2 therefore validates/configures these values and does not claim a real upgrade or real OAuth pass.
+- The current Business Login guide documents the authorization-code response as a `data` array containing a short-lived token, Instagram-scoped user ID, and comma-separated granted permissions. It does not document `expires_in` on that short-token response. The separate long-token and refresh responses do contain integer `expires_in`; v2 validates that value without inventing a fallback. `/me` exposes both an app-scoped `id` and the professional account `user_id`, so persistence uses and cross-checks the professional account ID rather than coercing either value through JavaScript numbers.
 - Official Instagram Business Login documentation lists state but did not document PKCE parameters in the evidence reviewed. The implementation must say “PKCE not documented for this flow,” not “Meta never supports PKCE.”
 - Vercel Cron is best-effort, can miss or duplicate invocations, does not retry failed jobs, and may overlap. V2 jobs use database claims, fencing, idempotency, and reconciliation rather than assuming exactly-once scheduling.
 - Hobby Cron cannot run every five minutes. Actual plan/cadence and project isolation remain deployment gates.
@@ -68,7 +71,8 @@ All packages are exact-pinned in `package.json` and `package-lock.json`. `npm au
 
 - Node: `v22.20.0`; npm: `10.9.3`.
 - Docker executable is visible through a Windows path, but Docker Desktop WSL integration is disabled; no local `psql`, `pg_isready`, or Supabase CLI was initially available.
-- Therefore actual PostgreSQL evidence requires a safe app-local PostgreSQL runtime or remains `NOT_RUN`; model tests or SQL inspection cannot be reported as database PASS.
+- A disposable PostgreSQL `16.15` binary bundle was subsequently unpacked under `/tmp` without a system install. The DB harness creates a fresh, isolated cluster for every test and applies only the v2 forward migration chain.
+- `npm run test:db` passed against that real PostgreSQL runtime (2 files, 26 tests). This is local SQL/RPC evidence only; it is not evidence for an actual Supabase project, staging migration, or production migration.
 
 ## Open gates (`NOT_RUN` until independently available)
 
@@ -78,4 +82,3 @@ All packages are exact-pinned in `package.json` and `package-lock.json`. `npm au
 - Final public contact address, approved policy text/version/hash, retention/ownership decisions.
 - Vercel project IDs, environment isolation, paid plan/Cron cadence, staging and production deployment.
 - Physical iPhone/Android/in-app-browser/screen-reader execution.
-

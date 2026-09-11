@@ -2,24 +2,28 @@
   "name": "@celeblife/onboarding-v2",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=22.20.0 <25"
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/production-build-stamp.mjs clear",
     "build": "next build",
+    "postbuild": "node scripts/production-build-stamp.mjs write",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit tests/integration",
     "test:db": "vitest run tests/db",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test --grep @a11y",
-    "test:visual": "playwright test --grep @visual",
     "test:reference": "node --test ../../handoff/celeblife-v2/tests/*.test.mjs",
     "verify:artifacts": "node scripts/verify-production-artifacts.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run verify:artifacts"
+    "verify:production-headers": "node scripts/verify-production-headers.mjs",
+    "verify:protected-root": "node scripts/verify-protected-root.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run verify:production-headers && npm run verify:artifacts && npm run verify:protected-root"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.116.0",

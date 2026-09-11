@@ -3,6 +3,7 @@ coverage/
 node_modules/
 playwright-report/
 test-results/
+*.tsbuildinfo
 evidence/generated/
 .env
 .env.local

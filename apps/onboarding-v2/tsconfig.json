@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "es2023"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2023"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -15,9 +19,15 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
@@ -26,7 +36,10 @@
     "**/*.ts",
     "**/*.tsx",
     "vitest.config.ts",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

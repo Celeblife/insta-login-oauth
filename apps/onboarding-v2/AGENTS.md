@@ -9,3 +9,13 @@
 - Do not run production DB/reset/deploy, Meta mutations, or real email. Record credential-dependent checks as `NOT_RUN`.
 - Use exact dependencies and update `package-lock.json` through npm. No new dependency without a concrete, documented need.
 - Run the smallest relevant tests after each change and the full app verification before completion.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

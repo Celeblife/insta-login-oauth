@@ -28,10 +28,19 @@ export default defineConfig({
       APP_ENV: "test",
       ONBOARDING_PROVIDER: "mock",
       MAIL_ENABLED: "false",
+      CONTACT_EMAIL: process.env.CONTACT_EMAIL ?? "support@example.com",
     },
   },
   projects: [
     { name: "chromium-desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 1000 } } },
-    { name: "chromium-mobile", use: { ...devices["iPhone 13"], viewport: { width: 390, height: 844 } } },
+    {
+      name: "chromium-mobile",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 390, height: 844 },
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
   ],
 });

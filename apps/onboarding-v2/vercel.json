@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/internal/token-refresh",
+      "schedule": "23 0 * * *"
+    },
+    {
+      "path": "/internal/notification-retry",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/internal/onboarding-cleanup",
+      "schedule": "43 0 * * *"
+    }
+  ]
+}
