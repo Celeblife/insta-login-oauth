@@ -1,0 +1,22 @@
+{
+  "baseline": {
+    "normal_width_pass": 70,
+    "normal_count": 70,
+    "long_pass": 0,
+    "long_count": 5,
+    "short_modal_pass": 0,
+    "short_modal_count": 3,
+    "double_text": false,
+    "measured_pass": false
+  },
+  "corrected": {
+    "normal_width_pass": 70,
+    "normal_count": 70,
+    "long_pass": 5,
+    "long_count": 5,
+    "short_modal_pass": 3,
+    "short_modal_count": 3,
+    "double_text": true,
+    "measured_pass": true
+  }
+}

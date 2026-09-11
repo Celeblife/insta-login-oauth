@@ -1,0 +1,40 @@
+{
+  "scope": "independent keyboard probes in local approved DOM + unchanged production CSS; not actual app/physical phone",
+  "browser": "144.0.7559.96",
+  "checks": [
+    {
+      "name": "form keyboard order",
+      "actual": [
+        "full-name",
+        "phone",
+        "email",
+        "instagram",
+        "agree-all"
+      ],
+      "pass": true
+    },
+    {
+      "name": "space toggles all consent",
+      "pass": true
+    },
+    {
+      "name": "keyboard opens policy",
+      "pass": true
+    },
+    {
+      "name": "15 tab steps remain in dialog",
+      "pass": false
+    },
+    {
+      "name": "escape closes and restores trigger focus",
+      "pass": true
+    },
+    {
+      "name": "invalid keyboard submit focuses first field",
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "requests": [],
+  "pass": false
+}

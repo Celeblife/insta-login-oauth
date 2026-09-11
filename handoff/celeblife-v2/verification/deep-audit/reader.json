@@ -1,0 +1,104 @@
+{
+  "scope": "reader navigation only",
+  "duplicate_ids": {},
+  "navigation": [
+    {
+      "label": "01. 고정 범위 감사 결과",
+      "href": "#section-1",
+      "target": "01. 고정 범위 감사 결과",
+      "pass": true
+    },
+    {
+      "label": "02. 이전 v1.3.1 검토 이력",
+      "href": "#section-2",
+      "target": "02. 이전 v1.3.1 검토 이력",
+      "pass": true
+    },
+    {
+      "label": "03. 인계 요약",
+      "href": "#section-3",
+      "target": "03. 인계 요약",
+      "pass": true
+    },
+    {
+      "label": "04. 제품·시스템 기준",
+      "href": "#section-4",
+      "target": "04. 제품·시스템 기준",
+      "pass": true
+    },
+    {
+      "label": "05. UI/UX 구현 명세",
+      "href": "#section-5",
+      "target": "05. UI/UX 구현 명세",
+      "pass": true
+    },
+    {
+      "label": "06. 백엔드·DB",
+      "href": "#section-6",
+      "target": "06. 백엔드·DB",
+      "pass": true
+    },
+    {
+      "label": "07. API 계약",
+      "href": "#section-7",
+      "target": "07. API 계약",
+      "pass": true
+    },
+    {
+      "label": "08. v1.3 검토 이력",
+      "href": "#section-8",
+      "target": "08. v1.3 검토 이력",
+      "pass": true
+    },
+    {
+      "label": "09. 기존 발견사항",
+      "href": "#section-9",
+      "target": "09. 기존 발견사항",
+      "pass": true
+    },
+    {
+      "label": "10. 출시 게이트",
+      "href": "#section-10",
+      "target": "10. 출시 게이트",
+      "pass": true
+    },
+    {
+      "label": "11. 구현 순서",
+      "href": "#section-11",
+      "target": "11. 구현 순서",
+      "pass": true
+    },
+    {
+      "label": "12. 테스트자료 초기화",
+      "href": "#section-12",
+      "target": "12. 테스트자료 초기화",
+      "pass": true
+    },
+    {
+      "label": "13. 실제 앱 인수 테스트",
+      "href": "#section-13",
+      "target": "13. 실제 앱 인수 테스트",
+      "pass": true
+    },
+    {
+      "label": "14. 현재 검증 결과",
+      "href": "#section-14",
+      "target": "14. 현재 검증 결과",
+      "pass": true
+    },
+    {
+      "label": "15. Codex 지시문",
+      "href": "#section-15",
+      "target": "15. Codex 지시문",
+      "pass": true
+    },
+    {
+      "label": "16. 근거·범위",
+      "href": "#section-16",
+      "target": "16. 근거·범위",
+      "pass": true
+    }
+  ],
+  "missing_internal_targets": [],
+  "pass": true
+}

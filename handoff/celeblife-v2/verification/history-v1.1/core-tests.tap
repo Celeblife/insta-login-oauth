@@ -1,0 +1,268 @@
+TAP version 13
+# Subtest: valid form normalizes values without inferring ownership
+ok 1 - valid form normalizes values without inferring ownership
+  ---
+  duration_ms: 1.505076
+  type: 'test'
+  ...
+# Subtest: blank name is rejected
+ok 2 - blank name is rejected
+  ---
+  duration_ms: 0.340253
+  type: 'test'
+  ...
+# Subtest: single character names are not arbitrarily excluded
+ok 3 - single character names are not arbitrarily excluded
+  ---
+  duration_ms: 0.162521
+  type: 'test'
+  ...
+# Subtest: name length is bounded
+ok 4 - name length is bounded
+  ---
+  duration_ms: 1.064265
+  type: 'test'
+  ...
+# Subtest: control characters in name are rejected
+ok 5 - control characters in name are rejected
+  ---
+  duration_ms: 0.161943
+  type: 'test'
+  ...
+# Subtest: email requires syntax, not a claimed delivery check
+ok 6 - email requires syntax, not a claimed delivery check
+  ---
+  duration_ms: 0.138339
+  type: 'test'
+  ...
+# Subtest: CRLF in email is rejected
+ok 7 - CRLF in email is rejected
+  ---
+  duration_ms: 0.087681
+  type: 'test'
+  ...
+# Subtest: unknown extra fields are dropped
+ok 8 - unknown extra fields are dropped
+  ---
+  duration_ms: 0.087279
+  type: 'test'
+  ...
+# Subtest: all consents must be actual booleans
+ok 9 - all consents must be actual booleans
+  ---
+  duration_ms: 0.436716
+  type: 'test'
+  ...
+# Subtest: missing consent fails
+ok 10 - missing consent fails
+  ---
+  duration_ms: 0.354433
+  type: 'test'
+  ...
+# Subtest: mismatched policy fails
+ok 11 - mismatched policy fails
+  ---
+  duration_ms: 0.137847
+  type: 'test'
+  ...
+# Subtest: no configured policy cannot silently proceed
+ok 12 - no configured policy cannot silently proceed
+  ---
+  duration_ms: 0.758004
+  type: 'test'
+  ...
+# Subtest: invalid request key fails
+ok 13 - invalid request key fails
+  ---
+  duration_ms: 0.096189
+  type: 'test'
+  ...
+# Subtest: non-object payload fails
+ok 14 - non-object payload fails
+  ---
+  duration_ms: 0.049325
+  type: 'test'
+  ...
+# Subtest: IG normalization strips @ and lowercases
+ok 15 - IG normalization strips @ and lowercases
+  ---
+  duration_ms: 0.043607
+  type: 'test'
+  ...
+# Subtest: IG URL is not a username
+ok 16 - IG URL is not a username
+  ---
+  duration_ms: 0.047004
+  type: 'test'
+  ...
+# Subtest: IG exceeds 30 characters
+ok 17 - IG exceeds 30 characters
+  ---
+  duration_ms: 0.044015
+  type: 'test'
+  ...
+# Subtest: phone letters are not silently discarded
+ok 18 - phone letters are not silently discarded
+  ---
+  duration_ms: 0.034931
+  type: 'test'
+  ...
+# Subtest: already international KR phone accepted
+ok 19 - already international KR phone accepted
+  ---
+  duration_ms: 0.136575
+  type: 'test'
+  ...
+# Subtest: landline normalization
+ok 20 - landline normalization
+  ---
+  duration_ms: 0.039036
+  type: 'test'
+  ...
+# Subtest: due token refreshes
+ok 21 - due token refreshes
+  ---
+  duration_ms: 0.321693
+  type: 'test'
+  ...
+# Subtest: expired token requires reconnect
+ok 22 - expired token requires reconnect
+  ---
+  duration_ms: 0.094634
+  type: 'test'
+  ...
+# Subtest: fresh token is skipped
+ok 23 - fresh token is skipped
+  ---
+  duration_ms: 0.048492
+  type: 'test'
+  ...
+# Subtest: exactly 24h old is eligible
+ok 24 - exactly 24h old is eligible
+  ---
+  duration_ms: 0.043051
+  type: 'test'
+  ...
+# Subtest: exactly 7 days remaining is not due, matching legacy strict cutoff
+ok 25 - exactly 7 days remaining is not due, matching legacy strict cutoff
+  ---
+  duration_ms: 0.03841
+  type: 'test'
+  ...
+# Subtest: missing expiry does not invent 60 days
+ok 26 - missing expiry does not invent 60 days
+  ---
+  duration_ms: 0.038072
+  type: 'test'
+  ...
+# Subtest: future save timestamp treated as bad metadata
+ok 27 - future save timestamp treated as bad metadata
+  ---
+  duration_ms: 0.036299
+  type: 'test'
+  ...
+# Subtest: timezone-free metadata rejected
+ok 28 - timezone-free metadata rejected
+  ---
+  duration_ms: 0.034347
+  type: 'test'
+  ...
+# Subtest: actual expires_in determines expiry
+ok 29 - actual expires_in determines expiry
+  ---
+  duration_ms: 1.493002
+  type: 'test'
+  ...
+# Subtest: invalid expires_in undefined
+ok 30 - invalid expires_in undefined
+  ---
+  duration_ms: 0.138899
+  type: 'test'
+  ...
+# Subtest: invalid expires_in 0
+ok 31 - invalid expires_in 0
+  ---
+  duration_ms: 0.058997
+  type: 'test'
+  ...
+# Subtest: invalid expires_in -1
+ok 32 - invalid expires_in -1
+  ---
+  duration_ms: 0.042968
+  type: 'test'
+  ...
+# Subtest: invalid expires_in true
+ok 33 - invalid expires_in true
+  ---
+  duration_ms: 0.043689
+  type: 'test'
+  ...
+# Subtest: invalid expires_in 3600
+ok 34 - invalid expires_in 3600
+  ---
+  duration_ms: 0.040713
+  type: 'test'
+  ...
+# Subtest: invalid expires_in NaN
+ok 35 - invalid expires_in NaN
+  ---
+  duration_ms: 0.041401
+  type: 'test'
+  ...
+# Subtest: invalid expires_in 1.5
+ok 36 - invalid expires_in 1.5
+  ---
+  duration_ms: 0.039072
+  type: 'test'
+  ...
+# Subtest: token response requires a token
+ok 37 - token response requires a token
+  ---
+  duration_ms: 0.920775
+  type: 'test'
+  ...
+# Subtest: mail deterministic key is receipt-specific
+ok 38 - mail deterministic key is receipt-specific
+  ---
+  duration_ms: 24.53548
+  type: 'test'
+  ...
+# Subtest: reconnection subject is distinct
+ok 39 - reconnection subject is distinct
+  ---
+  duration_ms: 0.368806
+  type: 'test'
+  ...
+# Subtest: HTML in name is escaped
+ok 40 - HTML in name is escaped
+  ---
+  duration_ms: 0.338027
+  type: 'test'
+  ...
+# Subtest: injected subject field rejected
+ok 41 - injected subject field rejected
+  ---
+  duration_ms: 0.116709
+  type: 'test'
+  ...
+# Subtest: token is never included, even if caller supplies it
+ok 42 - token is never included, even if caller supplies it
+  ---
+  duration_ms: 0.501544
+  type: 'test'
+  ...
+# Subtest: mail escaping includes quotes
+ok 43 - mail escaping includes quotes
+  ---
+  duration_ms: 0.082622
+  type: 'test'
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 139.831474

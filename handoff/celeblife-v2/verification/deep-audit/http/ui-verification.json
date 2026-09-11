@@ -1,0 +1,9 @@
+{
+  "scope": "split UI equivalence and demo interaction only; no real OAuth/DB/SMTP",
+  "comparisons": [],
+  "interaction": {},
+  "console_errors": [],
+  "external_requests": [],
+  "render_mode": "http_local_assets",
+  "limitations": []
+}

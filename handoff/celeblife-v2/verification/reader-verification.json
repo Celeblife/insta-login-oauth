@@ -1,0 +1,21 @@
+{
+  "scope": "integrated handoff reader; in-memory HTML render only",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "no_page_overflow": true,
+      "sections": 13,
+      "internal_links_valid": true
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "no_page_overflow": true,
+      "sections": 13,
+      "internal_links_valid": true
+    }
+  ],
+  "page_errors": [],
+  "passed": true
+}

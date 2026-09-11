@@ -1,0 +1,82 @@
+[
+  {
+    "path": "docs/BACKEND_DB_SPEC.md",
+    "change": "modified",
+    "sha256": "bebbe93cd4bba523e00d3a9efcf183dc38279892ef5e10378634d9351cbc0587"
+  },
+  {
+    "path": "docs/DECISIONS.md",
+    "change": "modified",
+    "sha256": "16d11fe2d430cf4f3cc81c1408ac1756755e4d7da326dce26ed3490984796097"
+  },
+  {
+    "path": "docs/DEEP_AUDIT.md",
+    "change": "added",
+    "sha256": "d06152b3fe61a546306bc4748374d0616799b0a1d53327d716c4bc1b2b39b32b"
+  },
+  {
+    "path": "docs/RELEASE_CHECKLIST.md",
+    "change": "modified",
+    "sha256": "f0ac78f41665840161d045fb95f71fc57b4fe04dce2fab99b108a9266f02bcb5"
+  },
+  {
+    "path": "docs/SOURCES.md",
+    "change": "modified",
+    "sha256": "cda96f75b4173215f9a16f74f1597a114b9d527fad3eca5bf7bbccee1a4aebf0"
+  },
+  {
+    "path": "docs/TEST_MATRIX.md",
+    "change": "modified",
+    "sha256": "d1d54f1d89d8b3066dc230326ff8afeafdc29f4cc68272f0a763557852466287"
+  },
+  {
+    "path": "docs/UI_UX_SPEC.md",
+    "change": "modified",
+    "sha256": "05ab29d478642e2a261e1fd2f5295d45ebc8107e71bb5280a4131ff3cc356791"
+  },
+  {
+    "path": "docs/V2_SPEC.md",
+    "change": "modified",
+    "sha256": "c02be251fb714cc7c424aeee0efa44246a8e8012910602abde534ee5bcce5d21"
+  },
+  {
+    "path": "scripts/build_reader.py",
+    "change": "modified",
+    "sha256": "e8178032159fcc30531212357b4a395489b3272d798e086180c4ca1025561875"
+  },
+  {
+    "path": "scripts/model-lifecycle-counterexamples.mjs",
+    "change": "added",
+    "sha256": "844c49fc7d6df4683174ef9b62671742cff5351ee64d7aa16fe7b732a118c25a"
+  },
+  {
+    "path": "scripts/verify_keyboard.py",
+    "change": "added",
+    "sha256": "fa68d1be9fd4d979f3baa5b09071751ff846115c0bbee2b79086a3d86868efb4"
+  },
+  {
+    "path": "scripts/verify_last_review.py",
+    "change": "modified",
+    "sha256": "018760936ab58e81de91d8b326d0c834a36801f16f205ddb4a30d7c48c68ec7f"
+  },
+  {
+    "path": "scripts/verify_reader.py",
+    "change": "added",
+    "sha256": "fbb5c3186df489dc512695b58a4866494db7ba3588e7d17ad056cce2ae4fbe03"
+  },
+  {
+    "path": "server-reference/lifecycle-policy.mjs",
+    "change": "added",
+    "sha256": "66c3d772a0b38c89f03b76235d3aef35305855496becba9e79dc27f1825a7866"
+  },
+  {
+    "path": "contracts/API.md",
+    "change": "modified",
+    "sha256": "2d8c56cc2c43d12350c46deb264dea040be5e44e2cb4c1d37cdd70695235b1f0"
+  },
+  {
+    "path": "templates/0001_v2_schema.sql.draft",
+    "change": "modified",
+    "sha256": "b6928e244d99fe5a21fbd53cfadfa4d4aa486566291c5798e032e8d6f3c1b18d"
+  }
+]

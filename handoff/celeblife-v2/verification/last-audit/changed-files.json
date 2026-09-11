@@ -1,0 +1,134 @@
+[
+  {
+    "path": "START_HERE_FOR_CODEX.md",
+    "change": "modified",
+    "previous_sha256": "b528e3e12073814fed4de0aac2d7ba73d6fcbc99c8e516da3747f20b5952f033",
+    "current_sha256": "daf60cd89bb5ce4e5dc50da76e4e7580c7d3ec3d361778d544abc2bd134015c5"
+  },
+  {
+    "path": "README.md",
+    "change": "modified",
+    "previous_sha256": "e4ac62e895cc663b4b6332e428a4a11bfeebb4c243cfea2aeacbb62f823a2e11",
+    "current_sha256": "f3dd4f3ba6032cd9d2bb5a4227024d63e7ef1ce66920b911a0e83f1f68f45353"
+  },
+  {
+    "path": "server-reference/attempt-policy.mjs",
+    "change": "modified",
+    "previous_sha256": "7d24ab647e94aa7d068a73f2a794121b6abea88d484025a49b8dcc4cf7e6a7f2",
+    "current_sha256": "afcd085509aa287d6ea50bb04232a5331c53f72cfbcab1366eabf04880570486"
+  },
+  {
+    "path": "scripts/verify_ui.py",
+    "change": "modified",
+    "previous_sha256": "d88b0d3764e049de1cedf8c1b923ac8d3b54ce487c6a4d34b6727084a21a0c11",
+    "current_sha256": "da1019272930ee65895f41d22bc180eac0964bfd83817ccb7a53ad9e0d323506"
+  },
+  {
+    "path": "scripts/verify_mobile_review.py",
+    "change": "modified",
+    "previous_sha256": "f62a2c869c02c31584e08c4270ad21f5a06a532069058793b2bcac62abcd3312",
+    "current_sha256": "63ceb0196b4ca0fd17782aade661a6584e8471c6eb31e8adb2e701c18cff349c"
+  },
+  {
+    "path": "scripts/verify_last_review.py",
+    "change": "added",
+    "previous_sha256": null,
+    "current_sha256": "c7c002c2ef0abf0ff4724b1bb4e18f8cc7479fdee249c76cbb1e87fa1c8b201b"
+  },
+  {
+    "path": "scripts/build_reader.py",
+    "change": "modified",
+    "previous_sha256": "095633a4caefb92c43e1bf8ef92dee918054d3095b042c57760251b7696920cb",
+    "current_sha256": "731977151fee07867f2fc7ac5ceb12e2700f4ba4b86c7d95807c9a96b9dbf457"
+  },
+  {
+    "path": "contracts/API.md",
+    "change": "modified",
+    "previous_sha256": "f34fcc9a183f2f0c9d17d5e5c76fc49603b6ccd67ac5c39195808f965e99baa3",
+    "current_sha256": "d05361f5fd3a87c7b39f4675dbf6c45afa1c6c3acf7144c12f63ec96b01ff323"
+  },
+  {
+    "path": "contracts/onboarding.ts",
+    "change": "modified",
+    "previous_sha256": "f548d7a9a528ef41201427eb19a0700172b4f167eb1684388f445f75ba2ea48a",
+    "current_sha256": "e6ff4c11728978a5684cf33eeda37f72f4d8ab61dc49a9ab65d3caed29eec637"
+  },
+  {
+    "path": "tests/final-review.test.mjs",
+    "change": "modified",
+    "previous_sha256": "552bece38e5a16e281e63e5a0f58e58b96bfc75e6c6d9cc4743e113086519843",
+    "current_sha256": "193b16092ec0368d7161be4de547fad72409e9c317f4f5bad5ccf941c78cec29"
+  },
+  {
+    "path": "tests/last-review.test.mjs",
+    "change": "added",
+    "previous_sha256": null,
+    "current_sha256": "0d4475bda7d8550026547ef869380cc04dc5853e87a60fc296f1a345b6795d2c"
+  },
+  {
+    "path": "docs/IMPLEMENTATION_PLAN.md",
+    "change": "modified",
+    "previous_sha256": "e2fbfcc7836c3a7a3918796a0cf52fdfbf122cefafbaee9eced2553fd92572de",
+    "current_sha256": "2905c76dc9ea0e3def7bb658cc45ef7e097f758cbe1fbee336d5935cc2fcede9"
+  },
+  {
+    "path": "docs/TEST_MATRIX.md",
+    "change": "modified",
+    "previous_sha256": "3cb9cb0baeb493d582bfde1c094f14629580f432b13fb9cfa5243986b7c3c370",
+    "current_sha256": "6c9985eba441431178124875a937a9107060bfdee89ffe63ab3c6c577ff18d92"
+  },
+  {
+    "path": "docs/SOURCES.md",
+    "change": "modified",
+    "previous_sha256": "cf12730c39bbd3f57d1030feb9015dcfd90f0b2fe296f146b4f20a55c93b605a",
+    "current_sha256": "1e357a31c81376e1fc997956457f78628fe556fd95168e9c426026e104f6e22e"
+  },
+  {
+    "path": "docs/RELEASE_CHECKLIST.md",
+    "change": "modified",
+    "previous_sha256": "a46385ed09f2dc5b01828465d7aed437815c5e71733e19bb9e31676cf8fb4718",
+    "current_sha256": "7f67fb871665d2b17d502dbbd07dd773534a07c58f00231615bd627be47e46cc"
+  },
+  {
+    "path": "docs/V2_SPEC.md",
+    "change": "modified",
+    "previous_sha256": "d420b37b417001187ded9de783d0d8cfec5a2a93abfca25e50d458d48a3d8258",
+    "current_sha256": "abaee3f91816f80a7c2b705a23f143ba3f3dc5062a263f5c5fbc6ea06b0d566c"
+  },
+  {
+    "path": "docs/UI_UX_SPEC.md",
+    "change": "modified",
+    "previous_sha256": "8b1e211629f86fbb039100c65772785bf13e87ea39447c0699b4c0cd78ee39c7",
+    "current_sha256": "6f92d01c5d42e91071b3fa803418bcd600f169376c68039673b3e207c83f8412"
+  },
+  {
+    "path": "docs/LAST_REVIEW.md",
+    "change": "added",
+    "previous_sha256": null,
+    "current_sha256": "573c6bc18bdb37f6dc8d6b7107ac5a2a3373021ea2ab5e97f1a6f832969c443c"
+  },
+  {
+    "path": "docs/DECISIONS.md",
+    "change": "modified",
+    "previous_sha256": "77985934a79b0e0c4980d4a8543bd79790977cfe0298a3102a43946c5ec2897e",
+    "current_sha256": "197d9e4211bbbf892ed84af0774885acf88c015c17cb056bd4c1c383ac87aba0"
+  },
+  {
+    "path": "docs/BACKEND_DB_SPEC.md",
+    "change": "modified",
+    "previous_sha256": "7515e0cd4894cdb5e8487f5e751e33d75dac0fa817a44ccbe90f8800ba8320a4",
+    "current_sha256": "f747b50d3c14e85f51e8f37ca7b699e0cad740778b2eb10f88e10997021f7f2f"
+  },
+  {
+    "path": "ui/production/usability-overrides.css",
+    "change": "modified",
+    "previous_sha256": "830e427b17ae160f2aa1ae07f5cbccc88bb226396e4c3f70a6006d7474a094f1",
+    "current_sha256": "356e92738bb1f3f5a3780e443ffbf15975372d4f36653da040466696800a434c"
+  },
+  {
+    "path": "ui/production/README.md",
+    "change": "modified",
+    "previous_sha256": "311e80ae3a48ed2dd55dae6a1b87d4e804f29dd3403fb4c3551871f95e73fb2a",
+    "current_sha256": "2158602949b18a6d1cdaaef08b92ddc5ad1202c916bc491911b56752af5c0a71"
+  }
+]

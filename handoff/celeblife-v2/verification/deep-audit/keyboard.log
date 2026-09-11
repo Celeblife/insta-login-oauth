@@ -1,0 +1,40 @@
+{
+  "scope": "independent keyboard probes in local approved DOM + unchanged production CSS; browser chrome is outside DOM focus, not a background form escape; not actual app/physical phone or complete focus-loop conformance",
+  "browser": "144.0.7559.96",
+  "checks": [
+    {
+      "name": "form keyboard order",
+      "actual": [
+        "full-name",
+        "phone",
+        "email",
+        "instagram",
+        "agree-all"
+      ],
+      "pass": true
+    },
+    {
+      "name": "space toggles all consent",
+      "pass": true
+    },
+    {
+      "name": "keyboard opens policy",
+      "pass": true
+    },
+    {
+      "name": "15 tabs do not focus background document controls; browser chrome permitted",
+      "pass": true
+    },
+    {
+      "name": "escape closes and restores trigger focus",
+      "pass": true
+    },
+    {
+      "name": "invalid keyboard submit focuses first field",
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "requests": [],
+  "pass": true
+}

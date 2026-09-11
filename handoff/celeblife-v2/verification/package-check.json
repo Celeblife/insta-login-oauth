@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "local_markdown_links_checked": 36,
+  "errors": [],
+  "scope": "package consistency only; not real application/security/production testing"
+}

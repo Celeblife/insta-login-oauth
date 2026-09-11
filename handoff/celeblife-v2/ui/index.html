@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src data:; font-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<title>셀럽라이프 · 크리에이터 온보딩 v2 UI</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<svg class="defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5.4"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.6" cy="6.5" r="1" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+<symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M20 12H5m6-6-6 6 6 6"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 7 3v5c0 4.5-2.8 7.4-7 10-4.2-2.6-7-5.5-7-10V6l7-3Z"/><path d="m8.5 12 2.3 2.3 4.9-5"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-cross" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.3 8.5a2.8 2.8 0 0 1 5.4 1c0 1.6-2.7 2-2.7 3.7m0 3h.01"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2c.8 6.2 3.8 9.2 10 10-6.2.8-9.2 3.8-10 10C11.2 15.8 8.2 12.8 2 12c6.2-.8 9.2-3.8 10-10Z"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 8-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m0 8a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-1 1" transform="translate(1,0) scale(.92)"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M8 15v-3m5 3V9m5 6V6"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/></symbol>
+<symbol id="cl-symbol" viewBox="0 0 32 36"><path d="M14.5 0c.6 8.5 4.7 14.6 14.5 18-9.8 3.4-13.9 9.5-14.5 18C13.9 27.5 9.8 21.4 0 18 9.8 14.6 13.9 8.5 14.5 0Z"/><path d="M29.5 1c.2 2.5 1.3 4.3 4.2 5.4-2.9 1-4 2.8-4.2 5.4-.2-2.6-1.3-4.4-4.2-5.4 2.9-1.1 4-2.9 4.2-5.4Z" transform="translate(-3,0)"/></symbol>
+</defs></svg>
+<header class="previewbar" aria-label="UI 시안 탐색 도구">
+ <div class="preview-label"><i class="preview-dot"></i><b>V2 UI PREVIEW</b><span class="preview-description">실제 저장·인스타 연동·메일 발송 없음</span></div>
+ <nav class="preview-nav" aria-label="화면 바로 보기">
+ <button type="button" data-view="intro" aria-pressed="false">시작</button><button type="button" data-view="form" aria-pressed="true">정보·동의</button><button type="button" data-view="loading" aria-pressed="false">연동 중</button><button type="button" data-view="success" aria-pressed="false">완료</button><span class="preview-divider"></span><button type="button" class="sample" id="sample-btn">예시 채우기</button>
+ </nav>
+</header>
+<main class="shell">
+<aside class="story" aria-label="셀럽라이프 소개">
+ <button type="button" class="brand" data-view="intro" aria-label="셀럽라이프 시작 화면"><svg class="brand-symbol" aria-hidden="true"><use href="#cl-symbol"/></svg><span class="wordmark">CelebLife<span class="brand-dot">.</span></span></button>
+ <div class="brand-sub">CREATOR COMMERCE PARTNER</div>
+ <div class="story-body">
+  <div class="eyebrow"><i></i>CELEBLIFE ONBOARDING</div>
+  <h2>반응을 읽고,<br><em>선택의 기준</em>을 만듭니다.</h2>
+  <p class="story-desc">채널 데이터를 바탕으로 셀럽님에게 꼭 맞는<br>제품과 판매 방향을 함께 찾아갑니다.</p>
+  <div class="connection" aria-hidden="true">
+   <div class="halo"></div><div class="orbit o1"></div><div class="orbit o2"></div><div class="connection-line"></div>
+   <div class="ig-tile"><svg class="ic"><use href="#i-ig"/></svg></div>
+   <div class="cl-tile"><svg class="brand-symbol"><use href="#cl-symbol"/></svg></div>
+   <div class="data-chip"><span></span>채널 데이터 연결</div>
+   <svg class="spark sp1" viewBox="0 0 24 24"><use href="#i-star"/></svg><svg class="spark sp2" viewBox="0 0 24 24"><use href="#i-star"/></svg>
+  </div>
+  <div class="story-benefits"><div class="benefit"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>채널의 강점 발견</div><div class="benefit"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg>맞춤 커머스 방향</div><div class="benefit"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg>담당자 직접 안내</div></div>
+ </div>
+ <div class="story-footer"><span>© 2026 CelebLife</span><span>Your influence, thoughtfully connected.</span></div>
+</aside>
+<section class="content-panel" aria-label="인스타그램 연동 신청">
+ <div class="panel-top"><div class="context"><span></span>CREATOR CONNECT</div><button type="button" class="brand mobile-brand" data-view="intro" aria-label="셀럽라이프 시작 화면"><svg class="brand-symbol" aria-hidden="true"><use href="#cl-symbol"/></svg><span class="wordmark">CelebLife<span class="brand-dot">.</span></span></button><button type="button" class="help-link" data-dialog="help"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg>연동이 궁금하신가요?</button></div>
+ <div class="view-wrap">
+  <section class="view view-intro" id="view-intro" hidden aria-labelledby="intro-title">
+   <p class="intro-eyebrow">CONNECT YOUR NEXT CHAPTER</p>
+   <h1 class="intro-title" id="intro-title" tabindex="-1">셀럽님의 다음 기회,<br>연결에서 시작됩니다.</h1>
+   <p class="subtitle" style="margin-top:15px">인스타그램을 연결하고,<br>내 채널에 맞는 새로운 커머스 가능성을 만나보세요.</p>
+   <div class="intro-trust"><div class="trust-title"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Meta 공식 로그인 방식<span class="trust-tag">안전한 연결</span></div><p>인스타그램 비밀번호는 셀럽라이프에 공유되지 않습니다.<br>다음 화면에서 기본 정보와 필수 동의를 먼저 확인해요.</p></div>
+   <button class="primary intro-action" type="button" data-view="form"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg>인스타그램 연결 시작하기<svg class="ic trailing" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+   <div class="intro-bottom"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg>기본 정보 입력<span></span>계정 연결<span></span>분석 신청 완료</div>
+  </section>
+  <section class="view" id="view-form" aria-labelledby="form-title">
+   <nav class="steps" aria-label="신청 단계"><span class="step active" aria-current="step"><span class="step-dot">1</span>기본 정보</span><span class="step-line"></span><span class="step"><span class="step-dot">2</span>인스타그램 연동</span><span class="step-line"></span><span class="step"><span class="step-dot">3</span>접수 완료</span></nav>
+   <div class="view-head"><h1 id="form-title" tabindex="-1">먼저, 셀럽님을 알려주세요.</h1><p class="subtitle">분석 결과와 담당자 안내를 받을 정보를 입력해 주세요.</p></div>
+   <form id="onboarding-form" novalidate autocomplete="off">
+    <p class="required-caption"><b>*</b> 모두 필수 입력 항목이에요</p>
+    <div class="form-grid">
+     <div class="field"><label for="full-name">이름 <span class="req">*</span></label><div class="input-wrap"><input id="full-name" name="fullName" placeholder="성함을 입력하세요" maxlength="50" autocomplete="off" required aria-describedby="name-error"></div><p class="field-error" id="name-error" hidden></p></div>
+     <div class="field"><label for="phone">연락처 <span class="req">*</span></label><div class="input-wrap"><input id="phone" name="phone" placeholder="010-0000-0000" type="tel" inputmode="tel" maxlength="15" autocomplete="off" required aria-describedby="phone-error"></div><p class="field-error" id="phone-error" hidden></p></div>
+     <div class="field full"><label for="email">이메일 <span class="req">*</span></label><div class="input-wrap"><input class="has-icon" id="email" name="email" placeholder="hello@example.com" type="email" inputmode="email" maxlength="254" autocapitalize="none" spellcheck="false" autocomplete="off" required aria-describedby="email-error"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></div><p class="field-error" id="email-error" hidden></p></div>
+     <div class="field full"><label for="instagram">셀럽 ID <span style="color:#aa9bb6;font-weight:400;font-size:10px">(인스타그램 아이디)</span><span class="req">*</span></label><div class="input-wrap"><span class="input-prefix" aria-hidden="true">@</span><input class="has-prefix" id="instagram" name="instagram" placeholder="instagram_id" maxlength="50" autocapitalize="none" spellcheck="false" autocomplete="off" required aria-describedby="instagram-hint instagram-error"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg></div><p class="field-hint" id="instagram-hint">연결할 계정의 아이디를 입력해 주세요.</p><p class="field-error" id="instagram-error" hidden></p></div>
+    </div>
+    <div class="consent-box">
+     <label class="all-agree"><span class="cb"><input type="checkbox" id="agree-all"><span><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></span>필수 항목에 모두 동의합니다</label>
+     <div class="checks">
+      <div class="check-row"><label><span class="cb"><input type="checkbox" name="age" data-consent required><span><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></span><span><span class="required-text">[필수]</span> 만 14세 이상입니다</span></label></div>
+      <div class="check-row"><label><span class="cb"><input type="checkbox" name="terms" data-consent required><span><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></span><span><span class="required-text">[필수]</span> 서비스 이용약관 동의</span></label><button type="button" class="policy-link" data-dialog="terms" aria-label="서비스 이용약관 보기"><svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+      <div class="check-row"><label><span class="cb"><input type="checkbox" name="privacy" data-consent required><span><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></span><span><span class="required-text">[필수]</span> 개인정보 수집·이용 동의</span></label><button type="button" class="policy-link" data-dialog="privacy" aria-label="개인정보 수집 이용 동의 보기"><svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+      <div class="check-row"><label><span class="cb"><input type="checkbox" name="instagramData" data-consent required><span><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></span><span><span class="required-text">[필수]</span> 인스타그램 데이터 이용 동의</span></label><button type="button" class="policy-link" data-dialog="instagramData" aria-label="인스타그램 데이터 이용 동의 보기"><svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+     </div>
+    </div>
+    <p class="field-error" id="consent-error" hidden role="alert">필수 동의 항목을 확인해 주세요.</p>
+    <button class="primary form-action" type="submit"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg>동의하고 Instagram 연결<svg class="ic trailing" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    <div class="action-caption"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>인스타그램 비밀번호는 셀럽라이프에 저장하지 않아요.</div>
+   </form>
+  </section>
+  <section class="view status-view" id="view-loading" hidden aria-labelledby="loading-title" aria-busy="false">
+   <nav class="steps" aria-label="신청 단계"><span class="step done"><span class="step-dot"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span>기본 정보</span><span class="step-line"></span><span class="step active" aria-current="step"><span class="step-dot">2</span>인스타그램 연동</span><span class="step-line"></span><span class="step"><span class="step-dot">3</span>접수 완료</span></nav>
+   <div class="status-illustration" aria-hidden="true"><svg class="progress-ring" viewBox="0 0 160 160"><circle class="ring-base" cx="80" cy="80" r="74"/><circle class="ring-motion" cx="80" cy="80" r="74"/></svg><div class="status-orb"><svg class="brand-symbol"><use href="#cl-symbol"/></svg></div><div class="orbit-badge"><svg class="ic"><use href="#i-ig"/></svg></div><svg class="status-twinkle" viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+   <div class="status-tag"><svg class="ic" aria-hidden="true"><use href="#i-link"/></svg><span id="loading-account">@celeblife_demo</span></div>
+   <h1 id="loading-title" tabindex="-1">셀럽님과 연결하고 있어요.</h1>
+   <p class="subtitle loading-copy" id="loading-copy" aria-live="polite">인스타그램 계정을 확인하고 있어요.<br>셀럽님에게 맞는 분석을 준비하는 첫 단계예요.</p>
+   <ol class="loading-list" aria-label="연동 진행 상황">
+    <li class="loading-step active"><span class="loading-node">1</span><span>인스타그램 계정 확인</span><span class="loading-detail">확인 중</span></li>
+    <li class="loading-step"><span class="loading-node">2</span><span>신청 정보 안전하게 저장</span><span class="loading-detail">대기</span></li>
+    <li class="loading-step"><span class="loading-node">3</span><span>AI 분석 신청 접수</span><span class="loading-detail">대기</span></li>
+   </ol>
+   <p class="loading-note"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>연결이 완료될 때까지 이 페이지를 유지해 주세요.</p>
+   <p class="long-wait" id="long-wait" hidden>연결 확인이 조금 지연되고 있어요.<br>입력하신 정보를 유지한 채 다시 시도할 수 있습니다.</p>
+  </section>
+  <section class="view status-view" id="view-success" hidden aria-labelledby="success-title">
+   <nav class="steps" aria-label="신청 단계"><span class="step done"><span class="step-dot"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span>기본 정보</span><span class="step-line"></span><span class="step done"><span class="step-dot"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span>인스타그램 연동</span><span class="step-line"></span><span class="step active" aria-current="step"><span class="step-dot"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span>접수 완료</span></nav>
+   <div class="success-illustration" aria-hidden="true"><div class="success-halo"></div><div class="success-circle"><svg class="ic"><use href="#i-check"/></svg></div><span class="success-dot"></span><svg class="success-star" viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+   <h1 id="success-title" tabindex="-1">연동이 완료되었습니다.</h1>
+   <p class="subtitle"><span id="success-name">셀럽</span>님의 분석 신청이 정상적으로 접수되었어요.</p>
+   <div class="connected-account"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg><b id="success-account">@celeblife_demo</b><span class="connected-pill">연결 완료</span></div>
+   <div class="next-card"><div class="next-header"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>이제, 이렇게 진행돼요<span>약 1영업일</span></div><div class="next-step"><span class="next-number">1</span><div><b>채널에 맞는 분석을 준비합니다</b><br>AI 분석과 담당자 검토가 함께 진행됩니다.</div></div><div class="next-step"><span class="next-number">2</span><div><b>담당자가 직접 연락드립니다</b><br>접수 확인 후 입력하신 연락처로 안내드릴게요.</div></div></div>
+   <p class="contact-line">안내받을 이메일 <b id="success-email">creator@example.com</b><br>연락처 <span id="success-phone">010-0000-0000</span></p>
+   <p class="finish-note"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>이 페이지는 닫으셔도 됩니다.</p>
+   <p class="success-reference" id="success-reference">UI 미리보기 · 실제 접수는 이루어지지 않았습니다.</p>
+   <button type="button" class="subtle-btn" data-dialog="contact">입력한 연락처에 수정이 필요한가요?</button>
+  </section>
+  <section class="view status-view" id="view-error" hidden aria-labelledby="error-title">
+   <div class="error-icon"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg></div><h1 id="error-title" tabindex="-1">연결을 마치지 못했어요.</h1><p class="subtitle">입력하신 정보는 이 페이지에 그대로 남아 있어요.<br>계정을 확인한 뒤 다시 연결해 주세요.</p><button class="primary" type="button" data-view="form" style="margin-top:27px">입력한 정보 확인하고 다시 연결</button><button class="secondary" type="button" data-dialog="help">연동 도움말 보기</button>
+  </section>
+ </div>
+ <footer class="panel-footer"><button type="button" data-dialog="terms">이용약관</button><i></i><button type="button" data-dialog="privacy">개인정보처리방침</button><i></i><button type="button" data-dialog="deletion">연동 해제·데이터 삭제</button></footer>
+</section>
+</main>
+<dialog class="dialog" id="info-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><button type="button" class="close-btn" data-close aria-label="닫기"><svg class="ic" aria-hidden="true"><use href="#i-cross"/></svg></button></div><div class="dialog-body" id="dialog-body"></div><div class="dialog-footer"><button class="primary" type="button" data-close>확인했어요</button></div></dialog>
+<dialog class="dialog" id="oauth-dialog" aria-labelledby="oauth-title"><div class="dialog-head"><h2 id="oauth-title">인스타그램 연결 미리보기</h2><button type="button" class="close-btn" data-close aria-label="닫기"><svg class="ic" aria-hidden="true"><use href="#i-cross"/></svg></button></div><div class="dialog-body"><div class="demo-badge">UI DEMO · 실제 인증이 아닙니다</div><div class="dialog-icon"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg></div><p><strong>실제 서비스에서는 Instagram 공식 승인 화면으로 이동합니다.</strong></p><p>지금은 화면 흐름만 확인하는 시안이에요. 개인정보를 저장하거나 인스타그램에 접속하지 않습니다.</p><div class="demo-account"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg><div><b id="demo-account">@celeblife_demo</b><small>입력한 계정을 이용한 시뮬레이션</small></div></div><p>아래 버튼을 누르면 연결 처리 화면을 거쳐 접수 완료 화면으로 이동합니다.</p></div><div class="dialog-footer"><button class="primary" type="button" id="simulate-btn">연동 흐름 체험하기<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="secondary" type="button" id="simulate-error">연동 취소 상황 보기</button></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="./preview.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+/* v1.3.1 production-only usability corrections.
+ * Import AFTER the approved styles.css; set <body data-celeblife-production="true">.
+ * Do not edit reference/approved or ui/preview.js. Not a replacement for React/API code.
+ * Geometry probes validate the specified cases only; real mobile Safari/Chrome QA remains required.
+ */
+[data-celeblife-production="true"] .previewbar { display: none; }
+[data-celeblife-production="true"] .shell,
+[data-celeblife-production="true"] .story,
+[data-celeblife-production="true"] .content-panel { min-height: 100svh; }
+
+/* Do not hide overflow: retain all of the applicant's name and authenticated handle. */
+[data-celeblife-production="true"] .view .subtitle,
+[data-celeblife-production="true"] .contact-line,
+[data-celeblife-production="true"] .success-reference,
+[data-celeblife-production="true"] .field-error,
+[data-celeblife-production="true"] .dialog-body {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+[data-celeblife-production="true"] .connected-account,
+[data-celeblife-production="true"] .status-tag { max-width: 100%; min-width: 0; }
+[data-celeblife-production="true"] .connected-account b,
+[data-celeblife-production="true"] .status-tag span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+[data-celeblife-production="true"] .connected-pill { flex-shrink: 0; white-space: nowrap; }
+[data-celeblife-production="true"] .steps,
+[data-celeblife-production="true"] .panel-top,
+[data-celeblife-production="true"] .next-header { flex-wrap: wrap; row-gap: 8px; }
+[data-celeblife-production="true"] .step { max-width: 100%; }
+
+/* A short viewport must scroll the policy text, not clip its confirmation controls. */
+[data-celeblife-production="true"] .dialog[open] {
+  display: flex;
+  flex-direction: column;
+  max-height: min(85svh, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px));
+}
+[data-celeblife-production="true"] .dialog-head,
+[data-celeblife-production="true"] .dialog-footer { flex: 0 0 auto; }
+[data-celeblife-production="true"] .dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Important small controls: the project target is 44px, not a blanket WCAG-AA claim. */
+[data-celeblife-production="true"] .policy-link,
+[data-celeblife-production="true"] .close-btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+[data-celeblife-production="true"] .check-row,
+[data-celeblife-production="true"] .check-row label,
+[data-celeblife-production="true"] .help-link,
+[data-celeblife-production="true"] .panel-footer button { min-height: 44px; }
+[data-celeblife-production="true"] .panel-footer button { min-width: 44px; font-size: 11px; }
+[data-celeblife-production="true"] .primary {
+  height: auto;
+  min-height: 53px;
+  padding: 12px 38px;
+  line-height: 1.5;
+}
+
+/* Selected essential secondary text measured below 4.5:1 on white in the prototype. */
+[data-celeblife-production="true"] .help-link,
+[data-celeblife-production="true"] .field-hint,
+[data-celeblife-production="true"] .action-caption,
+[data-celeblife-production="true"] .panel-footer,
+[data-celeblife-production="true"] .dialog-body,
+[data-celeblife-production="true"] .field input::placeholder {
+  color: #776583;
+}
+
+@media (max-width: 860px) {
+  [data-celeblife-production="true"] .content-panel {
+    padding-top: max(24px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(22px, env(safe-area-inset-bottom, 0px));
+    padding-left: max(26px, env(safe-area-inset-left, 0px));
+    padding-right: max(26px, env(safe-area-inset-right, 0px));
+  }
+}
+@media (max-width: 420px) {
+  [data-celeblife-production="true"] .content-panel {
+    padding-top: max(22px, env(safe-area-inset-top, 0px));
+    padding-left: max(22px, env(safe-area-inset-left, 0px));
+    padding-right: max(22px, env(safe-area-inset-right, 0px));
+  }
+}
+@media (max-width: 345px) {
+  [data-celeblife-production="true"] .content-panel {
+    padding-left: max(17px, env(safe-area-inset-left, 0px));
+    padding-right: max(17px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* v1.3.1: account confirmation CTA may include an authenticated 30-char handle.
+ * Wrapping must work inside the flex button too, not only in the account badge.
+ */
+[data-celeblife-production="true"] .primary {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+/* Two-action confirmation dialogs also need a short-height fallback.
+ * Normally only the body scrolls. If header + actions cannot fit, the dialog
+ * itself scrolls instead of clipping the secondary action or hiding all body text.
+ */
+[data-celeblife-production="true"] .dialog[open] { overflow-y: auto; }
+[data-celeblife-production="true"] .dialog-body { min-height: min(80px, 20dvh); }
+[data-celeblife-production="true"] .secondary {
+  height: auto;
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}

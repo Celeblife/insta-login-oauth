@@ -1,0 +1,4 @@
+{
+  "render_mode": "memory",
+  "http_failure": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:39409/reference/approved/index.html\nCall log:\n  - navigating to \"http://127.0.0.1:39409/reference/approved/index.html\", waiting until \"load\"\n"
+}

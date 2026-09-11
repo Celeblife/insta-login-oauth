@@ -1,0 +1,76 @@
+{
+  "checks": [
+    {
+      "default_form_visible": true
+    },
+    {
+      "desktop_no_overflow": true
+    },
+    {
+      "empty_form_blocked": true
+    },
+    {
+      "sample_does_not_accept_consent": true
+    },
+    {
+      "consent_required": true
+    },
+    {
+      "indeterminate_checkbox": true
+    },
+    {
+      "privacy_modal_opens": true
+    },
+    {
+      "escape_closes_modal": true
+    },
+    {
+      "oauth_simulation_dialog": true
+    },
+    {
+      "loading_visible": true
+    },
+    {
+      "loading_progressed": true
+    },
+    {
+      "success_flow": true
+    },
+    {
+      "intro_leads_to_form": true
+    },
+    {
+      "cancel_error_view": true
+    },
+    {
+      "retry_preserves_form": true
+    },
+    {
+      "user_text_not_html": true
+    },
+    {
+      "no_horizontal_overflow_390": true
+    },
+    {
+      "no_horizontal_overflow_320": true
+    },
+    {
+      "no_horizontal_overflow_768": true
+    },
+    {
+      "no_horizontal_overflow_1024": true
+    },
+    {
+      "no_localstorage": true
+    },
+    {
+      "no_sessionstorage": true
+    },
+    {
+      "no_network_calls": true
+    }
+  ],
+  "errors": [],
+  "network_requests": [],
+  "pass": true
+}

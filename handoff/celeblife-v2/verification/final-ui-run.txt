@@ -1,0 +1,111 @@
+{
+  "scope": "split UI equivalence and demo interaction only; no real OAuth/DB/SMTP",
+  "comparisons": [
+    {
+      "viewport": "desktop",
+      "state": "intro",
+      "pixel_identical": true,
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "form",
+      "pixel_identical": true,
+      "size": [
+        1440,
+        971
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "loading",
+      "pixel_identical": true,
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "success",
+      "pixel_identical": true,
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "state": "error",
+      "pixel_identical": true,
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "intro",
+      "pixel_identical": true,
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "form",
+      "pixel_identical": true,
+      "size": [
+        390,
+        971
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "loading",
+      "pixel_identical": true,
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "success",
+      "pixel_identical": true,
+      "size": [
+        390,
+        887
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "state": "error",
+      "pixel_identical": true,
+      "size": [
+        390,
+        844
+      ]
+    }
+  ],
+  "interaction": {
+    "empty_form_rejected": true,
+    "sample_does_not_preconsent": true,
+    "consent_all_and_indeterminate": true,
+    "policy_dialog_keyboard_close": true,
+    "cancel_preserves_in_tab_draft": true,
+    "demo_full_flow": true,
+    "no_horizontal_overflow_at_320": true
+  },
+  "console_errors": [],
+  "external_requests": [],
+  "render_mode": "in_memory_local_assets",
+  "limitations": [
+    "Local URL loading is not tested in memory mode. CSS/JS are inlined by this harness only. No browser policy or distributed source is modified."
+  ],
+  "passed": true
+}

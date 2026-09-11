@@ -1,0 +1,1551 @@
+{
+  "scope": "prototype + CSS only, not a React app or physical device",
+  "mode": "memory",
+  "variants": {
+    "baseline": {
+      "normal": [
+        {
+          "state": "intro",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        }
+      ],
+      "long_data": [
+        {
+          "configuredWidth": 320,
+          "layoutWidth": 618,
+          "documentWidth": 618,
+          "clientWidth": 320,
+          "height": 1630,
+          "fits": false
+        },
+        {
+          "configuredWidth": 360,
+          "layoutWidth": 624,
+          "documentWidth": 624,
+          "clientWidth": 360,
+          "height": 1461,
+          "fits": false
+        },
+        {
+          "configuredWidth": 390,
+          "layoutWidth": 623,
+          "documentWidth": 623,
+          "clientWidth": 390,
+          "height": 1349,
+          "fits": false
+        },
+        {
+          "configuredWidth": 430,
+          "layoutWidth": 627,
+          "documentWidth": 627,
+          "clientWidth": 430,
+          "height": 1231,
+          "fits": false
+        },
+        {
+          "configuredWidth": 861,
+          "layoutWidth": 1017,
+          "documentWidth": 1017,
+          "clientWidth": 861,
+          "height": 997,
+          "fits": false
+        }
+      ],
+      "short_modal": [
+        {
+          "height": 320,
+          "panelBottom": 296,
+          "footerBottom": 365.390625,
+          "footerFits": false,
+          "bodyHeight": 198,
+          "bodyScrollHeight": 467
+        },
+        {
+          "height": 420,
+          "panelBottom": 388.5,
+          "footerBottom": 434.890625,
+          "footerFits": false,
+          "bodyHeight": 260,
+          "bodyScrollHeight": 467
+        },
+        {
+          "height": 568,
+          "panelBottom": 525.390625,
+          "footerBottom": 537.75,
+          "footerFits": false,
+          "bodyHeight": 352,
+          "bodyScrollHeight": 467
+        }
+      ],
+      "targets": [
+        {
+          "selector": "help-link",
+          "width": 109.359375,
+          "height": 27
+        },
+        {
+          "selector": "LABEL",
+          "width": 320,
+          "height": 33
+        },
+        {
+          "selector": "LABEL",
+          "width": 287,
+          "height": 33
+        },
+        {
+          "selector": "policy-link",
+          "width": 25,
+          "height": 30
+        },
+        {
+          "selector": "LABEL",
+          "width": 287,
+          "height": 33
+        },
+        {
+          "selector": "policy-link",
+          "width": 25,
+          "height": 30
+        },
+        {
+          "selector": "LABEL",
+          "width": 287,
+          "height": 33
+        },
+        {
+          "selector": "policy-link",
+          "width": 25,
+          "height": 30
+        },
+        {
+          "selector": "BUTTON",
+          "width": 33.125,
+          "height": 23
+        },
+        {
+          "selector": "BUTTON",
+          "width": 66.25,
+          "height": 23
+        },
+        {
+          "selector": "BUTTON",
+          "width": 84.625,
+          "height": 23
+        }
+      ],
+      "double_text_probe": {
+        "configuredWidth": 390,
+        "layoutWidth": 427,
+        "documentWidth": 427,
+        "clientWidth": 390,
+        "height": 925,
+        "fits": false
+      },
+      "errors": [],
+      "measured_pass": false
+    },
+    "corrected": {
+      "normal": [
+        {
+          "state": "intro",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 345,
+          "layoutWidth": 345,
+          "documentWidth": 345,
+          "clientWidth": 345,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 346,
+          "layoutWidth": 346,
+          "documentWidth": 346,
+          "clientWidth": 346,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 375,
+          "layoutWidth": 375,
+          "documentWidth": 375,
+          "clientWidth": 375,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 412,
+          "layoutWidth": 412,
+          "documentWidth": 412,
+          "clientWidth": 412,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 768,
+          "layoutWidth": 768,
+          "documentWidth": 768,
+          "clientWidth": 768,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 860,
+          "layoutWidth": 860,
+          "documentWidth": 860,
+          "clientWidth": 860,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 900,
+          "layoutWidth": 900,
+          "documentWidth": 900,
+          "clientWidth": 900,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 1080,
+          "layoutWidth": 1080,
+          "documentWidth": 1080,
+          "clientWidth": 1080,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "intro",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "form",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "loading",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "success",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "state": "error",
+          "configuredWidth": 1440,
+          "layoutWidth": 1440,
+          "documentWidth": 1440,
+          "clientWidth": 1440,
+          "height": 844,
+          "fits": true
+        }
+      ],
+      "long_data": [
+        {
+          "configuredWidth": 320,
+          "layoutWidth": 320,
+          "documentWidth": 320,
+          "clientWidth": 320,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "configuredWidth": 360,
+          "layoutWidth": 360,
+          "documentWidth": 360,
+          "clientWidth": 360,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "configuredWidth": 390,
+          "layoutWidth": 390,
+          "documentWidth": 390,
+          "clientWidth": 390,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "configuredWidth": 430,
+          "layoutWidth": 430,
+          "documentWidth": 430,
+          "clientWidth": 430,
+          "height": 844,
+          "fits": true
+        },
+        {
+          "configuredWidth": 861,
+          "layoutWidth": 861,
+          "documentWidth": 861,
+          "clientWidth": 861,
+          "height": 844,
+          "fits": true
+        }
+      ],
+      "short_modal": [
+        {
+          "height": 320,
+          "panelBottom": 296,
+          "footerBottom": 295,
+          "footerFits": true,
+          "bodyHeight": 113,
+          "bodyScrollHeight": 467
+        },
+        {
+          "height": 420,
+          "panelBottom": 388.5,
+          "footerBottom": 387.5,
+          "footerFits": true,
+          "bodyHeight": 198,
+          "bodyScrollHeight": 467
+        },
+        {
+          "height": 568,
+          "panelBottom": 525.390625,
+          "footerBottom": 524.390625,
+          "footerFits": true,
+          "bodyHeight": 324,
+          "bodyScrollHeight": 467
+        }
+      ],
+      "targets": [
+        {
+          "selector": "help-link",
+          "width": 109.359375,
+          "height": 44
+        },
+        {
+          "selector": "LABEL",
+          "width": 320,
+          "height": 44
+        },
+        {
+          "selector": "LABEL",
+          "width": 268,
+          "height": 44
+        },
+        {
+          "selector": "policy-link",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "LABEL",
+          "width": 268,
+          "height": 44
+        },
+        {
+          "selector": "policy-link",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "LABEL",
+          "width": 268,
+          "height": 44
+        },
+        {
+          "selector": "policy-link",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "BUTTON",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "BUTTON",
+          "width": 80.96875,
+          "height": 44
+        },
+        {
+          "selector": "BUTTON",
+          "width": 103.421875,
+          "height": 44
+        }
+      ],
+      "double_text_probe": {
+        "configuredWidth": 390,
+        "layoutWidth": 390,
+        "documentWidth": 390,
+        "clientWidth": 390,
+        "height": 844,
+        "fits": true
+      },
+      "errors": [],
+      "measured_pass": true
+    }
+  },
+  "browser": "144.0.7559.96",
+  "limitations": [
+    "No real mobile Safari/Android browser or Instagram WebView",
+    "No actual virtual keyboard, safe-area inset, 200% OS text zoom; short-height and doubled computed-text probes only",
+    "No HTTP/CSP/Next.js/runtime backend tests; local assets injected into DOM",
+    "No overall WCAG conformance certification"
+  ]
+}

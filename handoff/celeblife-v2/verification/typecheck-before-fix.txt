@@ -1,0 +1,1 @@
+tests/contracts.typecheck.ts(10,3): error TS2322: Type '"confirmation_required"' is not assignable to type '"failed" | "completed" | "idle" | "awaiting_oauth" | "processing" | "account_confirmation_required"'.

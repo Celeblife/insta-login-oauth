@@ -1,0 +1,30 @@
+{
+  "scope": "counterexample models of conflicting/insufficient written predicates; no production code/SQL executed",
+  "revocation": {
+    "baselineSnapshot": {
+      "version": 7,
+      "status": "connected",
+      "token": "FAKE_TOKEN_A",
+      "expiry": "2026-09-15T00:00:00Z"
+    },
+    "afterRevoke": {
+      "version": 7,
+      "status": "revoked",
+      "token": "FAKE_TOKEN_A",
+      "expiry": "2026-09-15T00:00:00Z"
+    },
+    "literalCasAllowsWrite": true,
+    "afterVersioning": {
+      "version": 8,
+      "status": "revoked",
+      "token": "FAKE_TOKEN_A",
+      "expiry": "2026-09-15T00:00:00Z"
+    },
+    "fixedAllowsWrite": false
+  },
+  "cancellation": {
+    "blanketCancelledReadForbidden": false,
+    "uiRestorationRequirement": true,
+    "contradiction": true
+  }
+}

@@ -1,0 +1,676 @@
+TAP version 13
+# Subtest: valid form normalizes values without inferring ownership
+ok 1 - valid form normalizes values without inferring ownership
+  ---
+  duration_ms: 2.779732
+  type: 'test'
+  ...
+# Subtest: blank name is rejected
+ok 2 - blank name is rejected
+  ---
+  duration_ms: 0.391982
+  type: 'test'
+  ...
+# Subtest: single character names are not arbitrarily excluded
+ok 3 - single character names are not arbitrarily excluded
+  ---
+  duration_ms: 0.235326
+  type: 'test'
+  ...
+# Subtest: name length is bounded
+ok 4 - name length is bounded
+  ---
+  duration_ms: 0.19195
+  type: 'test'
+  ...
+# Subtest: control characters in name are rejected
+ok 5 - control characters in name are rejected
+  ---
+  duration_ms: 0.163568
+  type: 'test'
+  ...
+# Subtest: email requires syntax, not a claimed delivery check
+ok 6 - email requires syntax, not a claimed delivery check
+  ---
+  duration_ms: 0.195696
+  type: 'test'
+  ...
+# Subtest: CRLF in email is rejected
+ok 7 - CRLF in email is rejected
+  ---
+  duration_ms: 0.149516
+  type: 'test'
+  ...
+# Subtest: unknown extra fields are dropped
+ok 8 - unknown extra fields are dropped
+  ---
+  duration_ms: 0.261455
+  type: 'test'
+  ...
+# Subtest: all consents must be actual booleans
+ok 9 - all consents must be actual booleans
+  ---
+  duration_ms: 0.569291
+  type: 'test'
+  ...
+# Subtest: missing consent fails
+ok 10 - missing consent fails
+  ---
+  duration_ms: 0.731295
+  type: 'test'
+  ...
+# Subtest: mismatched policy fails
+ok 11 - mismatched policy fails
+  ---
+  duration_ms: 0.222877
+  type: 'test'
+  ...
+# Subtest: no configured policy cannot silently proceed
+ok 12 - no configured policy cannot silently proceed
+  ---
+  duration_ms: 0.448137
+  type: 'test'
+  ...
+# Subtest: invalid request key fails
+ok 13 - invalid request key fails
+  ---
+  duration_ms: 0.122625
+  type: 'test'
+  ...
+# Subtest: non-object payload fails
+ok 14 - non-object payload fails
+  ---
+  duration_ms: 0.094293
+  type: 'test'
+  ...
+# Subtest: IG normalization strips @ and lowercases
+ok 15 - IG normalization strips @ and lowercases
+  ---
+  duration_ms: 0.087222
+  type: 'test'
+  ...
+# Subtest: IG URL is not a username
+ok 16 - IG URL is not a username
+  ---
+  duration_ms: 0.097197
+  type: 'test'
+  ...
+# Subtest: IG exceeds 30 characters
+ok 17 - IG exceeds 30 characters
+  ---
+  duration_ms: 0.089546
+  type: 'test'
+  ...
+# Subtest: phone letters are not silently discarded
+ok 18 - phone letters are not silently discarded
+  ---
+  duration_ms: 0.102145
+  type: 'test'
+  ...
+# Subtest: already international KR phone accepted
+ok 19 - already international KR phone accepted
+  ---
+  duration_ms: 0.113352
+  type: 'test'
+  ...
+# Subtest: landline normalization
+ok 20 - landline normalization
+  ---
+  duration_ms: 0.073131
+  type: 'test'
+  ...
+# Subtest: due token refreshes
+ok 21 - due token refreshes
+  ---
+  duration_ms: 0.228676
+  type: 'test'
+  ...
+# Subtest: expired token requires reconnect
+ok 22 - expired token requires reconnect
+  ---
+  duration_ms: 0.117668
+  type: 'test'
+  ...
+# Subtest: fresh token is skipped
+ok 23 - fresh token is skipped
+  ---
+  duration_ms: 0.109295
+  type: 'test'
+  ...
+# Subtest: exactly 24h old is eligible
+ok 24 - exactly 24h old is eligible
+  ---
+  duration_ms: 0.113962
+  type: 'test'
+  ...
+# Subtest: exactly 7 days remaining is not due, matching legacy strict cutoff
+ok 25 - exactly 7 days remaining is not due, matching legacy strict cutoff
+  ---
+  duration_ms: 0.1054
+  type: 'test'
+  ...
+# Subtest: missing expiry does not invent 60 days
+ok 26 - missing expiry does not invent 60 days
+  ---
+  duration_ms: 0.111618
+  type: 'test'
+  ...
+# Subtest: future save timestamp treated as bad metadata
+ok 27 - future save timestamp treated as bad metadata
+  ---
+  duration_ms: 0.107372
+  type: 'test'
+  ...
+# Subtest: timezone-free metadata rejected
+ok 28 - timezone-free metadata rejected
+  ---
+  duration_ms: 0.108944
+  type: 'test'
+  ...
+# Subtest: actual expires_in determines expiry
+ok 29 - actual expires_in determines expiry
+  ---
+  duration_ms: 0.510933
+  type: 'test'
+  ...
+# Subtest: invalid expires_in undefined
+ok 30 - invalid expires_in undefined
+  ---
+  duration_ms: 0.167613
+  type: 'test'
+  ...
+# Subtest: invalid expires_in 0
+ok 31 - invalid expires_in 0
+  ---
+  duration_ms: 0.117248
+  type: 'test'
+  ...
+# Subtest: invalid expires_in -1
+ok 32 - invalid expires_in -1
+  ---
+  duration_ms: 0.101674
+  type: 'test'
+  ...
+# Subtest: invalid expires_in true
+ok 33 - invalid expires_in true
+  ---
+  duration_ms: 0.097888
+  type: 'test'
+  ...
+# Subtest: invalid expires_in 3600
+ok 34 - invalid expires_in 3600
+  ---
+  duration_ms: 0.09938
+  type: 'test'
+  ...
+# Subtest: invalid expires_in NaN
+ok 35 - invalid expires_in NaN
+  ---
+  duration_ms: 0.127082
+  type: 'test'
+  ...
+# Subtest: invalid expires_in 1.5
+ok 36 - invalid expires_in 1.5
+  ---
+  duration_ms: 0.133842
+  type: 'test'
+  ...
+# Subtest: token response requires a token
+ok 37 - token response requires a token
+  ---
+  duration_ms: 0.207534
+  type: 'test'
+  ...
+# Subtest: mail deterministic key is receipt-specific
+ok 38 - mail deterministic key is receipt-specific
+  ---
+  duration_ms: 25.301019
+  type: 'test'
+  ...
+# Subtest: reconnection subject is distinct
+ok 39 - reconnection subject is distinct
+  ---
+  duration_ms: 0.445053
+  type: 'test'
+  ...
+# Subtest: HTML in name is escaped
+ok 40 - HTML in name is escaped
+  ---
+  duration_ms: 0.287946
+  type: 'test'
+  ...
+# Subtest: injected subject field rejected
+ok 41 - injected subject field rejected
+  ---
+  duration_ms: 0.143867
+  type: 'test'
+  ...
+# Subtest: token is never included, even if caller supplies it
+ok 42 - token is never included, even if caller supplies it
+  ---
+  duration_ms: 0.467176
+  type: 'test'
+  ...
+# Subtest: mail escaping includes quotes
+ok 43 - mail escaping includes quotes
+  ---
+  duration_ms: 0.11212
+  type: 'test'
+  ...
+# Subtest: replaceAttemptId is optional and explicitly preserved
+ok 44 - replaceAttemptId is optional and explicitly preserved
+  ---
+  duration_ms: 0.166352
+  type: 'test'
+  ...
+# Subtest: malformed replaceAttemptId is rejected
+ok 45 - malformed replaceAttemptId is rejected
+  ---
+  duration_ms: 0.114173
+  type: 'test'
+  ...
+# Subtest: omitted replaceAttemptId is not invented
+ok 46 - omitted replaceAttemptId is not invented
+  ---
+  duration_ms: 0.10555
+  type: 'test'
+  ...
+# Subtest: start lost response reuses exact authorization state
+ok 47 - start lost response reuses exact authorization state
+  ---
+  duration_ms: 1.425094
+  type: 'test'
+  ...
+# Subtest: same key changed payload is conflict
+ok 48 - same key changed payload is conflict
+  ---
+  duration_ms: 0.762703
+  type: 'test'
+  ...
+# Subtest: expired state is never replayed
+ok 49 - expired state is never replayed
+  ---
+  duration_ms: 0.220523
+  type: 'test'
+  ...
+# Subtest: start retry after oauth_returned
+ok 50 - start retry after oauth_returned
+  ---
+  duration_ms: 0.122094
+  type: 'test'
+  ...
+# Subtest: start retry after exchanging
+ok 51 - start retry after exchanging
+  ---
+  duration_ms: 0.088624
+  type: 'test'
+  ...
+# Subtest: start retry after saving
+ok 52 - start retry after saving
+  ---
+  duration_ms: 0.078839
+  type: 'test'
+  ...
+# Subtest: start retry after awaiting_account_confirmation
+ok 53 - start retry after awaiting_account_confirmation
+  ---
+  duration_ms: 0.058279
+  type: 'test'
+  ...
+# Subtest: start replay completed is receipt resume
+ok 54 - start replay completed is receipt resume
+  ---
+  duration_ms: 0.080702
+  type: 'test'
+  ...
+# Subtest: start replay terminal failed
+ok 55 - start replay terminal failed
+  ---
+  duration_ms: 0.224829
+  type: 'test'
+  ...
+# Subtest: start replay terminal cancelled
+ok 56 - start replay terminal cancelled
+  ---
+  duration_ms: 0.481238
+  type: 'test'
+  ...
+# Subtest: start replay terminal expired
+ok 57 - start replay terminal expired
+  ---
+  duration_ms: 0.124038
+  type: 'test'
+  ...
+# Subtest: unknown start status is not guessed
+ok 58 - unknown start status is not guessed
+  ---
+  duration_ms: 0.353144
+  type: 'test'
+  ...
+# Subtest: bad fingerprint fails closed
+ok 59 - bad fingerprint fails closed
+  ---
+  duration_ms: 1.135757
+  type: 'test'
+  ...
+# Subtest: confirmation binds correct candidate revision
+ok 60 - confirmation binds correct candidate revision
+  ---
+  duration_ms: 0.094163
+  type: 'test'
+  ...
+# Subtest: old tab cannot approve new attempt
+ok 61 - old tab cannot approve new attempt
+  ---
+  duration_ms: 0.057287
+  type: 'test'
+  ...
+# Subtest: stale candidate cannot be approved
+ok 62 - stale candidate cannot be approved
+  ---
+  duration_ms: 0.055674
+  type: 'test'
+  ...
+# Subtest: confirmation not accepted during exchange
+ok 63 - confirmation not accepted during exchange
+  ---
+  duration_ms: 0.056675
+  type: 'test'
+  ...
+# Subtest: negative confirmation revision rejected
+ok 64 - negative confirmation revision rejected
+  ---
+  duration_ms: 0.055053
+  type: 'test'
+  ...
+# Subtest: cannot cancel live worker exchanging
+ok 65 - cannot cancel live worker exchanging
+  ---
+  duration_ms: 0.068343
+  type: 'test'
+  ...
+# Subtest: cannot cancel live worker saving
+ok 66 - cannot cancel live worker saving
+  ---
+  duration_ms: 0.03359
+  type: 'test'
+  ...
+# Subtest: explicit replacement pending allowed
+ok 67 - explicit replacement pending allowed
+  ---
+  duration_ms: 0.043796
+  type: 'test'
+  ...
+# Subtest: monotonic same-attempt status accepted
+ok 68 - monotonic same-attempt status accepted
+  ---
+  duration_ms: 0.098669
+  type: 'test'
+  ...
+# Subtest: older status ignored
+ok 69 - older status ignored
+  ---
+  duration_ms: 0.072961
+  type: 'test'
+  ...
+# Subtest: higher revision from other attempt ignored
+ok 70 - higher revision from other attempt ignored
+  ---
+  duration_ms: 0.056806
+  type: 'test'
+  ...
+# Subtest: unsafe status revision ignored
+ok 71 - unsafe status revision ignored
+  ---
+  duration_ms: 0.07283
+  type: 'test'
+  ...
+# Subtest: older authorization cannot overwrite newer token
+ok 72 - older authorization cannot overwrite newer token
+  ---
+  duration_ms: 1.428659
+  type: 'test'
+  ...
+# Subtest: newer authorization accepted by order policy
+ok 73 - newer authorization accepted by order policy
+  ---
+  duration_ms: 0.087462
+  type: 'test'
+  ...
+# Subtest: attempt order deterministic on equal time
+ok 74 - attempt order deterministic on equal time
+  ---
+  duration_ms: 0.077167
+  type: 'test'
+  ...
+# Subtest: no previous attempt not stale
+ok 75 - no previous attempt not stale
+  ---
+  duration_ms: 0.064057
+  type: 'test'
+  ...
+# Subtest: phone DB prefix parity 00123456789
+ok 76 - phone DB prefix parity 00123456789
+  ---
+  duration_ms: 0.157028
+  type: 'test'
+  ...
+# Subtest: phone DB prefix parity 0000000000
+ok 77 - phone DB prefix parity 0000000000
+  ---
+  duration_ms: 0.107032
+  type: 'test'
+  ...
+# Subtest: phone DB prefix parity +82012345678
+ok 78 - phone DB prefix parity +82012345678
+  ---
+  duration_ms: 0.042995
+  type: 'test'
+  ...
+# Subtest: normalized phone matches SQL constraint 010-1234-5678
+ok 79 - normalized phone matches SQL constraint 010-1234-5678
+  ---
+  duration_ms: 0.25168
+  type: 'test'
+  ...
+# Subtest: normalized phone matches SQL constraint 02-123-4567
+ok 80 - normalized phone matches SQL constraint 02-123-4567
+  ---
+  duration_ms: 0.19174
+  type: 'test'
+  ...
+# Subtest: normalized phone matches SQL constraint +82 10 1234 5678
+ok 81 - normalized phone matches SQL constraint +82 10 1234 5678
+  ---
+  duration_ms: 0.061943
+  type: 'test'
+  ...
+# Subtest: completed cannot regress to higher-revision processing
+ok 82 - completed cannot regress to higher-revision processing
+  ---
+  duration_ms: 2.481742
+  type: 'test'
+  ...
+# Subtest: completed cannot regress at same revision
+ok 83 - completed cannot regress at same revision
+  ---
+  duration_ms: 0.208455
+  type: 'test'
+  ...
+# Subtest: completed replay remains visible
+ok 84 - completed replay remains visible
+  ---
+  duration_ms: 0.15902
+  type: 'test'
+  ...
+# Subtest: status comparison rejects missing status fields
+ok 85 - status comparison rejects missing status fields
+  ---
+  duration_ms: 0.147163
+  type: 'test'
+  ...
+# Subtest: status comparison rejects unknown status
+ok 86 - status comparison rejects unknown status
+  ---
+  duration_ms: 0.150267
+  type: 'test'
+  ...
+# Subtest: processing can reach completed
+ok 87 - processing can reach completed
+  ---
+  duration_ms: 0.134924
+  type: 'test'
+  ...
+# Subtest: same millisecond: earlier microsecond is stale despite greater UUID
+ok 88 - same millisecond: earlier microsecond is stale despite greater UUID
+  ---
+  duration_ms: 0.715081
+  type: 'test'
+  ...
+# Subtest: same millisecond: later microsecond is not stale despite lower UUID
+ok 89 - same millisecond: later microsecond is not stale despite lower UUID
+  ---
+  duration_ms: 0.214143
+  type: 'test'
+  ...
+# Subtest: equivalent timezone values use equal-instant UUID order
+ok 90 - equivalent timezone values use equal-instant UUID order
+  ---
+  duration_ms: 0.386144
+  type: 'test'
+  ...
+# Subtest: exact instant and UUID uppercase replay is not stale
+ok 91 - exact instant and UUID uppercase replay is not stale
+  ---
+  duration_ms: 0.593468
+  type: 'test'
+  ...
+# Subtest: same fractional value with trailing zeros is equal
+ok 92 - same fractional value with trailing zeros is equal
+  ---
+  duration_ms: 0.269347
+  type: 'test'
+  ...
+# Subtest: precision beyond database contract is rejected not truncated
+ok 93 - precision beyond database contract is rejected not truncated
+  ---
+  duration_ms: 0.441347
+  type: 'test'
+  ...
+# Subtest: invalid calendar date rejected
+ok 94 - invalid calendar date rejected
+  ---
+  duration_ms: 0.133212
+  type: 'test'
+  ...
+# Subtest: invalid candidate rejected even without existing record
+ok 95 - invalid candidate rejected even without existing record
+  ---
+  duration_ms: 0.100953
+  type: 'test'
+  ...
+# Subtest: timezone-free comparison rejected
+ok 96 - timezone-free comparison rejected
+  ---
+  duration_ms: 0.136977
+  type: 'test'
+  ...
+# Subtest: invalid UTC offset rejected
+ok 97 - invalid UTC offset rejected
+  ---
+  duration_ms: 0.149806
+  type: 'test'
+  ...
+# Subtest: first real v2 registration creates one initial analysis request
+ok 98 - first real v2 registration creates one initial analysis request
+  ---
+  duration_ms: 3.478308
+  type: 'test'
+  ...
+# Subtest: an existing legacy account without a v2 initial request is still first submission
+ok 99 - an existing legacy account without a v2 initial request is still first submission
+  ---
+  duration_ms: 0.131378
+  type: 'test'
+  ...
+# Subtest: reconnection creates a receipt but no new analysis request
+ok 100 - reconnection creates a receipt but no new analysis request
+  ---
+  duration_ms: 0.128635
+  type: 'test'
+  ...
+# Subtest: completed attempt is reused, root=false
+ok 101 - completed attempt is reused, root=false
+  ---
+  duration_ms: 0.155625
+  type: 'test'
+  ...
+# Subtest: completed attempt is reused, root=true
+ok 102 - completed attempt is reused, root=true
+  ---
+  duration_ms: 0.117547
+  type: 'test'
+  ...
+# Subtest: same contacts never affect server account classification
+ok 103 - same contacts never affect server account classification
+  ---
+  duration_ms: 0.164689
+  type: 'test'
+  ...
+# Subtest: invalid server facts are rejected: null
+ok 104 - invalid server facts are rejected: null
+  ---
+  duration_ms: 0.360495
+  type: 'test'
+  ...
+# Subtest: invalid server facts are rejected: []
+ok 105 - invalid server facts are rejected: []
+  ---
+  duration_ms: 0.074903
+  type: 'test'
+  ...
+# Subtest: invalid server facts are rejected: {}
+ok 106 - invalid server facts are rejected: {}
+  ---
+  duration_ms: 0.267264
+  type: 'test'
+  ...
+# Subtest: invalid server facts are rejected: {"hasInitialV2Request":"false","attemptAlreadyCompleted":false}
+ok 107 - invalid server facts are rejected: {"hasInitialV2Request":"false","attemptAlreadyCompleted":false}
+  ---
+  duration_ms: 0.287134
+  type: 'test'
+  ...
+# Subtest: invalid server facts are rejected: {"hasInitialV2Request":false,"attemptAlreadyCompleted":1}
+ok 108 - invalid server facts are rejected: {"hasInitialV2Request":false,"attemptAlreadyCompleted":1}
+  ---
+  duration_ms: 0.122194
+  type: 'test'
+  ...
+# Subtest: reconnection mail does not claim another pending analysis
+ok 109 - reconnection mail does not claim another pending analysis
+  ---
+  duration_ms: 12.682593
+  type: 'test'
+  ...
+# Subtest: initial mail keeps the pending review message
+ok 110 - initial mail keeps the pending review message
+  ---
+  duration_ms: 0.411542
+  type: 'test'
+  ...
+# Subtest: a string reconnection flag is rejected
+ok 111 - a string reconnection flag is rejected
+  ---
+  duration_ms: 0.252331
+  type: 'test'
+  ...
+1..111
+# tests 111
+# suites 0
+# pass 111
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 176.375512

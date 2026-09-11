@@ -1,0 +1,111 @@
+{
+  "version": "1.1",
+  "date": "2026-09-10",
+  "scope": "handoff_package_only",
+  "source_archive_sha256": "84c6407d7bff4e36ce33b8c51bce978ac1c354a284784d68480439faffba1e7a",
+  "ui_and_approved_assets_byte_identical_to_v1_0": true,
+  "unchanged_reference_and_ui_file_count": 14,
+  "byte_comparisons": {
+    "reference/approved/index.html": true,
+    "reference/approved/previous-ui-test-report.json": true,
+    "reference/approved/screenshots/desktop-form.png": true,
+    "reference/approved/screenshots/desktop-intro.png": true,
+    "reference/approved/screenshots/desktop-loading.png": true,
+    "reference/approved/screenshots/desktop-success.png": true,
+    "reference/approved/screenshots/mobile-flow.png": true,
+    "reference/approved/screenshots/mobile-form.png": true,
+    "reference/approved/screenshots/mobile-intro.png": true,
+    "reference/approved/screenshots/mobile-loading.png": true,
+    "reference/approved/screenshots/mobile-success.png": true,
+    "ui/index.html": true,
+    "ui/preview.js": true,
+    "ui/styles.css": true
+  },
+  "pure_function_tests": {
+    "command": "node --test tests/*.test.mjs",
+    "passed": 57,
+    "failed": 0
+  },
+  "type_contract": {
+    "result": "pass",
+    "command": "tsc --strict --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext contracts/onboarding.ts"
+  },
+  "new_browser_render_tests": "not_run; unchanged UI bytes checked, historical results kept separately",
+  "sql_execution": "not_run; draft only",
+  "real_meta_db_smtp_cron": "not_run",
+  "production_deletion_deployment_mail_send": "not_performed",
+  "changes": [
+    {
+      "path": "AGENTS.md",
+      "change": "modified"
+    },
+    {
+      "path": "README.md",
+      "change": "modified"
+    },
+    {
+      "path": "START_HERE_FOR_CODEX.md",
+      "change": "modified"
+    },
+    {
+      "path": "contracts/API.md",
+      "change": "modified"
+    },
+    {
+      "path": "contracts/onboarding.ts",
+      "change": "modified"
+    },
+    {
+      "path": "docs/DECISIONS.md",
+      "change": "modified"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_PLAN.md",
+      "change": "modified"
+    },
+    {
+      "path": "docs/RESET_PLAN.md",
+      "change": "added"
+    },
+    {
+      "path": "docs/TEST_MATRIX.md",
+      "change": "modified"
+    },
+    {
+      "path": "docs/V2_SPEC.md",
+      "change": "modified"
+    },
+    {
+      "path": "server-reference/notification.mjs",
+      "change": "modified"
+    },
+    {
+      "path": "server-reference/registration-policy.mjs",
+      "change": "added"
+    },
+    {
+      "path": "templates/.env.example",
+      "change": "modified"
+    },
+    {
+      "path": "templates/0001_v2_schema.sql.draft",
+      "change": "modified"
+    },
+    {
+      "path": "tests/registration.test.mjs",
+      "change": "added"
+    },
+    {
+      "path": "verification/README.md",
+      "change": "modified"
+    },
+    {
+      "path": "verification/v1.1-core-tests.tap",
+      "change": "added"
+    },
+    {
+      "path": "verification/v1.1-typecheck.txt",
+      "change": "added"
+    }
+  ]
+}

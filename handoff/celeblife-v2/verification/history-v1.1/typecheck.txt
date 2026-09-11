@@ -1,0 +1,1 @@
+TypeScript public contract: typecheck PASS (tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext contracts/onboarding.ts)

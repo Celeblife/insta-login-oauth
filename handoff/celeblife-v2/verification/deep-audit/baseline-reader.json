@@ -1,0 +1,175 @@
+{
+  "duplicate_ids": {
+    "section-10": 4,
+    "section-11": 5,
+    "section-12": 3,
+    "section-13": 2,
+    "section-14": 2,
+    "section-15": 2
+  },
+  "nav_targets": [
+    {
+      "nav": "01. 마지막 재검토·판정",
+      "href": "#section-1",
+      "lands_on": "01. 마지막 재검토·판정",
+      "correct": true
+    },
+    {
+      "nav": "02. 인계 요약",
+      "href": "#section-2",
+      "lands_on": "02. 인계 요약",
+      "correct": true
+    },
+    {
+      "nav": "03. 제품·시스템 기준",
+      "href": "#section-3",
+      "lands_on": "03. 제품·시스템 기준",
+      "correct": true
+    },
+    {
+      "nav": "10. 개인정보/약관/운영설정 게이트",
+      "href": "#section-10",
+      "lands_on": "10. 개인정보/약관/운영설정 게이트",
+      "correct": true
+    },
+    {
+      "nav": "11. 전환/복구",
+      "href": "#section-11",
+      "lands_on": "11. 전환/복구",
+      "correct": true
+    },
+    {
+      "nav": "12. 완료 기준",
+      "href": "#section-12",
+      "lands_on": "12. 완료 기준",
+      "correct": true
+    },
+    {
+      "nav": "04. UI/UX 구현 명세",
+      "href": "#section-4",
+      "lands_on": "04. UI/UX 구현 명세",
+      "correct": true
+    },
+    {
+      "nav": "10. UX-06 재연동 완료",
+      "href": "#section-10",
+      "lands_on": "10. 개인정보/약관/운영설정 게이트",
+      "correct": false
+    },
+    {
+      "nav": "11. UX-07 오류·복구 문구",
+      "href": "#section-11",
+      "lands_on": "11. 전환/복구",
+      "correct": false
+    },
+    {
+      "nav": "12. 접근성·모바일·안전성",
+      "href": "#section-12",
+      "lands_on": "12. 완료 기준",
+      "correct": false
+    },
+    {
+      "nav": "13. UI 승인/검증 분리",
+      "href": "#section-13",
+      "lands_on": "13. UI 승인/검증 분리",
+      "correct": true
+    },
+    {
+      "nav": "14. v1.3 모바일 실측 보완 — 원형 유지, 결함은 이식하지 않기",
+      "href": "#section-14",
+      "lands_on": "14. v1.3 모바일 실측 보완 — 원형 유지, 결함은 이식하지 않기",
+      "correct": true
+    },
+    {
+      "nav": "15. v1.3.1 계정 확인 버튼·완료 상태 정정",
+      "href": "#section-15",
+      "lands_on": "15. v1.3.1 계정 확인 버튼·완료 상태 정정",
+      "correct": true
+    },
+    {
+      "nav": "05. 백엔드·DB",
+      "href": "#section-5",
+      "lands_on": "05. 백엔드·DB",
+      "correct": true
+    },
+    {
+      "nav": "10. 개발에서 필요한 DB 테스트",
+      "href": "#section-10",
+      "lands_on": "10. 개인정보/약관/운영설정 게이트",
+      "correct": false
+    },
+    {
+      "nav": "11. v1.3 재조회·만료·검증 순서",
+      "href": "#section-11",
+      "lands_on": "11. 전환/복구",
+      "correct": false
+    },
+    {
+      "nav": "11. v1.3.1 연결 순서 정밀도",
+      "href": "#section-11",
+      "lands_on": "11. 전환/복구",
+      "correct": false
+    },
+    {
+      "nav": "06. API 계약",
+      "href": "#section-6",
+      "lands_on": "06. API 계약",
+      "correct": true
+    },
+    {
+      "nav": "07. v1.3 검토 이력",
+      "href": "#section-7",
+      "lands_on": "07. v1.3 검토 이력",
+      "correct": true
+    },
+    {
+      "nav": "08. 기존 발견사항",
+      "href": "#section-8",
+      "lands_on": "08. 기존 발견사항",
+      "correct": true
+    },
+    {
+      "nav": "09. 출시 게이트",
+      "href": "#section-9",
+      "lands_on": "09. 출시 게이트",
+      "correct": true
+    },
+    {
+      "nav": "10. 구현 순서",
+      "href": "#section-10",
+      "lands_on": "10. 개인정보/약관/운영설정 게이트",
+      "correct": false
+    },
+    {
+      "nav": "11. 테스트자료 초기화",
+      "href": "#section-11",
+      "lands_on": "11. 전환/복구",
+      "correct": false
+    },
+    {
+      "nav": "12. 실제 앱 인수 테스트",
+      "href": "#section-12",
+      "lands_on": "12. 완료 기준",
+      "correct": false
+    },
+    {
+      "nav": "13. 현재 검증 결과",
+      "href": "#section-13",
+      "lands_on": "13. UI 승인/검증 분리",
+      "correct": false
+    },
+    {
+      "nav": "14. Codex 지시문",
+      "href": "#section-14",
+      "lands_on": "14. v1.3 모바일 실측 보완 — 원형 유지, 결함은 이식하지 않기",
+      "correct": false
+    },
+    {
+      "nav": "15. 근거·범위",
+      "href": "#section-15",
+      "lands_on": "15. v1.3.1 계정 확인 버튼·완료 상태 정정",
+      "correct": false
+    }
+  ],
+  "wrong_nav_count": 12
+}

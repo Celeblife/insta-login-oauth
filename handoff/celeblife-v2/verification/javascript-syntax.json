@@ -1,0 +1,32 @@
+[
+  {
+    "file": "server-reference/attempt-policy.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "file": "server-reference/notification.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "file": "server-reference/registration-policy.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "file": "server-reference/token-policy.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "file": "server-reference/validation.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "file": "ui/preview.js",
+    "exit_code": 0,
+    "error": ""
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "selector": "help-link",
+    "original": "#93869d",
+    "background": "#ffffff",
+    "ratio": 3.422,
+    "override": "#776583",
+    "override_ratio": 5.285,
+    "criterion": "normal-text 4.5:1; selected colors only, not overall conformance"
+  },
+  {
+    "selector": "field-hint",
+    "original": "#85728f",
+    "background": "#ffffff",
+    "ratio": 4.374,
+    "override": "#776583",
+    "override_ratio": 5.285,
+    "criterion": "normal-text 4.5:1; selected colors only, not overall conformance"
+  },
+  {
+    "selector": "action-caption",
+    "original": "#8f7b9e",
+    "background": "#ffffff",
+    "ratio": 3.822,
+    "override": "#776583",
+    "override_ratio": 5.285,
+    "criterion": "normal-text 4.5:1; selected colors only, not overall conformance"
+  },
+  {
+    "selector": "panel-footer",
+    "original": "#8b7898",
+    "background": "#ffffff",
+    "ratio": 4.009,
+    "override": "#776583",
+    "override_ratio": 5.285,
+    "criterion": "normal-text 4.5:1; selected colors only, not overall conformance"
+  },
+  {
+    "selector": "dialog-body",
+    "original": "#93829e",
+    "background": "#ffffff",
+    "ratio": 3.543,
+    "override": "#776583",
+    "override_ratio": 5.285,
+    "criterion": "normal-text 4.5:1; selected colors only, not overall conformance"
+  },
+  {
+    "selector": "input-placeholder",
+    "original": "#b1a7ba",
+    "background": "#ffffff",
+    "ratio": 2.306,
+    "override": "#776583",
+    "override_ratio": 5.285,
+    "criterion": "normal-text 4.5:1; selected colors only, not overall conformance"
+  }
+]

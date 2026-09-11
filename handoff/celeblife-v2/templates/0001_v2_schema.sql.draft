@@ -1,0 +1,179 @@
+-- DESIGN DRAFT ONLY. NOT A COMPLETE MIGRATION. DO NOT RUN AGAINST PRODUCTION.
+-- The final ROLLBACK intentionally prevents persistence in an accidental full execution.
+-- Codex must reconcile the live/test schema, implement RPCs, tests and an approved migration.
+-- Assumes existing public.users / tokens / user_consents; never recreates or drops them.
+-- v1.2: old test-data cleanup is a separate scoped runbook (docs/RESET_PLAN.md), not this migration.
+BEGIN;
+-- Application-wide token metadata additions: adapt to inspected schema in a real migration.
+ALTER TABLE public.tokens
+  ADD COLUMN row_version BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN connection_status TEXT NOT NULL DEFAULT 'unknown'
+    CHECK (connection_status IN ('unknown','connected','reauth_required','revoked')),
+  ADD COLUMN source_attempt_id UUID,
+  ADD COLUMN source_attempt_started_at TIMESTAMPTZ,
+  ADD COLUMN last_refresh_attempt_at TIMESTAMPTZ,
+  ADD COLUMN last_refreshed_at TIMESTAMPTZ,
+  ADD COLUMN refresh_failure_count INTEGER NOT NULL DEFAULT 0 CHECK (refresh_failure_count>=0),
+  ADD COLUMN last_refresh_error_code TEXT,
+  ADD COLUMN granted_scopes TEXT[],
+  ADD COLUMN scopes_checked_at TIMESTAMPTZ;
+-- A required production trigger increments row_version for security-relevant changes by ALL writers:
+-- access_token, expires_at, created_at, source_attempt_id/source_attempt_started_at,
+-- connection_status, granted_scopes, scopes_checked_at (canonical null-safe comparisons).
+-- Status-only revocation MUST invalidate in-flight refresh even when token/expiry are unchanged.
+-- The trigger owns version increments; callers cannot force an older/same version.
+-- Audit-only attempt times/counts do not by themselves grant permission or reopen a connection.
+-- Refresh finalization must UPDATE the still-existing eligible row, NEVER upsert/recreate it.
+-- Trigger, RPC bodies, grants and live-schema reconciliation are implementation tasks, not included here.
+
+
+CREATE TABLE public.creator_profiles (
+  user_id BIGINT PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+  full_name TEXT NOT NULL CHECK (char_length(full_name) BETWEEN 1 AND 50),
+  email TEXT NOT NULL CHECK (char_length(email) <= 254),
+  phone_e164 TEXT NOT NULL CHECK (phone_e164 ~ '^\+82[1-9][0-9]{7,9}$'),
+  -- Same contacts may be used on different accounts. No UNIQUE(email/phone).
+  email_verified BOOLEAN NOT NULL DEFAULT false CHECK (email_verified IS FALSE),
+  phone_verified BOOLEAN NOT NULL DEFAULT false CHECK (phone_verified IS FALSE),
+  -- These are declared contacts, NOT verified email/phone identities.
+  source_accepted_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE public.onboarding_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  browser_secret_hash TEXT NOT NULL CHECK (browser_secret_hash ~ '^[0-9a-f]{64}$'),
+  request_key UUID NOT NULL,
+  request_payload_hash TEXT NOT NULL CHECK (request_payload_hash ~ '^[0-9a-f]{64}$'),
+  parent_attempt_id UUID,
+  -- Needed to replay a lost start response without generating a new state.
+  oauth_state_encrypted TEXT,
+  oauth_code_hash TEXT,
+  receipt_expires_at TIMESTAMPTZ,
+  oauth_state_hash TEXT UNIQUE CHECK (oauth_state_hash ~ '^[0-9a-f]{64}$'),
+  oauth_state_expires_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN (
+    'pending','oauth_returned','exchanging','awaiting_account_confirmation',
+    'saving','completed','failed','cancelled','expired')),
+  stage TEXT CHECK (stage IN ('account','storage','submission')),
+  revision INTEGER NOT NULL DEFAULT 0 CHECK (revision >= 0),
+  -- Each ciphertext is an authenticated encryption envelope including nonce/tag/key ID.
+  draft_payload_encrypted TEXT,
+  oauth_code_encrypted TEXT,
+  short_token_encrypted TEXT,
+  long_token_encrypted TEXT,
+  candidate_account JSONB,
+  candidate_token_expires_at TIMESTAMPTZ,
+  -- Contains no raw tokens. Server-canonical document versions/hash and booleans.
+  consent_snapshot JSONB NOT NULL,
+  accepted_at TIMESTAMPTZ NOT NULL,
+  exchange_started_at TIMESTAMPTZ,
+  code_consumed_at TIMESTAMPTZ,
+  lease_owner UUID,
+  lease_expires_at TIMESTAMPTZ,
+  request_id UUID,
+  last_error_code TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL,
+  UNIQUE(browser_secret_hash, request_key)
+);
+CREATE INDEX onboarding_sessions_expiry_idx ON public.onboarding_sessions(expires_at);
+-- Explicitly cancel/finish the previous attempt before starting another in one browser session.
+CREATE UNIQUE INDEX onboarding_one_active_browser_idx
+ON public.onboarding_sessions(browser_secret_hash)
+WHERE status IN ('pending','oauth_returned','exchanging','awaiting_account_confirmation','saving');
+
+CREATE TABLE public.onboarding_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id BIGINT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  -- Persistent idempotency key. Intentionally not an FK: ephemeral session can be purged.
+  session_id UUID NOT NULL UNIQUE,
+  instagram_id_snapshot TEXT NOT NULL,
+  instagram_username_snapshot TEXT NOT NULL,
+  contact_snapshot JSONB NOT NULL,
+  connection_kind TEXT NOT NULL CHECK (connection_kind IN ('new','reconnection')),
+  -- Root initial request only; the final RPC must verify same-user and kind='new'.
+  initial_request_id UUID REFERENCES public.onboarding_requests(id),
+  review_status TEXT NOT NULL
+    CHECK (review_status IN ('pending_review','in_review','contacted','cancelled','not_requested')),
+  received_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (
+    (connection_kind='new' AND initial_request_id IS NULL AND review_status <> 'not_requested')
+    OR (connection_kind='reconnection' AND initial_request_id IS NOT NULL
+        AND initial_request_id <> id AND review_status='not_requested')
+  )
+);
+-- One initial v2 analysis submission per account; reconnections are separate audit receipts.
+CREATE UNIQUE INDEX onboarding_one_initial_per_user_idx
+ON public.onboarding_requests(user_id) WHERE connection_kind='new';
+CREATE INDEX onboarding_requests_review_idx
+ON public.onboarding_requests(review_status,received_at) WHERE connection_kind='new';
+CREATE INDEX onboarding_reconnection_root_idx ON public.onboarding_requests(initial_request_id);
+-- Same-account account-row lock + this UNIQUE enforce concurrent initial submissions.
+-- Reconnection writes must never reset the root review_status / received_at.
+ALTER TABLE public.onboarding_sessions ADD CONSTRAINT onboarding_session_request_fk
+  FOREIGN KEY(request_id) REFERENCES public.onboarding_requests(id) ON DELETE SET NULL;
+-- Deleting a root must remove its reconnection receipts in the same scoped account deletion.
+-- Purge one complete account graph; never leave reconnections referencing a missing root.
+-- Sessions contain draft PII before account ownership is known: deletion must also inspect
+-- verified candidate account/receipt bindings, never trust form username as deletion authority.
+
+CREATE TABLE public.notification_outbox (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  request_id UUID NOT NULL REFERENCES public.onboarding_requests(id) ON DELETE CASCADE,
+  event_key TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','sent','dead')),
+  attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+  next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  lease_owner UUID,
+  lease_expires_at TIMESTAMPTZ,
+  sent_at TIMESTAMPTZ,
+  last_error_code TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  -- No token or copied SMTP credentials. Build mail from the authorized request snapshot.
+);
+CREATE INDEX notification_outbox_due_idx ON public.notification_outbox(status,next_attempt_at);
+
+CREATE TABLE public.job_leases (
+  name TEXT PRIMARY KEY,
+  owner UUID NOT NULL,
+  lease_expires_at TIMESTAMPTZ NOT NULL,
+  last_success_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.creator_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.onboarding_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.onboarding_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notification_outbox ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.job_leases ENABLE ROW LEVEL SECURITY;
+
+REVOKE ALL ON TABLE public.creator_profiles,public.onboarding_sessions,
+  public.onboarding_requests,public.notification_outbox,public.job_leases
+  FROM PUBLIC,anon,authenticated;
+GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE public.creator_profiles,public.onboarding_sessions,
+  public.onboarding_requests,public.notification_outbox,public.job_leases TO service_role;
+
+-- RPCs intentionally NOT stubbed as fake success functions:
+-- 1. create/start attempt with browser+requestKey idempotency and canonical consent.
+-- 2. claim/recover completion lease; compare owner & expiry on checkpoint writes.
+-- 3. complete_instagram_onboarding_v2: atomic user/profile/consent/token/receipt/outbox/session.
+--    Lock actual-user row before looking up the initial request. If no root exists, create new;
+--    else create reconnection/not_requested referencing the same-user initial new row.
+--    A legacy users row without a v2 root is an initial request, not a reconnection.
+--    Contacts remain unverified. Same-attempt retry reuses receipt; no duplicate new analysis.
+-- 4. claim/finish/fail outbox entries with a lease and bounded retry policy.
+-- 5. token refresh CAS update; single job lease and environment ownership.
+-- Receipt lifetime is separate from draft TTL; cleanup uses status-specific deadlines.
+-- Expired processing outbox leases must be reclaimable; no job may remain processing forever.
+-- RPC boundary returns internal BIGINT IDs as TEXT, before any JavaScript JSON decoding.
+-- Reject stale attempt orders and stale leases before saving candidate token or contacts.
+-- Each RPC: REVOKE EXECUTE FROM PUBLIC,anon,authenticated; GRANT only to server role.
+-- If SECURITY DEFINER: set search_path to trusted schemas, schema-qualify tables.
+-- Never invoke the old v1 RPC with the new policy versions or alter its accepted versions.
+-- Existing user_consents schema version remains 1 when its four-consent shape is unchanged.
+
+ROLLBACK;

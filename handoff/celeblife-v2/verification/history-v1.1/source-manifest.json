@@ -1,0 +1,12 @@
+{
+  "source_name": "celeblife-v2-ui.html",
+  "source_sha256": "4519c18b79464b398b9e476a828b2dd52ba2038a7af88c3ab13660415a104da1",
+  "reference_sha256": "4519c18b79464b398b9e476a828b2dd52ba2038a7af88c3ab13660415a104da1",
+  "reference_is_byte_identical": true,
+  "css_extraction_is_exact": true,
+  "js_extraction_is_exact": true,
+  "repo": "Celeblife/insta-login-oauth",
+  "repository_main_sha_observed": "3c4cdc7ae4f8e399351bd2a30c0db24401347a9e",
+  "prepared_date": "2026-09-10",
+  "format": "Codex implementation handoff, not deployed app"
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "primary",
+    "text": "확인했어요",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BODY",
+    "id": "",
+    "cls": "",
+    "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n V2 UI PREVIEW",
+    "focused": false,
+    "modal": false
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "close-btn",
+    "text": "",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "primary",
+    "text": "확인했어요",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BODY",
+    "id": "",
+    "cls": "",
+    "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n V2 UI PREVIEW",
+    "focused": false,
+    "modal": false
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "close-btn",
+    "text": "",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "primary",
+    "text": "확인했어요",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "close-btn",
+    "text": "",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "primary",
+    "text": "확인했어요",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BODY",
+    "id": "",
+    "cls": "",
+    "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n V2 UI PREVIEW",
+    "focused": false,
+    "modal": false
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "close-btn",
+    "text": "",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "primary",
+    "text": "확인했어요",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BODY",
+    "id": "",
+    "cls": "",
+    "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n V2 UI PREVIEW",
+    "focused": false,
+    "modal": false
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "close-btn",
+    "text": "",
+    "focused": true,
+    "modal": true
+  },
+  {
+    "active": "BUTTON",
+    "id": "",
+    "cls": "primary",
+    "text": "확인했어요",
+    "focused": true,
+    "modal": true
+  }
+]
