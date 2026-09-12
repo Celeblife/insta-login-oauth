@@ -45,8 +45,9 @@ describe("OnboardingService completion races", () => {
   });
 
   it("returns a completed lease receipt without decrypting scrubbed draft and keeps expired receipt as 410", async () => {
+    const nowMs = Date.now();
     const beforeClaim = attemptRecord({ status: "saving", stage: "submission", revision: 4, candidate: candidate() });
-    const completed = attemptRecord({ status: "completed", stage: "submission", revision: 5, draftPayloadEncrypted: null, result: result(), receiptExpiresAt: "2026-09-12T00:00:00.000Z" });
+    const completed = attemptRecord({ status: "completed", stage: "submission", revision: 5, draftPayloadEncrypted: null, result: result(), receiptExpiresAt: new Date(nowMs + 86_400_000).toISOString() });
     const repository = fakeRepository({
       async findAttemptById() {
         return beforeClaim;
@@ -62,7 +63,7 @@ describe("OnboardingService completion races", () => {
       body: { status: "completed", attemptId: beforeClaim.id, result: { kind: "v2", email: "creator@example.com" } },
     });
 
-    const expired = { ...completed, receiptExpiresAt: "2026-09-10T00:00:00.000Z" };
+    const expired = { ...completed, receiptExpiresAt: new Date(nowMs - 86_400_000).toISOString() };
     const expiredService = new OnboardingService({
       config: getConfig(),
       provider: fakeProvider,
