@@ -5,9 +5,9 @@ export function createContentSecurityPolicy(nonce: string, isDevelopment: boolea
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDevelopment ? " 'unsafe-eval'" : ""}`,
-    `style-src 'self' 'nonce-${nonce}'${isDevelopment ? " 'unsafe-inline'" : ""}`,
+    `style-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net${isDevelopment ? " 'unsafe-inline'" : ""}`,
     "img-src 'self' blob: data:",
-    "font-src 'self'",
+    "font-src 'self' https://cdn.jsdelivr.net",
     "connect-src 'self'",
     "media-src 'none'",
     "object-src 'none'",

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "../styles/onboarding.css";
+import "../styles/legacy-login-intro.css";
 
 export const metadata: Metadata = {
   title: "셀럽라이프 온보딩",

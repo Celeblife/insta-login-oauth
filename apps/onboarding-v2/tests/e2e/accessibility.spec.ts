@@ -26,7 +26,7 @@ test.beforeEach(async ({ page }) => {
 
 test("A11Y01 @a11y intro page has no WCAG A or AA violations", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /셀럽님의 다음 기회/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /반응을 읽고,\s*선택의 기준을 만듭니다\./ })).toBeVisible();
 
   await expectNoWcagAOrAaViolations(page);
 });

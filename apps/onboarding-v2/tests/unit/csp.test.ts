@@ -7,6 +7,8 @@ describe("request-scoped CSP", () => {
 
     expect(policy).toContain("script-src 'self' 'nonce-fixed-nonce' 'strict-dynamic'");
     expect(policy).toContain("style-src 'self' 'nonce-fixed-nonce'");
+    expect(policy).toContain("https://cdn.jsdelivr.net");
+    expect(policy).toContain("font-src 'self' https://cdn.jsdelivr.net");
     expect(policy).toContain("connect-src 'self'");
     expect(policy).toContain("form-action 'self'");
     expect(policy).toContain("frame-ancestors 'none'");

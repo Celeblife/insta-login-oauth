@@ -11,32 +11,38 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("UI01 AUDIT production intro has approved shell without preview toolbar or hash success", async ({ page }) => {
+test("UI01 AUDIT production intro preserves the deployed login screen and enters v2 through apply", async ({ page }) => {
   await page.goto("/#success");
-  await expect(page.getByRole("heading", { name: /셀럽님의 다음 기회/ })).toBeVisible();
-  await expect(page.getByText("CONNECT YOUR NEXT CHAPTER")).toBeVisible();
-  await expect(page.getByText("인스타그램을 연결하고,내 채널에 맞는 새로운 커머스 가능성을 만나보세요.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /반응을 읽고,\s*선택의 기준을 만듭니다\./ })).toBeVisible();
+  await expect(page.locator(".cl-eyebrow:visible")).toHaveText("CELEBLIFE ONBOARDING");
+  await expect(page.getByText("채널 데이터를 분석해 맞는 제품과 판매 방향을 제안합니다.")).toBeVisible();
   await expect(page.getByText("Meta 공식 로그인 방식")).toBeVisible();
   await expect(page.getByText("안전한 연결")).toBeVisible();
-  await expect(page.getByText("인스타그램 비밀번호는 셀럽라이프에 공유되지 않습니다.다음 화면에서 기본 정보와 필수 동의를 먼저 확인해요.")).toBeVisible();
-  await expect(page.getByText("기본 정보 입력")).toBeVisible();
-  await expect(page.getByText("계정 연결")).toBeVisible();
-  await expect(page.getByText("분석 신청 완료")).toBeVisible();
+  await expect(page.getByText("인스타그램 비밀번호는 셀럽라이프에 공유되거나 저장되지 않습니다. 연결 권한은 언제든 직접 해제할 수 있어요.")).toBeVisible();
   if ((page.viewportSize()?.width ?? 0) > 860) {
-    await expect(page.getByText("CREATOR COMMERCE PARTNER")).toBeVisible();
-    await expect(page.getByText("CELEBLIFE ONBOARDING")).toBeVisible();
+    await expect(page.getByText("로그인 정보는 셀럽라이프에 저장되지 않아요.")).toBeHidden();
+    await expect(page.getByRole("heading", { name: "인스타그램을 연결해 주세요" })).toBeVisible();
     await expect(page.getByText("채널 데이터 연결")).toBeVisible();
-    await expect(page.getByText("채널의 강점 발견")).toBeVisible();
-    await expect(page.getByText("맞춤 커머스 방향")).toBeVisible();
-    await expect(page.getByText("담당자 직접 안내")).toBeVisible();
+    await expect(page.getByText("채널 데이터를 바탕으로 셀럽님에게 꼭 맞는 판매 전략을 설계합니다.")).toBeVisible();
+  } else {
+    await expect(page.getByText("로그인 정보는 셀럽라이프에 저장되지 않아요.")).toBeVisible();
   }
+  await expect(page.getByText("CONNECT YOUR NEXT CHAPTER")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /셀럽님의 다음 기회/ })).toHaveCount(0);
+  await expect(page.getByText("기본 정보 입력")).toHaveCount(0);
+  await expect(page.getByText("계정 연결")).toHaveCount(0);
+  await expect(page.getByText("분석 신청 완료")).toHaveCount(0);
   await expect(page.getByText("CREATOR ONBOARDING")).toHaveCount(0);
   await expect(page.getByText("Instagram 공식 승인 화면에서 진행돼요")).toHaveCount(0);
   await expect(page.getByText("비밀번호 저장 없음")).toHaveCount(0);
   await expect(page.getByText("명시적 동의 후 연결")).toHaveCount(0);
   await expect(page.getByText("SAFE")).toHaveCount(0);
   await expect(page.getByText("V2 UI PREVIEW")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "인스타그램 연결 시작하기" })).toHaveAttribute("href", "/apply");
+  const continueLink = page.getByRole("link", { name: "Instagram으로 계속하기" });
+  await expect(continueLink).toHaveAttribute("href", "/apply");
+  await continueLink.click();
+  await expect(page).toHaveURL(/\/apply$/);
+  await expect(page.getByRole("heading", { name: "먼저, 셀럽님을 알려주세요." })).toBeVisible();
 });
 
 test("UI01 loading preview renders without onboarding API calls", async ({ page }) => {
@@ -441,7 +447,7 @@ test("MOB01 MOB02 MOB05 reduced motion and responsive overflow matrix stay stabl
     await page.unroute("**/api/onboarding/status?**");
   }
   await page.goto("/");
-  await expect(page.locator(".ig-tile")).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".cl-ig-tile")).toHaveCSS("animation-name", "none");
 });
 
 test("LAST02 complete revalidation ignores processing regression after completed receipt", async ({ page }) => {

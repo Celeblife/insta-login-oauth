@@ -83,13 +83,13 @@ export function OnboardingShell({ children, contactEmail }: ShellProps) {
       <IconDefs />
       <main className="shell">
         <BrandPanel />
-        <section className="content-panel" aria-label="인스타그램 연동 신청">
+        <section className="content-panel" aria-label="셀럽라이프 온보딩">
           <div className="panel-top">
+            <BrandMark mobile />
             <div className="context">
               <span />
-              CREATOR CONNECT
+              CELEBLIFE ONBOARDING
             </div>
-            <BrandMark mobile />
             <button type="button" className="help-link" onClick={(event) => openDialog("help", event.currentTarget)}>
               <Icon id="i-help" />
               연동이 궁금하신가요?
@@ -129,27 +129,22 @@ function BrandPanel() {
   return (
     <section className="story" aria-label="셀럽라이프 소개">
       <BrandMark />
-      <div className="brand-sub">CREATOR COMMERCE PARTNER</div>
+      <div className="brand-sub">CREATOR COMMERCE INTELLIGENCE</div>
       <div className="story-body">
         <div className="eyebrow">
           <i />
-          CELEBLIFE ONBOARDING
+          INSTAGRAM CONNECTION
         </div>
         <h2>
           반응을 읽고,
           <br />
           <em>선택의 기준</em>을 만듭니다.
         </h2>
-        <p className="story-desc">
-          채널 데이터를 바탕으로 셀럽님에게 꼭 맞는
-          <br />
-          제품과 판매 방향을 함께 찾아갑니다.
-        </p>
+        <p className="story-desc">인스타그램 계정 연결을 통해 채널 반응과 커머스 기회를 함께 살펴볼 준비를 시작합니다.</p>
         <div className="connection" aria-hidden="true">
           <div className="halo" />
           <div className="orbit o1" />
           <div className="orbit o2" />
-          <div className="connection-line" />
           <div className="ig-tile">
             <Icon id="i-ig" />
           </div>
@@ -158,9 +153,10 @@ function BrandPanel() {
               <use href="#cl-symbol" />
             </svg>
           </div>
+          <div className="connection-line" />
           <div className="data-chip">
             <span />
-            채널 데이터 연결
+            Insights ready
           </div>
           <svg className="spark sp1" viewBox="0 0 24 24">
             <use href="#i-star" />
@@ -171,22 +167,22 @@ function BrandPanel() {
         </div>
         <div className="story-benefits">
           <div className="benefit">
+            <Icon id="i-shield" />
+            공식 인증
+          </div>
+          <div className="benefit">
             <Icon id="i-chart" />
-            채널의 강점 발견
+            채널 분석
           </div>
           <div className="benefit">
-            <Icon id="i-star" />
-            맞춤 커머스 방향
-          </div>
-          <div className="benefit">
-            <Icon id="i-user" />
-            담당자 직접 안내
+            <Icon id="i-mail" />
+            담당자 안내
           </div>
         </div>
       </div>
       <div className="story-footer">
-        <span>© 2026 CelebLife</span>
-        <span>Your influence, thoughtfully connected.</span>
+        <span>셀럽님의 데이터는 동의 후에만 연결됩니다.</span>
+        <span>v2 onboarding</span>
       </div>
     </section>
   );

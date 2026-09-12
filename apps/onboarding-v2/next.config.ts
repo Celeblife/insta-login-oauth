@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const securityHeaders = [
@@ -14,6 +18,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  turbopack: { root: repoRoot },
   devIndicators: false,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,

@@ -20,7 +20,7 @@ destructive authority remain explicitly `NOT_RUN`.
 | Chromium desktop/mobile E2E | PASS | 54/54 |
 | Axe WCAG A/AA automated scan | PASS | 6/6 across intro, apply, and completed receipt |
 | npm dependency audits | PASS | zero known vulnerabilities in full and production-only audits |
-| Current UI visual layout comparison | PASS WITH LIMITATION | 10 desktop/mobile state captures; see below |
+| Deployed-login visual parity | PASS | desktop and mobile captures are byte-for-byte identical to `public/Login/index.html` |
 
 The Axe run is an explicit subset of the 54-test Playwright suite and is listed separately as a
 quality gate, not added as six unique E2E tests.
@@ -46,27 +46,20 @@ it did not contact Meta or send mail.
 
 ## Visual evidence
 
-The current app was captured at the approved desktop and mobile dimensions for intro, form,
-loading, success, and error states. Loading uses the development-only static preview route; the
-remaining captures use the same route components and styles as the production build. The generated
-evidence is local and ignored by Git under `evidence/generated/`.
+The first login screen was rendered from both the deployed static source
+`public/Login/index.html` and the v2 `/` route after the restore. Chromium used the same viewport,
+font, and network-idle capture conditions for each pair. `cmp` returned zero for both pairs, so the
+PNG output itself is identical, including Korean typography, layout, assets, colors, and responsive
+behavior.
 
-| Capture | SHA-256 |
-|---|---|
-| `desktop-intro.png` | `ca04124bea999b912808c87aef2085e4b6dc9128e769ec01df8c7cd653455cf4` |
-| `desktop-form.png` | `5f7217a465801c3647b9c3f6b60a3ad60430a5bf062850aeb6a5106be74e5961` |
-| `desktop-loading.png` | `0e34d805fc12ee7617dbdeb7883c02209260f3460bb361bc905292fbed34f20d` |
-| `desktop-success.png` | `01db78d3e4c5c7a75a4bc1bfea58b5ca5f883c7e3e2446822ede3a6084fbc10f` |
-| `desktop-error.png` | `745f0e8d3a76932d95e990b9945aad49749ee915346c7534a38c77bca8a6427f` |
-| `mobile-intro.png` | `bc934b664c235f66c7a2aec6072150685385303f12675eb946cea1c0ccc59bfc` |
-| `mobile-form.png` | `510205aa0476efc5e2f77336212b2a0bf8cc896b08012cfc11c069623ea804d2` |
-| `mobile-loading.png` | `0486f0cc2b04028584e9fab0cf1fb4bef8334e2f9f4362e12343e5f907737068` |
-| `mobile-success.png` | `541dc48e3c8bec063d4bc55468c8dc3bd1446691193c61eb86064ff184b5add4` |
-| `mobile-error.png` | `c5b4f1674a0bea4971d674761e0c750ce916e0a0434c5fae8744f7d3b60cc855` |
+| Viewport | Deployed source SHA-256 | V2 route SHA-256 | Result |
+|---|---|---|---|
+| Desktop `1440x1000` | `a6beb9cd0c9076c2c47724f92c940c2f30c10e53b47d99fcefd4fd56c1108acf` | `a6beb9cd0c9076c2c47724f92c940c2f30c10e53b47d99fcefd4fd56c1108acf` | identical |
+| Mobile `390x960` | `6a66a58b7e7d8170aee4c9f2993c9f88f8fb09e1e0815baa6f61349ff3c872db` | `6a66a58b7e7d8170aee4c9f2993c9f88f8fb09e1e0815baa6f61349ff3c872db` | identical |
 
-The local Chromium image does not have the approved Korean font installed, so Korean glyphs render
-as fallback boxes. Geometry, responsive behavior, field widths, hint placement, footer visibility,
-and state hierarchy were reviewed; typography and pixel-identical Korean rendering are not claimed.
+The CTA is the intentional functional difference: it keeps the deployed label and styling but links
+to the v2 `/apply` route. The remaining v2 pages are not claimed as pixel-identical to the legacy
+screen; their unchanged flow is covered by the 54-test desktop/mobile E2E suite.
 
 ## External and operational gates
 

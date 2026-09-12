@@ -83,7 +83,7 @@ export function BrandMark({ mobile = false }: { mobile?: boolean }) {
         <use href="#cl-symbol" />
       </svg>
       <span className="wordmark">
-        CelebLife<span className="brand-dot">.</span>
+        Celeb<span className="brand-dot">Life</span>
       </span>
     </Link>
   );
