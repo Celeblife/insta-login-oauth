@@ -14,6 +14,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   reactStrictMode: true,
