@@ -5,32 +5,42 @@ export default function HomePage() {
   return (
     <OnboardingShell>
       <section className="view view-intro" id="view-intro" aria-labelledby="intro-title">
-        <div className="intro-eyebrow">CREATOR ONBOARDING</div>
+        <p className="intro-eyebrow">CONNECT YOUR NEXT CHAPTER</p>
         <h1 id="intro-title" className="intro-title">
           셀럽님의 다음 기회,
           <br />
           연결에서 시작됩니다.
         </h1>
-        <p className="subtitle">Instagram 계정 연결 후 채널에 맞는 분석 신청을 접수합니다.</p>
+        <p className="subtitle">
+          인스타그램을 연결하고,
+          <br />내 채널에 맞는 새로운 커머스 가능성을 만나보세요.
+        </p>
         <div className="intro-trust">
           <div className="trust-title">
             <Icon id="i-shield" />
-            Instagram 공식 승인 화면에서 진행돼요
-            <span className="trust-tag">SAFE</span>
+            Meta 공식 로그인 방식
+            <span className="trust-tag">안전한 연결</span>
           </div>
-          <p>셀럽라이프는 Instagram 비밀번호나 2단계 인증 코드를 직접 입력받지 않습니다.</p>
+          <p>
+            인스타그램 비밀번호는 셀럽라이프에 공유되지 않습니다.
+            <br />
+            다음 화면에서 기본 정보와 필수 동의를 먼저 확인해요.
+          </p>
         </div>
         <div className="intro-action">
           <a className="primary" href="/apply">
+            <Icon id="i-ig" />
             인스타그램 연결 시작하기
             <Icon id="i-arrow" className="ic trailing" />
           </a>
         </div>
         <div className="intro-bottom">
-          <Icon id="i-lock" />
-          비밀번호 저장 없음
+          <Icon id="i-user" />
+          기본 정보 입력
           <span />
-          명시적 동의 후 연결
+          계정 연결
+          <span />
+          분석 신청 완료
         </div>
       </section>
     </OnboardingShell>

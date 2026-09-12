@@ -1,6 +1,6 @@
 # Onboarding v2 verification report
 
-Captured: 2026-09-11 (Asia/Seoul)
+Captured: 2026-09-12 (Asia/Seoul)
 
 ## Scope and outcome
 
@@ -17,12 +17,12 @@ destructive authority remain explicitly `NOT_RUN`.
 | Disposable PostgreSQL 16 migration/RPC suite | PASS | 2 files, 26 tests |
 | Production Next.js build and route generation | PASS | build completed |
 | Production headers, artifact scan, protected-root boundary | PASS | all checks completed |
-| Chromium desktop/mobile E2E | PASS | 52/52 |
+| Chromium desktop/mobile E2E | PASS | 54/54 |
 | Axe WCAG A/AA automated scan | PASS | 6/6 across intro, apply, and completed receipt |
 | npm dependency audits | PASS | zero known vulnerabilities in full and production-only audits |
-| Production-build visual layout comparison | PASS WITH LIMITATION | 10 desktop/mobile state captures; see below |
+| Current UI visual layout comparison | PASS WITH LIMITATION | 10 desktop/mobile state captures; see below |
 
-The Axe run is an explicit subset of the 52-test Playwright suite and is listed separately as a
+The Axe run is an explicit subset of the 54-test Playwright suite and is listed separately as a
 quality gate, not added as six unique E2E tests.
 
 ## Commands and boundaries
@@ -46,22 +46,23 @@ it did not contact Meta or send mail.
 
 ## Visual evidence
 
-The optimized production build was captured at the approved desktop and mobile dimensions for
-intro, form, loading, success, and error states. The generated evidence is local and ignored by Git
-under `evidence/generated/`.
+The current app was captured at the approved desktop and mobile dimensions for intro, form,
+loading, success, and error states. Loading uses the development-only static preview route; the
+remaining captures use the same route components and styles as the production build. The generated
+evidence is local and ignored by Git under `evidence/generated/`.
 
 | Capture | SHA-256 |
 |---|---|
-| `desktop-intro.png` | `93ff9ddda8ed3921d15fcfdac9241f229cc9832c62224c8bbb0816228df730e2` |
-| `desktop-form.png` | `2a3ac8b780de422868c7e11267d65e420b58fedd7333acb2b763637dd7ef8217` |
-| `desktop-loading.png` | `788dd55a39863ef5a6af1cd9b5262a52f9fe5da67641725c617369923579e481` |
-| `desktop-success.png` | `7a3b6e66a47b6944a51214b4e9b524ef1a9252d43bd1c56bc4cfd83ddcd2ecc3` |
-| `desktop-error.png` | `675ead3a322df169472f672af5b125d856ee70ca2706e879792d2e371dc047b5` |
-| `mobile-intro.png` | `c5fc4f91bf2c6ffb676790ae81d3d491a2b6aab9e7606632028f9a5d3a58cd0a` |
-| `mobile-form.png` | `7b1b69e63f6200e173d296818fe5947d6de106ec41019e68d5a641151b3e4d84` |
-| `mobile-loading.png` | `d65accc708ecf3d8b76f30ea9ec00f4da51d75aed6ff21f10a1b2933cbc5a97d` |
-| `mobile-success.png` | `0a5e03cd0c46b3629c3f3db9af5b948047fcdd6f40c27d16ec73ad0ee786f881` |
-| `mobile-error.png` | `8b3b1be0caf662fbe0309dc1f6e909cf11ddbb6a947ad74ad24d224774110d9b` |
+| `desktop-intro.png` | `ca04124bea999b912808c87aef2085e4b6dc9128e769ec01df8c7cd653455cf4` |
+| `desktop-form.png` | `5f7217a465801c3647b9c3f6b60a3ad60430a5bf062850aeb6a5106be74e5961` |
+| `desktop-loading.png` | `0e34d805fc12ee7617dbdeb7883c02209260f3460bb361bc905292fbed34f20d` |
+| `desktop-success.png` | `01db78d3e4c5c7a75a4bc1bfea58b5ca5f883c7e3e2446822ede3a6084fbc10f` |
+| `desktop-error.png` | `745f0e8d3a76932d95e990b9945aad49749ee915346c7534a38c77bca8a6427f` |
+| `mobile-intro.png` | `bc934b664c235f66c7a2aec6072150685385303f12675eb946cea1c0ccc59bfc` |
+| `mobile-form.png` | `510205aa0476efc5e2f77336212b2a0bf8cc896b08012cfc11c069623ea804d2` |
+| `mobile-loading.png` | `0486f0cc2b04028584e9fab0cf1fb4bef8334e2f9f4362e12343e5f907737068` |
+| `mobile-success.png` | `541dc48e3c8bec063d4bc55468c8dc3bd1446691193c61eb86064ff184b5add4` |
+| `mobile-error.png` | `c5b4f1674a0bea4971d674761e0c750ce916e0a0434c5fae8744f7d3b60cc855` |
 
 The local Chromium image does not have the approved Korean font installed, so Korean glyphs render
 as fallback boxes. Geometry, responsive behavior, field widths, hint placement, footer visibility,
