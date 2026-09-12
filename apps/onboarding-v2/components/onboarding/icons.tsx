@@ -79,12 +79,7 @@ export function Icon({ id, className = "ic" }: { id: string; className?: string 
 export function BrandMark({ mobile = false }: { mobile?: boolean }) {
   return (
     <Link className={`brand${mobile ? " mobile-brand" : ""}`} href="/" aria-label="셀럽라이프 홈">
-      <svg className="brand-symbol" aria-hidden="true">
-        <use href="#cl-symbol" />
-      </svg>
-      <span className="wordmark">
-        Celeb<span className="brand-dot">Life</span>
-      </span>
+      <span className="brand-logo" aria-hidden="true" />
     </Link>
   );
 }

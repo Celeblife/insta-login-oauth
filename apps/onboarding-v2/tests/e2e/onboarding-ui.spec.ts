@@ -70,6 +70,8 @@ test("UI02 apply validates fields, syncs consent indeterminate, and posts real s
     });
   });
   await page.goto("/apply");
+  await expect(page.locator(".brand-logo:visible")).toHaveCSS("background-image", /celeblife_logo_purple/);
+  await expect(page.locator(".wordmark")).toHaveCount(0);
   await page.getByRole("button", { name: /동의하고 Instagram 연결/ }).click();
   await expect(page.getByText("이름을 입력해 주세요.")).toBeVisible();
 
