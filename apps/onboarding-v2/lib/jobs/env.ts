@@ -2,7 +2,8 @@ import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
   assertExactSupabaseUrl,
-  isServerSupabaseKey,
+  resolveSupabaseProjectRef,
+  resolveSupabaseServerKey,
   validateSupabaseTargetIdentity,
   type AppEnvironment,
 } from "@/lib/config/target-identity";
@@ -37,9 +38,12 @@ export function assertInternalJobRequest(request: Request, requiredFlag: string)
     return { ok: false, status: 401, code: "UNAUTHORIZED_JOB" };
   }
 
-  const expectedProjectRef = process.env.SUPABASE_EXPECTED_PROJECT_REF?.trim() ?? "";
+  let expectedProjectRef;
   try {
-    if (!expectedProjectRef) throw new Error("missing expected project ref");
+    expectedProjectRef = resolveSupabaseProjectRef({
+      expectedProjectRef: process.env.SUPABASE_EXPECTED_PROJECT_REF,
+      productionProjectRef: process.env.SUPABASE_PRODUCTION_PROJECT_REF,
+    });
     assertExactSupabaseUrl(process.env.SUPABASE_URL, expectedProjectRef);
   } catch {
     return { ok: false, status: 412, code: "SUPABASE_PROJECT_GUARD_FAILED" };
@@ -50,8 +54,14 @@ export function assertInternalJobRequest(request: Request, requiredFlag: string)
     return { ok: false, status: 412, code: "VERCEL_PROJECT_GUARD_FAILED" };
   }
 
-  const serviceRoleKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-  if (!isServerSupabaseKey(serviceRoleKey)) {
+  try {
+    resolveSupabaseServerKey({
+      supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
+      supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      supabaseKey: process.env.SUPABASE_KEY,
+      failOnConflict: true,
+    });
+  } catch {
     return { ok: false, status: 503, code: "SUPABASE_SERVER_CONFIG_MISSING" };
   }
 
@@ -63,7 +73,9 @@ export function assertInternalJobRequest(request: Request, requiredFlag: string)
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
       supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      supabaseKey: process.env.SUPABASE_KEY,
       expectedProjectRef: process.env.SUPABASE_EXPECTED_PROJECT_REF,
+      productionProjectRef: process.env.SUPABASE_PRODUCTION_PROJECT_REF,
       vercelProjectId: process.env.VERCEL_PROJECT_ID,
       expectedVercelProjectId: process.env.VERCEL_PROJECT_ID_EXPECTED,
     });

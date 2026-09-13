@@ -15,6 +15,8 @@ export type RequestContext = {
   setCookie?: string;
 };
 
+export type SetCookie = string | readonly string[] | undefined;
+
 export async function withApi(
   request: Request,
   handler: (context: RequestContext) => Promise<Response>,
@@ -33,13 +35,13 @@ export async function withApi(
 
 export async function withCallbackRedirect(
   request: Request,
-  handler: (context: RequestContext) => Promise<{ redirectPath: string; setCookie?: string }>,
+  handler: (context: RequestContext) => Promise<{ redirectPath: string; setCookie?: SetCookie }>,
 ): Promise<Response> {
   try {
     rateLimit(request);
     const context = buildContext(request);
     const result = await handler(context);
-    return redirect303(result.redirectPath, result.setCookie ?? context.setCookie);
+    return redirect303(result.redirectPath, mergeSetCookies(context.setCookie, result.setCookie));
   } catch {
     return redirect303("/connection-error");
   }
@@ -60,18 +62,18 @@ export async function readJsonBody(request: Request): Promise<unknown> {
   }
 }
 
-export function jsonResponse(value: unknown, init: ResponseInit = {}, setCookie?: string): Response {
+export function jsonResponse(value: unknown, init: ResponseInit = {}, setCookie?: SetCookie): Response {
   const headers = new Headers(init.headers);
   headers.set("content-type", "application/json; charset=utf-8");
   headers.set("cache-control", "no-store");
   headers.set("x-content-type-options", "nosniff");
-  if (setCookie) headers.append("set-cookie", setCookie);
+  appendSetCookies(headers, setCookie);
   return new Response(JSON.stringify(value), { ...init, headers });
 }
 
-export function redirect303(path: string, setCookie?: string): Response {
-  const headers: HeadersInit = { location: path, "cache-control": "no-store", "referrer-policy": "no-referrer" };
-  if (setCookie) headers["set-cookie"] = setCookie;
+export function redirect303(path: string, setCookie?: SetCookie): Response {
+  const headers = new Headers({ location: path, "cache-control": "no-store", "referrer-policy": "no-referrer" });
+  appendSetCookies(headers, setCookie);
   return new Response(null, {
     status: 303,
     headers,
@@ -198,4 +200,15 @@ function serializeCookie(name: string, value: string, secure: boolean): string {
   ];
   if (secure) attrs.push("Secure");
   return attrs.join("; ");
+}
+
+function mergeSetCookies(...values: SetCookie[]): string[] | undefined {
+  const merged = values.flatMap((value) => value ? (Array.isArray(value) ? value : [value]) : []);
+  return merged.length ? merged : undefined;
+}
+
+function appendSetCookies(headers: Headers, setCookie: SetCookie): void {
+  for (const cookie of mergeSetCookies(setCookie) ?? []) {
+    headers.append("set-cookie", cookie);
+  }
 }

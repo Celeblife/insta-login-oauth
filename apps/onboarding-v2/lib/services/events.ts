@@ -6,6 +6,7 @@ export type OnboardingEvent = {
     | "start"
     | "callback_code_checkpointed"
     | "callback_rejected"
+    | "legacy_callback_failed"
     | "complete_claimed"
     | "short_exchange_started"
     | "short_token_checkpointed"

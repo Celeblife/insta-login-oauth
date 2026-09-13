@@ -170,12 +170,28 @@ describe("security/config invariants", () => {
     process.env.BROWSER_SECRET_PEPPER = randomBytes(32).toString("base64url");
     process.env.ONBOARDING_PAYLOAD_HASH_KEY = randomBytes(32).toString("base64url");
     process.env.CHECKPOINT_ENCRYPTION_KEYS = `v1:${randomBytes(32).toString("base64url")}`;
-    process.env.INSTAGRAM_REDIRECT_URI = "https://onboarding.example.com/auth/instagram/callback?code=leak";
+    process.env.INSTAGRAM_REDIRECT_URI = "https://onboarding.example.com/auth/callback?code=leak";
     expect(() => getConfig()).toThrow(PublicApiError);
 
     process.env.INSTAGRAM_REDIRECT_URI = "https://onboarding.example.com/auth/instagram/callback";
+    expect(() => getConfig()).toThrow(PublicApiError);
+
+    process.env.INSTAGRAM_REDIRECT_URI = "https://onboarding.example.com/auth/callback";
     setProductionSupabaseIdentity();
     expect(getConfig()).toMatchObject({ appEnv: "production", providerMode: "instagram" });
+  });
+
+  it("OP01 resolves the existing /auth/callback redirect from canonical and legacy env names", () => {
+    process.env.APP_ENV = "local";
+    process.env.APP_BASE_URL = "http://localhost:3000";
+    process.env.ONBOARDING_PROVIDER = "mock";
+    expect(getConfig().instagram.redirectUri).toBe("http://localhost:3000/auth/callback");
+
+    process.env.OAUTH_REDIRECT_URI = "http://localhost:3000/auth/callback";
+    expect(getConfig().instagram.redirectUri).toBe("http://localhost:3000/auth/callback");
+
+    process.env.INSTAGRAM_REDIRECT_URI = "http://localhost:3000/auth/callback";
+    expect(getConfig().instagram.redirectUri).toBe("http://localhost:3000/auth/callback");
   });
 
   it("OP01 staging instagram mode rejects missing or known mock credentials while local mock remains valid", () => {
@@ -281,6 +297,15 @@ describe("security/config invariants", () => {
     expect(() => getConfig()).toThrow(PublicApiError);
 
     setStagingSupabaseConfig();
+    delete process.env.SUPABASE_EXPECTED_PROJECT_REF;
+    process.env.SUPABASE_PRODUCTION_PROJECT_REF = "project";
+    expect(getConfig().supabase?.url).toBe("https://project.supabase.co");
+
+    process.env.SUPABASE_EXPECTED_PROJECT_REF = "project";
+    process.env.SUPABASE_PRODUCTION_PROJECT_REF = "wrong";
+    expect(() => getConfig()).toThrow(PublicApiError);
+
+    setStagingSupabaseConfig();
     delete process.env.VERCEL_PROJECT_ID_EXPECTED;
     expect(() => getConfig()).toThrow(PublicApiError);
 
@@ -292,6 +317,7 @@ describe("security/config invariants", () => {
     delete process.env.SUPABASE_URL;
     delete process.env.SUPABASE_SECRET_KEY;
     delete process.env.SUPABASE_EXPECTED_PROJECT_REF;
+    delete process.env.SUPABASE_PRODUCTION_PROJECT_REF;
     delete process.env.VERCEL_PROJECT_ID_EXPECTED;
     expect(getConfig()).toMatchObject({ appEnv: "staging", providerMode: "mock" });
 
@@ -301,6 +327,11 @@ describe("security/config invariants", () => {
     expect(getConfig().supabase?.url).toBe("https://prodref.supabase.co");
 
     delete process.env.SUPABASE_EXPECTED_PROJECT_REF;
+    process.env.SUPABASE_PRODUCTION_PROJECT_REF = "prodref";
+    expect(getConfig().supabase?.url).toBe("https://prodref.supabase.co");
+
+    delete process.env.SUPABASE_EXPECTED_PROJECT_REF;
+    delete process.env.SUPABASE_PRODUCTION_PROJECT_REF;
     expect(() => getConfig()).toThrow(PublicApiError);
   });
 
@@ -317,9 +348,22 @@ describe("security/config invariants", () => {
     process.env.SUPABASE_SECRET_KEY = jwtWithRole("service_role");
     expect(getConfig().supabase?.serviceRoleKey).toBe(process.env.SUPABASE_SECRET_KEY);
 
+    setStagingSupabaseConfig();
+    delete process.env.SUPABASE_SECRET_KEY;
+    process.env.SUPABASE_KEY = jwtWithRole("service_role");
+    expect(getConfig().supabase?.serviceRoleKey).toBe(process.env.SUPABASE_KEY);
+
+    process.env.SUPABASE_KEY = jwtWithRole("anon");
+    expect(() => getConfig()).toThrow(PublicApiError);
+
+    setStagingSupabaseConfig();
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "sb_secret_different";
+    expect(() => getConfig()).toThrow(PublicApiError);
+
     setProductionConfig();
     setProductionSupabaseIdentity();
     delete process.env.SUPABASE_SECRET_KEY;
+    delete process.env.SUPABASE_KEY;
     process.env.SUPABASE_SERVICE_ROLE_KEY = "sb_secret_prod";
     expect(getConfig().supabase).toMatchObject({
       url: "https://prodref.supabase.co",

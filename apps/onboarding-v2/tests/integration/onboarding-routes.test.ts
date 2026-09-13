@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GET as legacyCallbackGet } from "@/app/auth/callback/route";
 import { GET as callbackGet } from "@/app/auth/instagram/callback/route";
+import { POST as legacyTerminalPost } from "@/app/api/onboarding/legacy-terminal/route";
 import { GET as bootstrapGet } from "@/app/api/onboarding/bootstrap/route";
 import { POST as completePost } from "@/app/api/onboarding/complete/route";
 import { POST as confirmPost } from "@/app/api/onboarding/confirm-account/route";
@@ -80,6 +81,37 @@ describe("onboarding v2 route contract", () => {
     const completedReplay = await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=user_matched_user&state=${state}`, { headers: { cookie: client.cookie } }));
     expect(completedReplay.status).toBe(303);
     expect(completedReplay.headers.get("location")).toBe(`/complete?attemptId=${attemptIdFrom(started.body)}`);
+  });
+
+  it("AU07 /auth/callback dispatches v2 success and cancellation before legacy code validation", async () => {
+    const successClient = await bootstrapClient();
+    const successStart = await start(successClient, validStart({ instagramUsername: "legacy_bridge" }));
+    const success = await legacyCallbackGet(
+      new Request(`${ORIGIN}/auth/callback?code=user_legacy_bridge&state=${stateFrom(successStart.body)}`, {
+        headers: { cookie: successClient.cookie },
+      }),
+    );
+    expect(success.status).toBe(303);
+    expect(success.headers.get("location")).toBe(`/connecting?attemptId=${attemptIdFrom(successStart.body)}`);
+    expect((await complete(successClient, attemptIdFrom(successStart.body))).body).toMatchObject({
+      status: "completed",
+      result: { instagramUsername: "legacy_bridge" },
+    });
+
+    const cancelClient = await bootstrapClient();
+    const cancelStart = await start(cancelClient, validStart({ instagramUsername: "legacy_cancel" }));
+    const cancel = await legacyCallbackGet(
+      new Request(`${ORIGIN}/auth/callback?error=access_denied&state=${stateFrom(cancelStart.body)}`, {
+        headers: { cookie: cancelClient.cookie },
+      }),
+    );
+    expect(cancel.status).toBe(303);
+    expect(cancel.headers.get("location")).toBe(`/connection-error?attemptId=${attemptIdFrom(cancelStart.body)}`);
+    expect(await getStatus(cancelClient, attemptIdFrom(cancelStart.body))).toMatchObject({
+      status: "failed",
+      code: "OAUTH_CANCELLED",
+      draftAvailable: true,
+    });
   });
 
   it("AU07 terminal failure and repeated cancel callbacks reject without mutating or extending draft TTL", async () => {
@@ -276,7 +308,7 @@ describe("onboarding v2 route contract", () => {
     expect(legacy.headers.get("location")).not.toContain("state=");
   });
 
-  it("AU05 AU06 FINAL06 accepts exact legacy v1 callback and clears binding cookie", async () => {
+  it("AU05 AU06 FINAL06 accepts exact legacy v1 callback, issues terminal receipt, and clears binding cookie", async () => {
     const secrets = legacySecrets();
     const bindingId = "legacy-binding-id-0123456789";
     const callback = await legacyCallbackGet(
@@ -286,10 +318,49 @@ describe("onboarding v2 route contract", () => {
     );
 
     expect(callback.status).toBe(303);
-    expect(callback.headers.get("location")).toBe("/Dashboard");
+    expect(callback.headers.get("location")).toBe("/legacy-complete");
     expect(callback.headers.get("location")).not.toContain("code=");
     expect(callback.headers.get("location")).not.toContain("state=");
     expect(callback.headers.get("set-cookie")).toContain("cl_consent_binding=; Max-Age=0");
+    const issuedCookies = setCookiePairs(callback);
+    expect(issuedCookies.some((cookie) => cookie.startsWith("cl-onboarding="))).toBe(true);
+    expect(issuedCookies.some((cookie) => cookie.startsWith("cl-legacy-terminal="))).toBe(true);
+
+    const terminal = await legacyTerminalPost(new Request(`${ORIGIN}/api/onboarding/legacy-terminal`, {
+      method: "POST",
+      headers: { cookie: issuedCookies.filter((cookie) => !cookie.startsWith("cl_consent_binding=")).join("; ") },
+    }));
+    expect(terminal.status).toBe(200);
+    await expect(terminal.json()).resolves.toEqual({ ok: true });
+    expect(terminal.headers.get("set-cookie")).toContain("cl-legacy-terminal=; Max-Age=0");
+
+    const wrongBrowser = await legacyTerminalPost(new Request(`${ORIGIN}/api/onboarding/legacy-terminal`, {
+      method: "POST",
+      headers: { cookie: issuedCookies.filter((cookie) => cookie.startsWith("cl-legacy-terminal=")).concat("cl-onboarding=different-browser-secret").join("; ") },
+    }));
+    expect(wrongBrowser.status).toBe(401);
+    await expect(wrongBrowser.json()).resolves.toEqual({ ok: false });
+  });
+
+  it("FINAL06 normalizes legacy repository /complete results to the same terminal page", async () => {
+    const existingClient = await bootstrapClient();
+    const existing = await start(existingClient, validStart({ instagramUsername: "legacy_existing" }));
+    await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=user_legacy_existing&state=${stateFrom(existing.body)}`, { headers: { cookie: existingClient.cookie } }));
+    expect((await complete(existingClient, attemptIdFrom(existing.body))).body).toMatchObject({ status: "completed" });
+
+    const secrets = legacySecrets();
+    const bindingId = "legacy-binding-id-0123456789";
+    const callback = await legacyCallbackGet(
+      new Request(`${ORIGIN}/auth/callback?code=user_legacy_existing&state=${legacyState(bindingId, secrets.instagramSecret, { nonce: "legacy-existing-nonce" })}`, {
+        headers: { cookie: legacyBindingCookie(bindingId, secrets.sessionSecret) },
+      }),
+    );
+
+    expect(callback.status).toBe(303);
+    expect(callback.headers.get("location")).toBe("/legacy-complete");
+    expect(callback.headers.get("location")).not.toContain("code=");
+    expect(callback.headers.get("location")).not.toContain("state=");
+    expect(setCookiePairs(callback).some((cookie) => cookie.startsWith("cl-legacy-terminal="))).toBe(true);
   });
 
   it("OP03 AU05 rejects legacy tamper, TTL, future iat, cookie mismatch, wrong docs, missing consent, and bundle hash mismatch", async () => {
@@ -419,6 +490,17 @@ function legacyBundleHash(payload: Record<string, unknown>): string {
   delete consentItems.binding_id;
   delete consentItems.bundle_hash;
   return createHash("sha256").update(stableJson(consentItems), "utf8").digest("hex");
+}
+
+function setCookiePairs(response: Response): string[] {
+  const headers = response.headers as Headers & { getSetCookie?: () => string[] };
+  const values = headers.getSetCookie?.() ?? splitSetCookieHeader(response.headers.get("set-cookie"));
+  return values.map((value) => value.split(";")[0] ?? value);
+}
+
+function splitSetCookieHeader(value: string | null): string[] {
+  if (!value) return [];
+  return value.split(/,\s*(?=[^;,]+=)/);
 }
 
 function signedToken(payload: Record<string, unknown>, secret: string): string {

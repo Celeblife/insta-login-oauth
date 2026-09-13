@@ -3,10 +3,12 @@ import type { BootstrapResponse, ConfirmAccountRequest, PublicErrorCode, Restart
 import { PublicApiError } from "@/lib/domain/errors";
 import { canonicalPayloadHashPayload, isUuid, validateStart } from "@/lib/domain/validation";
 import { clearLegacyBindingCookie, parseLegacyState, verifyLegacyBindingCookie } from "@/lib/legacy/instagram";
+import { createLegacyTerminalReceiptCookie } from "@/lib/legacy/terminal-receipt";
 import { createOnboardingRepository } from "@/lib/persistence";
 import type { AttemptRecord, CompletionLease, OnboardingRepository, PolicySnapshot } from "@/lib/persistence/types";
 import { AmbiguousProviderExchangeError, createInstagramProvider, type InstagramProvider, type InstagramShortToken, type InstagramToken } from "@/lib/providers/instagram";
 import { logOnboardingEvent } from "@/lib/services/events";
+import type { SetCookie } from "@/lib/services/http";
 import { keyedPayloadHash, openJson, randomUrlToken, sealJson, sha256Hmac, uuid } from "@/lib/security/crypto";
 
 const STATE_TTL_MS = 10 * 60 * 1000;
@@ -93,13 +95,20 @@ export class OnboardingService {
     return { redirectPath: `/connecting?attemptId=${encodeURIComponent(updated.id)}` };
   }
 
-  async legacyCallback(browserBindingHash: string, url: URL, cookieHeader: string | null): Promise<{ redirectPath: string; setCookie?: string }> {
+  async legacyCallback(browserBindingHash: string, url: URL, cookieHeader: string | null): Promise<{ redirectPath: string; setCookie?: SetCookie }> {
     const state = url.searchParams.get("state");
     const code = url.searchParams.get("code");
-    if (!state || !code || code.length > 2048) return { redirectPath: "/connection-error", setCookie: clearLegacyBindingCookie() };
+    if (!state) {
+      logOnboardingEvent({ name: "legacy_callback_failed", code: "INVALID_STATE" });
+      return { redirectPath: "/connection-error", setCookie: clearLegacyBindingCookie() };
+    }
     const stateHash = sha256Hmac(this.config.browserSecretKey, state);
     const v2Attempt = await this.repository.findAttemptByStateHash(stateHash);
     if (v2Attempt) return this.callback(browserBindingHash, url);
+    if (!code || code.length > 2048) {
+      logOnboardingEvent({ name: "legacy_callback_failed", code: "INVALID_STATE" });
+      return { redirectPath: "/connection-error", setCookie: clearLegacyBindingCookie() };
+    }
     try {
       const bindingId = verifyLegacyBindingCookie(cookieHeader, process.env.SESSION_COOKIE_SECRET);
       const consentSnapshot = parseLegacyState(state, bindingId, this.config.instagram.clientSecret);
@@ -114,8 +123,18 @@ export class OnboardingService {
         consentSnapshot,
         now: nowIso(),
       });
-      return { ...result, setCookie: clearLegacyBindingCookie() };
-    } catch {
+      if (isLegacyTerminalRedirect(result.redirectPath)) {
+        return {
+          redirectPath: "/legacy-complete",
+          setCookie: [
+            createLegacyTerminalReceiptCookie(this.config, browserBindingHash, { instagramUsername: account.username }),
+            clearLegacyBindingCookie(),
+          ],
+        };
+      }
+      throw new PublicApiError("CONFIGURATION_ERROR");
+    } catch (error) {
+      logOnboardingEvent({ name: "legacy_callback_failed", code: legacyCallbackFailureCode(error) });
       return { redirectPath: "/connection-error", setCookie: clearLegacyBindingCookie() };
     }
   }
@@ -386,6 +405,14 @@ function canExposeDraft(attempt: AttemptRecord, nowMs = Date.now()): boolean {
 
 function isReplayableCallbackStatus(status: AttemptRecord["status"]): boolean {
   return status === "callback_received" || status === "exchanging_short" || status === "short_token_checkpointed" || status === "exchanging_long" || status === "long_token_checkpointed" || status === "fetching_account" || status === "awaiting_account_confirmation" || status === "saving";
+}
+
+function isLegacyTerminalRedirect(path: string): boolean {
+  return path === "/Dashboard" || path === "/complete";
+}
+
+function legacyCallbackFailureCode(error: unknown): PublicErrorCode {
+  return error instanceof PublicApiError ? error.code : "PROVIDER_UNAVAILABLE";
 }
 
 function requireSealed<T>(value: T | null): T {

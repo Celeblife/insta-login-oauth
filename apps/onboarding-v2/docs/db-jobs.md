@@ -6,7 +6,7 @@ contract.
 
 ## Migration
 
-- Apply only to the intended Supabase project after checking `SUPABASE_EXPECTED_PROJECT_REF`.
+- Apply only to the intended Supabase project after checking `SUPABASE_EXPECTED_PROJECT_REF` or legacy `SUPABASE_PRODUCTION_PROJECT_REF`.
 - The forward migration adds v2 tables, service-only RPCs, RLS policies, outbox/job leases,
   and token metadata/CAS triggers. Draft onboarding contact payloads are stored only as sealed
   `draft_payload_encrypted` envelopes; finalize receives the server-decrypted payload explicitly
@@ -27,7 +27,7 @@ contract.
 
 All internal routes support `GET` for Vercel Cron and `POST` for protected manual runs. They require
 `Authorization: Bearer $CRON_SECRET`, `INTERNAL_JOBS_ENABLED=true`, a valid `APP_ENV`, exact
-`SUPABASE_EXPECTED_PROJECT_REF`, and exact `VERCEL_PROJECT_ID_EXPECTED`. The handlers declare
+`SUPABASE_EXPECTED_PROJECT_REF` (or legacy `SUPABASE_PRODUCTION_PROJECT_REF`), and exact `VERCEL_PROJECT_ID_EXPECTED`. The handlers declare
 `maxDuration = 60`; provider/SMTP timeouts should stay below that budget and DB leases are 90s.
 
 - `GET|POST /internal/token-refresh`

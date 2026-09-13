@@ -624,3 +624,10 @@ test("UI10 complete direct access does not render success without DB completed s
   await expect(page.getByText("연동이 완료되었습니다.")).toHaveCount(0);
   await expect(page.getByText("creator@example.com")).toHaveCount(0);
 });
+
+test("UI10 legacy completion direct access does not render a false success", async ({ page }) => {
+  await page.goto("/legacy-complete");
+  await expect(page.getByRole("heading", { name: "완료 확인 시간이 지났어요." })).toBeVisible();
+  await expect(page.getByText("인스타그램 연결이 확인되었습니다.")).toHaveCount(0);
+  await expect(page.getByText("연결 완료")).toHaveCount(0);
+});

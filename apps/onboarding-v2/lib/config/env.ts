@@ -1,6 +1,6 @@
 import { PublicApiError } from "@/lib/domain/errors";
 import type { KeyRing } from "@/lib/security/crypto";
-import { validateSupabaseTargetIdentity } from "./target-identity";
+import { resolveSupabaseServerKey, validateSupabaseTargetIdentity } from "./target-identity";
 
 export type AppConfig = {
   nodeEnv: string;
@@ -88,7 +88,8 @@ export function getConfig(): AppConfig {
       clientSecret: process.env.INSTAGRAM_APP_SECRET ?? process.env.INSTAGRAM_CLIENT_SECRET ?? "mock-client-secret",
       redirectUri:
         process.env.INSTAGRAM_REDIRECT_URI ??
-        `${appOrigin}/auth/instagram/callback`,
+        process.env.OAUTH_REDIRECT_URI ??
+        `${appOrigin}/auth/callback`,
       oauthAuthorizeBaseUrl:
         process.env.INSTAGRAM_AUTHORIZE_URL ??
         "https://www.instagram.com/oauth/authorize",
@@ -113,7 +114,9 @@ export function getConfig(): AppConfig {
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    supabaseKey: process.env.SUPABASE_KEY,
     expectedProjectRef: process.env.SUPABASE_EXPECTED_PROJECT_REF,
+    productionProjectRef: process.env.SUPABASE_PRODUCTION_PROJECT_REF,
     vercelProjectId: process.env.VERCEL_PROJECT_ID,
     expectedVercelProjectId: process.env.VERCEL_PROJECT_ID_EXPECTED,
   });
@@ -122,10 +125,15 @@ export function getConfig(): AppConfig {
       url: supabaseIdentity.url,
       serviceRoleKey: supabaseIdentity.serviceRoleKey,
     };
-  } else if (process.env.SUPABASE_URL && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+  } else if (process.env.SUPABASE_URL && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY)) {
     config.supabase = {
       url: process.env.SUPABASE_URL,
-      serviceRoleKey: process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+      serviceRoleKey: resolveSupabaseServerKey({
+        supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
+        supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        supabaseKey: process.env.SUPABASE_KEY,
+        failOnConflict: false,
+      }),
     };
   }
   if (config.providerMode === "instagram") validateInstagramConfig(config);
@@ -210,7 +218,7 @@ function graphApiVersion(appEnv: AppConfig["appEnv"]): string {
 function validateInstagramConfig(config: AppConfig): void {
   const redirect = new URL(config.instagram.redirectUri);
   parseHttpsOrLocalOrigin(config.instagram.redirectUri, config.appEnv);
-  if (redirect.origin !== config.appOrigin || redirect.pathname !== "/auth/instagram/callback" || redirect.search || redirect.hash) throw new PublicApiError("CONFIGURATION_ERROR");
+  if (redirect.origin !== config.appOrigin || redirect.pathname !== "/auth/callback" || redirect.search || redirect.hash) throw new PublicApiError("CONFIGURATION_ERROR");
   const graph = new URL(config.instagram.graphBaseUrl);
   if (
     graph.protocol !== "https:" ||

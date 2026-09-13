@@ -63,6 +63,20 @@ describe("internal job guard", () => {
       ok: false,
       code: "VERCEL_PROJECT_GUARD_FAILED",
     });
+
+    setValidJobEnv();
+    delete process.env.SUPABASE_EXPECTED_PROJECT_REF;
+    process.env.SUPABASE_PRODUCTION_PROJECT_REF = "project";
+    expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: true,
+    });
+
+    process.env.SUPABASE_EXPECTED_PROJECT_REF = "project";
+    process.env.SUPABASE_PRODUCTION_PROJECT_REF = "wrong";
+    expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: false,
+      code: "SUPABASE_PROJECT_GUARD_FAILED",
+    });
   });
 
   it("OP01 rejects malformed Supabase URLs, public keys, and missing expected Vercel identity with typed job codes", () => {
@@ -102,6 +116,29 @@ describe("internal job guard", () => {
 
     expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
       ok: true,
+    });
+  });
+
+  it("OP01 accepts only server-role legacy SUPABASE_KEY and rejects conflicting external keys", () => {
+    setValidJobEnv();
+    delete process.env.SUPABASE_SECRET_KEY;
+    process.env.SUPABASE_KEY = jwtWithRole("service_role");
+
+    expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: true,
+    });
+
+    process.env.SUPABASE_KEY = "sb_publishable_test";
+    expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: false,
+      code: "SUPABASE_SERVER_CONFIG_MISSING",
+    });
+
+    setValidJobEnv();
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "sb_secret_different";
+    expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: false,
+      code: "SUPABASE_SERVER_CONFIG_MISSING",
     });
   });
 

@@ -15,7 +15,9 @@ type SupabaseTargetInput = {
   supabaseUrl: string | undefined;
   supabaseSecretKey: string | undefined;
   supabaseServiceRoleKey: string | undefined;
+  supabaseKey: string | undefined;
   expectedProjectRef: string | undefined;
+  productionProjectRef: string | undefined;
   vercelProjectId: string | undefined;
   expectedVercelProjectId: string | undefined;
 };
@@ -27,7 +29,10 @@ export function isExternalSupabaseMode(appEnv: AppEnvironment, repository: strin
 export function validateSupabaseTargetIdentity(input: SupabaseTargetInput): SupabaseTargetIdentity | undefined {
   if (!isExternalSupabaseMode(input.appEnv, input.repository)) return undefined;
 
-  const expectedProjectRef = required(input.expectedProjectRef);
+  const expectedProjectRef = resolveSupabaseProjectRef({
+    expectedProjectRef: input.expectedProjectRef,
+    productionProjectRef: input.productionProjectRef,
+  });
   if (!/^[a-z0-9-]+$/.test(expectedProjectRef)) throw new PublicApiError("CONFIGURATION_ERROR");
 
   const url = required(input.supabaseUrl);
@@ -37,8 +42,12 @@ export function validateSupabaseTargetIdentity(input: SupabaseTargetInput): Supa
   const vercelProjectId = required(input.vercelProjectId);
   if (vercelProjectId !== expectedVercelProjectId) throw new PublicApiError("CONFIGURATION_ERROR");
 
-  const serviceRoleKey = input.supabaseSecretKey || input.supabaseServiceRoleKey || "";
-  if (!isServerSupabaseKey(serviceRoleKey)) throw new PublicApiError("CONFIGURATION_ERROR");
+  const serviceRoleKey = resolveSupabaseServerKey({
+    supabaseSecretKey: input.supabaseSecretKey,
+    supabaseServiceRoleKey: input.supabaseServiceRoleKey,
+    supabaseKey: input.supabaseKey,
+    failOnConflict: true,
+  });
 
   return {
     url,
@@ -46,6 +55,34 @@ export function validateSupabaseTargetIdentity(input: SupabaseTargetInput): Supa
     projectRef: expectedProjectRef,
     vercelProjectId,
   };
+}
+
+export function resolveSupabaseProjectRef(input: {
+  expectedProjectRef: string | undefined;
+  productionProjectRef: string | undefined;
+}): string {
+  const expected = input.expectedProjectRef?.trim() ?? "";
+  const legacy = input.productionProjectRef?.trim() ?? "";
+  if (expected && legacy && expected !== legacy) throw new PublicApiError("CONFIGURATION_ERROR");
+  return required(expected || legacy || undefined);
+}
+
+export function resolveSupabaseServerKey(input: {
+  supabaseSecretKey: string | undefined;
+  supabaseServiceRoleKey: string | undefined;
+  supabaseKey: string | undefined;
+  failOnConflict: boolean;
+}): string {
+  const candidates = [
+    input.supabaseSecretKey?.trim(),
+    input.supabaseServiceRoleKey?.trim(),
+    input.supabaseKey?.trim(),
+  ].filter((value): value is string => Boolean(value));
+  const unique = new Set(candidates);
+  if (input.failOnConflict && unique.size > 1) throw new PublicApiError("CONFIGURATION_ERROR");
+  const key = candidates[0] ?? "";
+  if (!isServerSupabaseKey(key)) throw new PublicApiError("CONFIGURATION_ERROR");
+  return key;
 }
 
 export function assertExactSupabaseUrl(raw: string | undefined, expectedProjectRef: string): void {

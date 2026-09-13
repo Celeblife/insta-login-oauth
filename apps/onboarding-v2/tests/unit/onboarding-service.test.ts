@@ -1,6 +1,6 @@
-import { randomBytes, randomUUID } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getConfig } from "@/lib/config/env";
 import { PublicApiError } from "@/lib/domain/errors";
@@ -23,6 +23,7 @@ describe("OnboardingService completion races", () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     process.env = { ...originalEnv };
   });
 
@@ -78,6 +79,46 @@ describe("OnboardingService completion races", () => {
     });
     await expect(expiredService.complete(beforeClaim.browserBindingHash, { attemptId: beforeClaim.id })).rejects.toMatchObject({ code: "SESSION_EXPIRED", status: 410 });
   });
+
+  it("logs PROVIDER_UNAVAILABLE for unexpected legacy provider failures while keeping redirect sanitized", async () => {
+    const secrets = legacySecrets();
+    const service = new OnboardingService({
+      config: getConfig(),
+      repository: fakeRepository({}),
+      provider: fakeLegacyProvider({
+        async exchangeCodeForShortToken() {
+          throw new Error("provider unavailable");
+        },
+      }),
+    });
+    const log = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    await expect(service.legacyCallback("a".repeat(64), legacyCallbackUrl(secrets), legacyCookie(secrets))).resolves.toMatchObject({
+      redirectPath: "/connection-error",
+    });
+
+    expect(loggedEvents(log)).toContainEqual(expect.objectContaining({ name: "legacy_callback_failed", code: "PROVIDER_UNAVAILABLE" }));
+  });
+
+  it("logs CONFIGURATION_ERROR for unexpected legacy repository redirects while keeping redirect sanitized", async () => {
+    const secrets = legacySecrets();
+    const service = new OnboardingService({
+      config: getConfig(),
+      repository: fakeRepository({
+        async completeGuardedLegacyCallback() {
+          return { redirectPath: "/unexpected" };
+        },
+      }),
+      provider: fakeLegacyProvider(),
+    });
+    const log = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    const result = await service.legacyCallback("a".repeat(64), legacyCallbackUrl(secrets), legacyCookie(secrets));
+
+    expect(result.redirectPath).toBe("/connection-error");
+    expect(result.setCookie).toContain("cl_consent_binding=; Max-Age=0");
+    expect(loggedEvents(log)).toContainEqual(expect.objectContaining({ name: "legacy_callback_failed", code: "CONFIGURATION_ERROR" }));
+  });
 });
 
 function fakeRepository(overrides: Partial<OnboardingRepository>): OnboardingRepository {
@@ -107,6 +148,98 @@ const fakeProvider: InstagramProvider = {
   async exchangeShortTokenForLongToken() { throw new Error("not implemented"); },
   async fetchAccount() { throw new Error("not implemented"); },
 };
+
+function fakeLegacyProvider(overrides: Partial<InstagramProvider> = {}): InstagramProvider {
+  return {
+    buildAuthorizeUrl() { return "https://www.instagram.com/oauth/authorize"; },
+    async exchangeCodeForShortToken() {
+      return {
+        accessToken: "short-token",
+        providerUserId: "ig_legacy",
+        grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+      };
+    },
+    async exchangeShortTokenForLongToken() {
+      return {
+        accessToken: "long-token",
+        providerUserId: "ig_legacy",
+        expiresAt: "2026-12-01T00:00:00.000Z",
+        grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+      };
+    },
+    async fetchAccount() {
+      return { providerAccountId: "ig_legacy", username: "legacy_user", accountType: "creator" };
+    },
+    ...overrides,
+  };
+}
+
+function loggedEvents(log: { mock: { calls: unknown[][] } }): Record<string, unknown>[] {
+  return log.mock.calls.map((call) => JSON.parse(String(call[1])) as Record<string, unknown>);
+}
+
+function legacySecrets(): { sessionSecret: string; instagramSecret: string; bindingId: string } {
+  const sessionSecret = "session-secret-for-legacy-callback-tests";
+  const instagramSecret = "instagram-secret-for-legacy-state-tests";
+  process.env.SESSION_COOKIE_SECRET = sessionSecret;
+  process.env.INSTAGRAM_APP_SECRET = instagramSecret;
+  return { sessionSecret, instagramSecret, bindingId: "legacy-binding-id-0123456789" };
+}
+
+function legacyCallbackUrl(secrets: ReturnType<typeof legacySecrets>): URL {
+  return new URL(`http://localhost:3000/auth/callback?code=legacy-code&state=${legacyState(secrets)}`);
+}
+
+function legacyCookie(secrets: ReturnType<typeof legacySecrets>): string {
+  const now = Math.floor(Date.now() / 1000);
+  return `cl_consent_binding=${signedToken({ bid: secrets.bindingId, exp: now + 600, iat: now, v: 1 }, secrets.sessionSecret, "encoded-payload")}`;
+}
+
+function legacyState(secrets: ReturnType<typeof legacySecrets>): string {
+  const now = Math.floor(Date.now() / 1000);
+  const payload: Record<string, unknown> = {
+    accepted_at: new Date(now * 1000).toISOString(),
+    age_confirmed: true,
+    binding_id: secrets.bindingId,
+    iat: now,
+    instagram_permissions_accepted: true,
+    instagram_permissions_version: "instagram-permissions-2026-08-26",
+    nonce: `legacy-state-${randomUUID()}`,
+    privacy_accepted: true,
+    privacy_version: "privacy-2026-08-26-v3",
+    terms_accepted: true,
+    terms_version: "influencer-v1.2-2026-08-26",
+    v: 1,
+  };
+  payload.bundle_hash = legacyBundleHash(payload);
+  return signedToken(payload, secrets.instagramSecret, "payload-bytes");
+}
+
+function legacyBundleHash(payload: Record<string, unknown>): string {
+  const consentItems = { ...payload };
+  delete consentItems.iat;
+  delete consentItems.nonce;
+  delete consentItems.binding_id;
+  delete consentItems.bundle_hash;
+  return createHash("sha256").update(stableJson(consentItems), "utf8").digest("hex");
+}
+
+function signedToken(payload: Record<string, unknown>, secret: string, signatureInput: "encoded-payload" | "payload-bytes"): string {
+  const payloadPart = Buffer.from(stableJson(payload), "utf8").toString("base64url");
+  const signedBytes = signatureInput === "encoded-payload" ? Buffer.from(payloadPart, "ascii") : Buffer.from(stableJson(payload), "utf8");
+  const signature = createHmac("sha256", Buffer.from(secret, "utf8")).update(signedBytes).digest("base64url");
+  return `${payloadPart}.${signature}`;
+}
+
+function stableJson(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`)
+    .join(",")}}`;
+}
 
 function attemptRecord(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
   const id = "00000000-0000-4000-8000-000000000301";
