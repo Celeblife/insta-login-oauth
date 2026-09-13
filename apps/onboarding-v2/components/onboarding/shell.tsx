@@ -82,14 +82,9 @@ export function OnboardingShell({ children, contactEmail }: ShellProps) {
     <DialogContext.Provider value={openDialog}>
       <IconDefs />
       <main className="shell">
-        <BrandPanel />
         <section className="content-panel" aria-label="셀럽라이프 온보딩">
           <div className="panel-top">
             <BrandMark mobile />
-            <div className="context">
-              <span />
-              CELEBLIFE ONBOARDING
-            </div>
             <button type="button" className="help-link" onClick={(event) => openDialog("help", event.currentTarget)}>
               <Icon id="i-help" />
               연동이 궁금하신가요?
@@ -122,69 +117,6 @@ export function OnboardingShell({ children, contactEmail }: ShellProps) {
         </div>
       </dialog>
     </DialogContext.Provider>
-  );
-}
-
-function BrandPanel() {
-  return (
-    <section className="story" aria-label="셀럽라이프 소개">
-      <BrandMark />
-      <div className="brand-sub">CREATOR COMMERCE INTELLIGENCE</div>
-      <div className="story-body">
-        <div className="eyebrow">
-          <i />
-          INSTAGRAM CONNECTION
-        </div>
-        <h2>
-          반응을 읽고,
-          <br />
-          <em>선택의 기준</em>을 만듭니다.
-        </h2>
-        <p className="story-desc">인스타그램 계정 연결을 통해 채널 반응과 커머스 기회를 함께 살펴볼 준비를 시작합니다.</p>
-        <div className="connection" aria-hidden="true">
-          <div className="halo" />
-          <div className="orbit o1" />
-          <div className="orbit o2" />
-          <div className="ig-tile">
-            <Icon id="i-ig" />
-          </div>
-          <div className="cl-tile">
-            <svg className="brand-symbol">
-              <use href="#cl-symbol" />
-            </svg>
-          </div>
-          <div className="connection-line" />
-          <div className="data-chip">
-            <span />
-            Insights ready
-          </div>
-          <svg className="spark sp1" viewBox="0 0 24 24">
-            <use href="#i-star" />
-          </svg>
-          <svg className="spark sp2" viewBox="0 0 24 24">
-            <use href="#i-star" />
-          </svg>
-        </div>
-        <div className="story-benefits">
-          <div className="benefit">
-            <Icon id="i-shield" />
-            공식 인증
-          </div>
-          <div className="benefit">
-            <Icon id="i-chart" />
-            채널 분석
-          </div>
-          <div className="benefit">
-            <Icon id="i-mail" />
-            담당자 안내
-          </div>
-        </div>
-      </div>
-      <div className="story-footer">
-        <span>셀럽님의 데이터는 동의 후에만 연결됩니다.</span>
-        <span>v2 onboarding</span>
-      </div>
-    </section>
   );
 }
 
