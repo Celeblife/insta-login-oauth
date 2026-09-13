@@ -11,3 +11,4 @@ evidence/generated/
 !.env.example
 supabase/.branches/
 supabase/.temp/
+.vercel
