@@ -7,6 +7,32 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 DO $$
+DECLARE
+  v_pgcrypto_schema text;
+BEGIN
+  SELECT namespace.nspname INTO v_pgcrypto_schema
+    FROM pg_catalog.pg_extension extension
+    JOIN pg_catalog.pg_namespace namespace ON namespace.oid = extension.extnamespace
+   WHERE extension.extname = 'pgcrypto';
+
+  IF v_pgcrypto_schema IS NULL THEN
+    RAISE EXCEPTION 'PGCRYPTO_EXTENSION_MISSING';
+  END IF;
+
+  EXECUTE pg_catalog.format($create$
+CREATE OR REPLACE FUNCTION public.onboarding_v2_sha256(p_value text)
+RETURNS text
+LANGUAGE sql
+IMMUTABLE STRICT PARALLEL SAFE
+SET search_path = pg_catalog
+AS $function$
+  SELECT pg_catalog.encode(%I.digest(p_value, 'sha256'), 'hex')
+$function$
+$create$, v_pgcrypto_schema);
+END
+$$;
+
+DO $$
 BEGIN
   ALTER TABLE public.tokens ADD COLUMN row_version bigint NOT NULL DEFAULT 0;
 EXCEPTION WHEN duplicate_column THEN NULL;
@@ -127,7 +153,7 @@ CREATE TABLE IF NOT EXISTS public.creator_profiles (
 );
 
 CREATE TABLE IF NOT EXISTS public.onboarding_sessions (
-  id uuid PRIMARY KEY DEFAULT public.gen_random_uuid(),
+  id uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid(),
   browser_binding_hash text NOT NULL CHECK (browser_binding_hash ~ '^[0-9a-f]{64}$'),
   request_key uuid NOT NULL,
   payload_hash text NOT NULL CHECK (payload_hash ~ '^[0-9a-f]{64}$'),
@@ -177,7 +203,7 @@ CREATE INDEX IF NOT EXISTS onboarding_sessions_receipt_idx
   WHERE status = 'completed';
 
 CREATE TABLE IF NOT EXISTS public.onboarding_requests (
-  id uuid PRIMARY KEY DEFAULT public.gen_random_uuid(),
+  id uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid(),
   user_id bigint NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   session_id uuid NOT NULL UNIQUE,
   instagram_id_snapshot text NOT NULL,
@@ -214,7 +240,7 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 CREATE TABLE IF NOT EXISTS public.notification_outbox (
-  id uuid PRIMARY KEY DEFAULT public.gen_random_uuid(),
+  id uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid(),
   request_id uuid NOT NULL REFERENCES public.onboarding_requests(id) ON DELETE CASCADE,
   event_key text NOT NULL UNIQUE,
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','sent','dead')),
@@ -1142,7 +1168,7 @@ BEGIN
   v_expires_at := (p_token_metadata->>'expiresAt')::timestamptz;
   v_scopes := ARRAY(SELECT jsonb_array_elements_text(COALESCE(p_token_metadata->'grantedScopes', '[]'::jsonb)));
   v_accepted_at := (v_session.consent_snapshot->>'acceptedAt')::timestamptz;
-  v_access_token_hash := encode(public.digest(p_access_token, 'sha256'), 'hex');
+  v_access_token_hash := public.onboarding_v2_sha256(p_access_token);
   v_token_metadata := jsonb_build_object(
     'providerUserId', p_token_metadata->>'providerUserId',
     'expiresAt', p_token_metadata->>'expiresAt',
@@ -1832,6 +1858,7 @@ END;
 $$;
 
 REVOKE ALL ON FUNCTION public.complete_instagram_onboarding_v2(uuid,text,uuid,bigint,integer,jsonb,jsonb,text,jsonb,timestamptz) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.onboarding_v2_sha256(text) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.onboarding_attempt_to_json_v2(public.onboarding_sessions) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.expire_onboarding_attempts_v2(text,timestamptz) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.get_active_onboarding_attempt_v2(text,timestamptz) FROM PUBLIC, anon, authenticated;
@@ -1863,6 +1890,7 @@ REVOKE ALL ON FUNCTION public.bump_token_row_version_v2() FROM PUBLIC, anon, aut
 REVOKE ALL ON FUNCTION public.complete_guarded_legacy_instagram_callback_v2(text,text,text,text,text,timestamptz,text[],jsonb,timestamptz) FROM PUBLIC, anon, authenticated;
 
 GRANT EXECUTE ON FUNCTION public.complete_instagram_onboarding_v2(uuid,text,uuid,bigint,integer,jsonb,jsonb,text,jsonb,timestamptz) TO service_role;
+GRANT EXECUTE ON FUNCTION public.onboarding_v2_sha256(text) TO service_role;
 GRANT EXECUTE ON FUNCTION public.onboarding_attempt_to_json_v2(public.onboarding_sessions) TO service_role;
 GRANT EXECUTE ON FUNCTION public.expire_onboarding_attempts_v2(text,timestamptz) TO service_role;
 GRANT EXECUTE ON FUNCTION public.get_active_onboarding_attempt_v2(text,timestamptz) TO service_role;

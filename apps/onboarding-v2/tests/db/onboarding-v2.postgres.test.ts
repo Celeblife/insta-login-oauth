@@ -63,6 +63,8 @@ async function stopPostgres(harness: PgHarness) {
 
 async function seedBaseSchema(client: Client) {
   await client.query(`
+    CREATE SCHEMA extensions;
+    CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
     CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role;
     CREATE TABLE public.users (
       id BIGSERIAL PRIMARY KEY, instagram_id TEXT UNIQUE NOT NULL,

@@ -5,6 +5,7 @@
 BEGIN;
 
 REVOKE ALL ON FUNCTION public.complete_instagram_onboarding_v2(uuid,text,uuid,bigint,integer,jsonb,jsonb,text,jsonb,timestamptz) FROM PUBLIC, anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION public.onboarding_v2_sha256(text) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.onboarding_attempt_to_json_v2(public.onboarding_sessions) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.expire_onboarding_attempts_v2(text,timestamptz) FROM PUBLIC, anon, authenticated, service_role;
 REVOKE ALL ON FUNCTION public.get_active_onboarding_attempt_v2(text,timestamptz) FROM PUBLIC, anon, authenticated, service_role;

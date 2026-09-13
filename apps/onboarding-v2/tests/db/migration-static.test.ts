@@ -57,6 +57,19 @@ describe("onboarding v2 migration static safety", () => {
     expect(sql).toContain("draft_payload_encrypted jsonb");
   });
 
+  it("DB06 resolves pgcrypto from its installed schema instead of assuming public", async () => {
+    const sql = await readFile(migration, "utf8");
+    expect(sql).not.toContain("public.gen_random_uuid()");
+    expect(sql).not.toContain("public.digest(");
+    expect(sql.match(/DEFAULT pg_catalog\.gen_random_uuid\(\)/g)?.length ?? 0).toBe(3);
+    expect(sql).toContain("WHERE extension.extname = 'pgcrypto'");
+    expect(sql).toContain("CREATE OR REPLACE FUNCTION public.onboarding_v2_sha256(p_value text)");
+    expect(sql).toContain("%I.digest(p_value, 'sha256')");
+    expect(sql).toContain("v_access_token_hash := public.onboarding_v2_sha256(p_access_token);");
+    expect(sql).toMatch(/REVOKE ALL ON FUNCTION public\.onboarding_v2_sha256\(text\)/i);
+    expect(sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.onboarding_v2_sha256\(text\) TO service_role;/i);
+  });
+
   it("OP07 has a non-destructive rollback companion outside migrations", async () => {
     const sql = await readFile(rollback, "utf8");
     expect(sql).not.toMatch(/\bDROP\s+TABLE\b/i);
