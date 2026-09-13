@@ -7,10 +7,12 @@ import { errorCopy, isUuid, shouldAcceptStatus } from "./flow";
 import { Steps, useOnboardingDialog } from "./shell";
 import type { StatusResponse, SubmittedResult } from "./types";
 
-export function CompleteClient({ attemptId, contactEmail }: { attemptId: string; contactEmail: string }) {
+type CompletedStatus = Extract<StatusResponse, { status: "completed" }>;
+
+export function CompleteClient({ attemptId, contactEmail, previewStatus }: { attemptId: string; contactEmail: string; previewStatus?: CompletedStatus | undefined }) {
   const openDialog = useOnboardingDialog();
   const [status, setStatus] = useState<StatusResponse | null>(() =>
-    isUuid(attemptId) ? null : { status: "failed", attemptId, revision: 0, code: "INVALID_STATE", retryAction: "return_form", draftAvailable: false },
+    previewStatus ?? (isUuid(attemptId) ? null : { status: "failed", attemptId, revision: 0, code: "INVALID_STATE", retryAction: "return_form", draftAvailable: false }),
   );
   const currentRef = useRef<StatusResponse | null>(status);
 
@@ -27,6 +29,7 @@ export function CompleteClient({ attemptId, contactEmail }: { attemptId: string;
   }, [attemptId]);
 
   useEffect(() => {
+    if (previewStatus) return;
     if (!isUuid(attemptId)) return;
     let cancelled = false;
     const revalidate = () => {
@@ -61,7 +64,7 @@ export function CompleteClient({ attemptId, contactEmail }: { attemptId: string;
       document.removeEventListener("visibilitychange", onReturn);
       window.removeEventListener("pageshow", onReturn);
     };
-  }, [accept, attemptId, purgeExpired]);
+  }, [accept, attemptId, previewStatus, purgeExpired]);
 
   if (!status) return <PendingReceipt />;
   if (status.status !== "completed") {

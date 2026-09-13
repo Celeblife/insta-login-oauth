@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { getConfig } from "@/lib/config/env";
+import { allowsUiPreview } from "@/lib/config/preview";
 import { PublicApiError } from "@/lib/domain/errors";
 import { readJsonBody } from "@/lib/services/http";
 import { openJson, sealJson, type KeyRing } from "@/lib/security/crypto";
@@ -115,6 +116,15 @@ describe("security/config invariants", () => {
     process.env.ONBOARDING_PAYLOAD_HASH_KEY = randomBytes(32).toString("base64url");
     process.env.CHECKPOINT_ENCRYPTION_KEYS = `v1:${randomBytes(32).toString("base64url")}`;
     expect(() => getConfig()).toThrow(PublicApiError);
+  });
+
+  it("OP01 UI preview bypass is never enabled for APP_ENV production", () => {
+    setProductionConfig();
+    setProductionSupabaseIdentity();
+    expect(allowsUiPreview(getConfig())).toBe(false);
+    expect(allowsUiPreview({ appEnv: "production", providerMode: "mock" })).toBe(false);
+    expect(allowsUiPreview({ appEnv: "local", providerMode: "instagram" })).toBe(false);
+    expect(allowsUiPreview({ appEnv: "test", providerMode: "mock" })).toBe(true);
   });
 
   it("OP01 invalid APP_ENV and inactive checkpoint key versions fail closed", () => {

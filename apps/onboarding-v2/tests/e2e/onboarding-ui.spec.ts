@@ -59,6 +59,21 @@ test("UI01 loading preview renders without onboarding API calls", async ({ page 
   expect(apiCalls).toBe(0);
 });
 
+test("UI01 success preview renders the completed receipt without onboarding API calls", async ({ page }) => {
+  let apiCalls = 0;
+  await page.route("**/api/onboarding/**", async (route) => {
+    apiCalls += 1;
+    await route.fulfill({ status: 500, body: "preview must not call onboarding APIs" });
+  });
+
+  await page.goto("/complete?preview=success");
+  await expect(page.getByRole("heading", { name: "연동이 완료되었습니다." })).toBeVisible();
+  await expect(page.getByText("샘플 셀럽님의 분석 신청이 정상적으로 접수되었어요.")).toBeVisible();
+  await expect(page.getByText("@sample_creator")).toBeVisible();
+  await expect(page.getByText("sample@example.invalid")).toBeVisible();
+  expect(apiCalls).toBe(0);
+});
+
 test("UI02 apply validates fields, syncs consent indeterminate, and posts real start API", async ({ page }) => {
   let posted: unknown;
   await page.route("**/api/onboarding/start", async (route) => {
