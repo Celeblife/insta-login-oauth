@@ -8,8 +8,8 @@
   --cl-gray-600: #77717f;
   --cl-gray-500: #75707d;
   --cl-line: #e8e4ed;
-  --cl-logo: url("../../../public/Login/assets/celeblife_logo_purple.png");
-  --cl-symbol: url("../../../public/Login/assets/celeblife_symbol_purple.png");
+  --cl-logo: url("/Login/assets/celeblife_logo_purple.png");
+  --cl-symbol: url("/Login/assets/celeblife_symbol_purple.png");
   position: relative;
   display: flex;
   flex-direction: column;
