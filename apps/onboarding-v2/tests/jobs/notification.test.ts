@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { runNotificationRetryJob } from "@/lib/jobs/notification-retry";
 import { buildNotification } from "@/lib/notifications/message";
-import { readSmtpConfig, sendNotificationMail } from "@/lib/notifications/smtp";
+import { classifySmtpFailure, readSmtpConfig, sendNotificationMail } from "@/lib/notifications/smtp";
 
 const originalEnv = { ...process.env };
 
@@ -22,6 +22,14 @@ describe("notification message and SMTP guard", () => {
       from: "dkssud374@celeblife.co.kr",
       to: "dkssud374@celeblife.co.kr",
     });
+  });
+
+  it("MAIL12 classifies SMTP failures without exposing provider messages", () => {
+    expect(classifySmtpFailure({ code: "EAUTH", response: "535 account details" })).toBe("SMTP_AUTH_FAILED");
+    expect(classifySmtpFailure({ code: "ETIMEDOUT", message: "socket timed out" })).toBe("SMTP_TIMEOUT");
+    expect(classifySmtpFailure({ code: "ECONNREFUSED", address: "127.0.0.1" })).toBe("SMTP_CONNECTION_FAILED");
+    expect(classifySmtpFailure(new Error("SMTP_ACCEPTED_RECIPIENT_REQUIRED"))).toBe("SMTP_RECIPIENT_REJECTED");
+    expect(classifySmtpFailure(new Error("provider detail that must not be returned"))).toBe("SMTP_SEND_FAILED");
   });
 
   it("SE03 MA04 escapes user content and keeps deterministic event/message ids", () => {
@@ -136,8 +144,9 @@ describe("notification message and SMTP guard", () => {
     process.env.MAIL_FROM = "no-reply@celeblife.co.kr";
 
     const calls: string[] = [];
+    const failedArgs: Record<string, unknown>[] = [];
     const supabase = {
-      rpc: async (name: string) => {
+      rpc: async (name: string, args: Record<string, unknown>) => {
         calls.push(name);
         if (name === "try_acquire_job_lease_v2") return { data: true, error: null };
         if (name === "claim_notification_outbox_v2") {
@@ -158,7 +167,10 @@ describe("notification message and SMTP guard", () => {
             error: null,
           };
         }
-        if (name === "mark_notification_outbox_failed_v2") return { data: true, error: null };
+        if (name === "mark_notification_outbox_failed_v2") {
+          failedArgs.push(args);
+          return { data: true, error: null };
+        }
         if (name === "release_job_lease_v2") return { data: true, error: null };
         return { data: null, error: { code: "UNEXPECTED_RPC" } };
       },
@@ -166,7 +178,10 @@ describe("notification message and SMTP guard", () => {
 
     await expect(
       runNotificationRetryJob({ supabase, owner: "00000000-0000-4000-8000-000000000001" }),
-    ).resolves.toMatchObject({ claimed: 1, failed: 1, stale: 0 });
+    ).resolves.toMatchObject({ claimed: 1, failed: 1, stale: 0, failureCodes: { SMTP_MESSAGE_INVALID: 1 } });
+    expect(failedArgs).toEqual([
+      expect.objectContaining({ p_error_code: "SMTP_MESSAGE_INVALID" }),
+    ]);
     expect(calls).toEqual([
       "try_acquire_job_lease_v2",
       "claim_notification_outbox_v2",

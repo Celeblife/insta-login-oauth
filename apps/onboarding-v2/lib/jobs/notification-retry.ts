@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { buildNotification } from "../notifications/message";
-import { readSmtpConfig, sendNotificationMail } from "../notifications/smtp";
+import { classifySmtpFailure, readSmtpConfig, sendNotificationMail, type SmtpFailureCode } from "../notifications/smtp";
 import { readPositiveInt, rpc } from "./env";
 
 export type OutboxClaim = {
@@ -21,6 +21,7 @@ export type NotificationRetrySummary = {
   sent: number;
   failed: number;
   stale: number;
+  failureCodes: Partial<Record<SmtpFailureCode, number>>;
 };
 
 export async function runNotificationRetryJob(options: {
@@ -28,14 +29,14 @@ export async function runNotificationRetryJob(options: {
   owner: string;
 }): Promise<NotificationRetrySummary> {
   const smtp = readSmtpConfig();
-  if (!smtp.enabled) return { status: "NOT_RUN", claimed: 0, sent: 0, failed: 0, stale: 0 };
+  if (!smtp.enabled) return { status: "NOT_RUN", claimed: 0, sent: 0, failed: 0, stale: 0, failureCodes: {} };
 
   const lease = await rpc<boolean>(options.supabase, "try_acquire_job_lease_v2", {
     p_name: "notification-retry",
     p_owner: options.owner,
     p_lease_seconds: 90,
   });
-  if (!lease) return { status: "NOT_RUN", claimed: 0, sent: 0, failed: 0, stale: 0 };
+  if (!lease) return { status: "NOT_RUN", claimed: 0, sent: 0, failed: 0, stale: 0, failureCodes: {} };
 
   const summary: NotificationRetrySummary = {
     status: "PASS",
@@ -43,6 +44,7 @@ export async function runNotificationRetryJob(options: {
     sent: 0,
     failed: 0,
     stale: 0,
+    failureCodes: {},
   };
 
   try {
@@ -72,14 +74,17 @@ export async function runNotificationRetryJob(options: {
         });
         if (marked) summary.sent += 1;
         else summary.stale += 1;
-      } catch {
+      } catch (error) {
+        const failureCode = classifySmtpFailure(error);
         const marked = await rpc<boolean>(options.supabase, "mark_notification_outbox_failed_v2", {
           p_outbox_id: item.outbox_id,
           p_owner: options.owner,
-          p_error_code: "SMTP_SEND_FAILED",
+          p_error_code: failureCode,
         });
-        if (marked) summary.failed += 1;
-        else summary.stale += 1;
+        if (marked) {
+          summary.failed += 1;
+          summary.failureCodes[failureCode] = (summary.failureCodes[failureCode] ?? 0) + 1;
+        } else summary.stale += 1;
       }
     }
     return summary;

@@ -29,6 +29,34 @@ export type SendMailResult = {
   messageId: string;
 };
 
+type SmtpErrorShape = {
+  code?: unknown;
+  message?: unknown;
+};
+
+export type SmtpFailureCode =
+  | "SMTP_AUTH_FAILED"
+  | "SMTP_CONNECTION_FAILED"
+  | "SMTP_TIMEOUT"
+  | "SMTP_MESSAGE_INVALID"
+  | "SMTP_RECIPIENT_REJECTED"
+  | "SMTP_SEND_FAILED";
+
+export function classifySmtpFailure(error: unknown): SmtpFailureCode {
+  if (!error || typeof error !== "object") return "SMTP_SEND_FAILED";
+  const { code, message } = error as SmtpErrorShape;
+  if (code === "EAUTH") return "SMTP_AUTH_FAILED";
+  if (code === "ETIMEDOUT" || code === "ESOCKETTIMEDOUT") return "SMTP_TIMEOUT";
+  if (["ECONNECTION", "ECONNREFUSED", "ECONNRESET", "ENOTFOUND", "EAI_AGAIN", "ESOCKET"].includes(String(code))) {
+    return "SMTP_CONNECTION_FAILED";
+  }
+  if (message === "SMTP_ACCEPTED_RECIPIENT_REQUIRED") return "SMTP_RECIPIENT_REJECTED";
+  if (typeof message === "string" && (message.startsWith("INVALID_") || message === "SMTP_REQUIRE_TLS_REQUIRED")) {
+    return "SMTP_MESSAGE_INVALID";
+  }
+  return "SMTP_SEND_FAILED";
+}
+
 function requireHeaderValue(name: string, value: string | undefined): string {
   if (!value || CONTROL.test(value) || value.includes("\r") || value.includes("\n")) {
     throw new Error(`INVALID_${name}`);
