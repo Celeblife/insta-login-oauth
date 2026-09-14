@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 const migration = "supabase/migrations/0001_onboarding_v2.sql";
+const restartableFailureMigration = "supabase/migrations/0002_preserve_restartable_failure_draft.sql";
 const rollback = "supabase/rollback/0001_onboarding_v2_rollback.sql";
 const resetDryRunScript = "scripts/db-reset-dry-run.mjs";
 
@@ -33,6 +34,16 @@ describe("onboarding v2 migration static safety", () => {
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS public.notification_outbox");
     expect(sql).toContain("RETURNS jsonb");
     expect(sql).toContain("'kind', 'v2'");
+  });
+
+  it("LIFE01 keeps the restartable failure migration additive and scoped to the failure RPC", async () => {
+    const sql = await readFile(restartableFailureMigration, "utf8");
+    expect(sql).not.toMatch(/\bDROP\s+TABLE\b/i);
+    expect(sql).not.toMatch(/\bDELETE\s+FROM\b/i);
+    expect(sql).toContain("CREATE OR REPLACE FUNCTION public.fail_instagram_onboarding_v2");
+    expect(sql).toContain("p_code IN ('PROVIDER_UNAVAILABLE', 'PERMISSIONS_REQUIRED')");
+    expect(sql).toContain("p_status = 'cancelled' AND p_code = 'OAUTH_CANCELLED'");
+    expect(sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.fail_instagram_onboarding_v2\(uuid,text,text,text,timestamptz,uuid,bigint\) TO service_role;/i);
   });
 
   it("DB06 locks down v2 RPCs and uses fixed search_path", async () => {

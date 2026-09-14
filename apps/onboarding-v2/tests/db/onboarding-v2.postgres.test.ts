@@ -94,7 +94,7 @@ async function seedBaseSchema(client: Client) {
 async function applyMigrationChain(client: Client) {
   const migrationDir = path.resolve("supabase/migrations");
   const files = (await readdir(migrationDir)).filter((file) => file.endsWith(".sql")).sort();
-  expect(files).toEqual(["0001_onboarding_v2.sql"]);
+  expect(files).toEqual(["0001_onboarding_v2.sql", "0002_preserve_restartable_failure_draft.sql"]);
   for (const file of files) await client.query(await readFile(path.join(migrationDir, file), "utf8"));
 }
 
@@ -460,17 +460,45 @@ describe.skipIf(!canRunPostgres)("onboarding v2 postgres migration", () => {
     });
   });
 
-  it("LIFE01 clears draft envelopes for non-cancel terminal failures", async () => {
+  it("LIFE01 preserves restartable provider failure drafts and clears non-restartable failures", async () => {
     await withDb(async (client) => {
       await startAttempt(client);
-      const failed = await callNamed(client, "fail_instagram_onboarding_v2", {
+      const providerFailed = await callNamed(client, "fail_instagram_onboarding_v2", {
         p_attempt_id: "00000000-0000-4000-8000-000000000101",
         p_browser_binding_hash: browserA,
         p_code: "PROVIDER_UNAVAILABLE",
         p_status: "failed",
-        p_now: new Date().toISOString(),
+        p_now: "2026-09-11T00:01:00Z",
       });
-      expect(failed.rows[0].result.draftPayloadEncrypted).toBeNull();
+      expect(providerFailed.rows[0].result.draftPayloadEncrypted).toEqual(sealedEnvelope);
+
+      await startAttempt(client, {
+        p_attempt_id: "00000000-0000-4000-8000-000000000102",
+        p_request_key: "00000000-0000-4000-8000-000000000202",
+        p_oauth_state_hash: "2".repeat(64),
+      });
+      const permissionFailed = await callNamed(client, "fail_instagram_onboarding_v2", {
+        p_attempt_id: "00000000-0000-4000-8000-000000000102",
+        p_browser_binding_hash: browserA,
+        p_code: "PERMISSIONS_REQUIRED",
+        p_status: "failed",
+        p_now: "2026-09-11T00:01:00Z",
+      });
+      expect(permissionFailed.rows[0].result.draftPayloadEncrypted).toEqual(sealedEnvelope);
+
+      await startAttempt(client, {
+        p_attempt_id: "00000000-0000-4000-8000-000000000103",
+        p_request_key: "00000000-0000-4000-8000-000000000203",
+        p_oauth_state_hash: "3".repeat(64),
+      });
+      const storageFailed = await callNamed(client, "fail_instagram_onboarding_v2", {
+        p_attempt_id: "00000000-0000-4000-8000-000000000103",
+        p_browser_binding_hash: browserA,
+        p_code: "STORAGE_UNAVAILABLE",
+        p_status: "failed",
+        p_now: "2026-09-11T00:01:00Z",
+      });
+      expect(storageFailed.rows[0].result.draftPayloadEncrypted).toBeNull();
     });
   });
 

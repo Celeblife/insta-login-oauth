@@ -129,19 +129,16 @@ class FetchInstagramProvider implements InstagramProvider {
     url.searchParams.set("fields", "user_id,username,account_type");
     url.searchParams.set("access_token", input.token.accessToken);
     const json = accountRowFromResponse(await this.fetchJson(url, { method: "GET" }));
-    const providerUserId = isRecord(json) ? providerUserIdFromValue(json.user_id) : null;
     if (
       !isRecord(json) ||
-      !providerUserId ||
       typeof json.username !== "string" ||
       !/^[a-z0-9_][a-z0-9_.]{0,29}$/i.test(json.username)
     ) {
       throw new PublicApiError("PROVIDER_UNAVAILABLE");
     }
-    if (providerUserId !== input.token.providerUserId) throw new PublicApiError("PROVIDER_UNAVAILABLE");
     const accountType = accountTypeFromOfficial(json.account_type);
     if (accountType === "personal") throw new PublicApiError("UNSUPPORTED_ACCOUNT");
-    return { providerAccountId: providerUserId, username: json.username.toLowerCase(), accountType };
+    return { providerAccountId: input.token.providerUserId, username: json.username.toLowerCase(), accountType };
   }
 
   private assertAllowedUrl(value: string): URL {
@@ -231,12 +228,12 @@ function assertRequiredScopes(grantedScopes: readonly string[], requiredScopes: 
   if (requiredScopes.some((scope) => !granted.has(scope))) throw new PublicApiError("PERMISSIONS_REQUIRED");
 }
 
-function accountTypeFromOfficial(value: unknown): "business" | "creator" | "personal" {
-  if (typeof value !== "string") throw new PublicApiError("PROVIDER_UNAVAILABLE");
+function accountTypeFromOfficial(value: unknown): "business" | "creator" | "personal" | "unknown" {
+  if (typeof value !== "string") return "unknown";
   const rawType = value.toLowerCase();
   if (rawType === "media_creator") return "creator";
   if (rawType === "business" || rawType === "creator" || rawType === "personal") return rawType;
-  throw new PublicApiError("PROVIDER_UNAVAILABLE");
+  return "unknown";
 }
 
 function expiryFromPositiveSeconds(seconds: number): string {

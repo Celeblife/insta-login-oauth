@@ -26,7 +26,7 @@ describe("Instagram provider official response contract", () => {
     process.env = { ...originalEnv };
   });
 
-  it("AU01 FINAL11 unwraps code exchange data and verifies /me user_id match", async () => {
+  it("AU01 FINAL11 unwraps code exchange data and uses token-exchange user_id as the account id", async () => {
     const provider = createInstagramProvider(getConfig());
     const paths: string[] = [];
     vi.stubGlobal("fetch", vi.fn(async (url: URL | string) => {
@@ -100,7 +100,7 @@ describe("Instagram provider official response contract", () => {
     ).resolves.toMatchObject({ accountType: "creator" });
   });
 
-  it("normalizes numeric /me user_id before matching the token subject", async () => {
+  it("uses the token subject as the account id even when /me user_id is numeric", async () => {
     const provider = createInstagramProvider(getConfig());
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ user_id: 1789, username: "creator", account_type: "CREATOR" })));
 
@@ -108,15 +108,15 @@ describe("Instagram provider official response contract", () => {
       provider.fetchAccount({
         token: {
           accessToken: "long",
-          providerUserId: "1789",
+          providerUserId: "app_scoped_1789",
           expiresAt: new Date().toISOString(),
           grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
         },
       }),
-    ).resolves.toMatchObject({ providerAccountId: "1789", username: "creator" });
+    ).resolves.toMatchObject({ providerAccountId: "app_scoped_1789", username: "creator" });
   });
 
-  it("preserves a large numeric /me user_id JSON token before token subject matching", async () => {
+  it("does not round-trip /me user_id into the persisted account id", async () => {
     const provider = createInstagramProvider(getConfig());
     vi.stubGlobal("fetch", vi.fn(async () => rawJsonResponse('{"user_id":17891234567890123,"username":"creator","account_type":"CREATOR"}')));
 
@@ -124,12 +124,12 @@ describe("Instagram provider official response contract", () => {
       provider.fetchAccount({
         token: {
           accessToken: "long",
-          providerUserId: "17891234567890123",
+          providerUserId: "app_scoped_subject",
           expiresAt: new Date().toISOString(),
           grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
         },
       }),
-    ).resolves.toMatchObject({ providerAccountId: "17891234567890123", username: "creator" });
+    ).resolves.toMatchObject({ providerAccountId: "app_scoped_subject", username: "creator" });
   });
 
   it("rejects empty, multirow, and malformed /me data wrappers", async () => {
@@ -154,7 +154,7 @@ describe("Instagram provider official response contract", () => {
     }
   });
 
-  it("AU15 rejects personal, missing, and unrecognized official account types before finalization", async () => {
+  it("AU15 rejects explicitly personal accounts before finalization", async () => {
     const provider = createInstagramProvider(getConfig());
     const token = {
       accessToken: "long",
@@ -165,12 +165,22 @@ describe("Instagram provider official response contract", () => {
 
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ user_id: "1789", username: "creator", account_type: "PERSONAL" })));
     await expect(provider.fetchAccount({ token })).rejects.toMatchObject({ code: "UNSUPPORTED_ACCOUNT" });
+  });
+
+  it("accepts missing and unrecognized official account types as unknown", async () => {
+    const provider = createInstagramProvider(getConfig());
+    const token = {
+      accessToken: "long",
+      providerUserId: "1789",
+      expiresAt: new Date().toISOString(),
+      grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+    };
 
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ user_id: "1789", username: "creator" })));
-    await expect(provider.fetchAccount({ token })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
+    await expect(provider.fetchAccount({ token })).resolves.toMatchObject({ accountType: "unknown", providerAccountId: "1789" });
 
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ user_id: "1789", username: "creator", account_type: "PRIVATE" })));
-    await expect(provider.fetchAccount({ token })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
+    await expect(provider.fetchAccount({ token })).resolves.toMatchObject({ accountType: "unknown", providerAccountId: "1789" });
   });
 
   it("carries required scopes after successful code exchange regardless of returned permission metadata", async () => {
@@ -201,7 +211,7 @@ describe("Instagram provider official response contract", () => {
     await expect(provider.exchangeShortTokenForLongToken({ shortToken: { accessToken: "short", providerUserId: "1789", grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"] } })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
 
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ user_id: "different", username: "creator", account_type: "CREATOR" })));
-    await expect(provider.fetchAccount({ token: { accessToken: "long", providerUserId: "1789", expiresAt: new Date().toISOString(), grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"] } })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
+    await expect(provider.fetchAccount({ token: { accessToken: "long", providerUserId: "1789", expiresAt: new Date().toISOString(), grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"] } })).resolves.toMatchObject({ providerAccountId: "1789", username: "creator" });
 
     vi.stubGlobal("fetch", vi.fn(async () => oversizedResponse()));
     await expect(provider.exchangeShortTokenForLongToken({ shortToken: { accessToken: "short", providerUserId: "1789", grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"] } })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });

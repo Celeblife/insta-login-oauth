@@ -121,13 +121,13 @@ describe("onboarding v2 route contract", () => {
     const failedState = stateFrom(failedStart.body);
     await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=missing_scope&state=${failedState}`, { headers: { cookie: failedClient.cookie } }));
     const failed = await complete(failedClient, attemptIdFrom(failedStart.body));
-    expect(failed.body).toMatchObject({ status: "failed", code: "PERMISSIONS_REQUIRED", draftAvailable: false });
+    expect(failed.body).toMatchObject({ status: "failed", code: "PERMISSIONS_REQUIRED", draftAvailable: false, retryAction: "restart_oauth" });
     const failedRevision = failed.body.revision;
 
     const terminalReplay = await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=missing_scope&state=${failedState}`, { headers: { cookie: failedClient.cookie } }));
     expect(terminalReplay.status).toBe(303);
     expect(terminalReplay.headers.get("location")).toBe("/connection-error");
-    expect(await getStatus(failedClient, attemptIdFrom(failedStart.body))).toMatchObject({ status: "failed", revision: failedRevision, draftAvailable: false });
+    expect(await getStatus(failedClient, attemptIdFrom(failedStart.body))).toMatchObject({ status: "failed", revision: failedRevision, draftAvailable: false, retryAction: "restart_oauth" });
 
     const cancelClient = await bootstrapClient();
     const cancelStart = await start(cancelClient, validStart({ instagramUsername: "cancel_me" }));
@@ -145,7 +145,7 @@ describe("onboarding v2 route contract", () => {
     vi.setSystemTime(new Date("2026-09-11T00:31:00.000Z"));
     const expiredDraft = await statusGet(new Request(`${ORIGIN}/api/onboarding/status?attemptId=${attemptIdFrom(cancelStart.body)}`, { headers: { cookie: cancelClient.cookie } }));
     expect(expiredDraft.status).toBe(200);
-    await expect(expiredDraft.json()).resolves.toMatchObject({ status: "failed", draftAvailable: false });
+    await expect(expiredDraft.json()).resolves.toMatchObject({ status: "failed", draftAvailable: false, retryAction: "return_form" });
   });
 
   it("FINAL04 AU09 mismatch candidate requires exact expectedRevision before finalization", async () => {
@@ -183,6 +183,20 @@ describe("onboarding v2 route contract", () => {
     expect(failed.setCookie).toBeNull();
     const retry = await complete(client, attemptIdFrom(started.body));
     expect(retry.body).toMatchObject({ status: "failed", code: "PROVIDER_UNAVAILABLE" });
+  });
+
+  it("provider permission failures can restart OAuth while the internal draft is still live", async () => {
+    vi.useFakeTimers({ now: new Date("2026-09-11T00:00:00.000Z") });
+    const client = await bootstrapClient();
+    const started = await start(client, validStart({ instagramUsername: "missing_scope" }));
+    await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=missing_scope&state=${stateFrom(started.body)}`, { headers: { cookie: client.cookie } }));
+
+    const failed = await complete(client, attemptIdFrom(started.body));
+    expect(failed.body).toMatchObject({ status: "failed", code: "PERMISSIONS_REQUIRED", draftAvailable: false, retryAction: "restart_oauth" });
+
+    const restarted = await restart(client, attemptIdFrom(started.body), randomUUID());
+    expect(restarted.status).toBe(201);
+    expect(restarted.body.action).toBe("authorize");
   });
 
   it("FINAL11 TO04 scope and malformed expiry failures block completion", async () => {
@@ -238,7 +252,7 @@ describe("onboarding v2 route contract", () => {
     const body = (await bootstrap.json()) as BootstrapResponse;
     expect(body.activeAttempt).toBeUndefined();
     expect(body.draft).toBeUndefined();
-    expect(await getStatus(client, attemptIdFrom(started.body))).toMatchObject({ status: "failed", code: "SESSION_EXPIRED", draftAvailable: false });
+    expect(await getStatus(client, attemptIdFrom(started.body))).toMatchObject({ status: "failed", code: "SESSION_EXPIRED", draftAvailable: false, retryAction: "return_form" });
 
     const fresh = await start(client, validStart({ instagramUsername: "fresh_after_expiry" }));
     expect(fresh.status).toBe(201);

@@ -271,7 +271,9 @@ export class InMemoryOnboardingRepository implements OnboardingRepository {
     attempt.status = input.status;
     attempt.failureCode = input.code;
     attempt.stateInvalidatedAt = input.now;
-    scrubAttemptSecrets(attempt, { preserveDraft: input.status === "cancelled" && input.code === "OAUTH_CANCELLED" && Date.parse(attempt.draftExpiresAt) > Date.parse(input.now) });
+    scrubAttemptSecrets(attempt, {
+      preserveDraft: shouldPreserveDraftForFailure(input.status, input.code, attempt.draftExpiresAt, input.now),
+    });
     attempt.leaseOwner = null;
     attempt.leaseExpiresAt = null;
     attempt.revision += 1;
@@ -390,6 +392,17 @@ function scrubAttemptSecrets(attempt: AttemptRecord, input: { preserveDraft: boo
   attempt.encryptedShortToken = null;
   attempt.encryptedLongToken = null;
   attempt.candidate = null;
+}
+
+function shouldPreserveDraftForFailure(
+  status: "failed" | "cancelled" | "expired",
+  code: AttemptRecord["failureCode"],
+  draftExpiresAt: string,
+  now: string,
+): boolean {
+  if (Date.parse(draftExpiresAt) <= Date.parse(now)) return false;
+  if (status === "cancelled" && code === "OAUTH_CANCELLED") return true;
+  return status === "failed" && (code === "PROVIDER_UNAVAILABLE" || code === "PERMISSIONS_REQUIRED");
 }
 
 function tokenHash(accessToken: string) {

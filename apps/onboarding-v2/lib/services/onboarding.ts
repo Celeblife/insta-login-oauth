@@ -394,13 +394,32 @@ function toStatus(attempt: AttemptRecord): StatusResponse {
   if (attempt.status === "pending") return { status: "awaiting_oauth", attemptId: attempt.id, revision: attempt.revision, expiresAt: attempt.stateExpiresAt };
   if (attempt.status === "failed" || attempt.status === "cancelled" || attempt.status === "expired") {
     const draftAvailable = canExposeDraft(attempt);
-    return { status: "failed", attemptId: attempt.id, revision: attempt.revision, code: attempt.failureCode ?? "REAUTH_REQUIRED", retryAction: draftAvailable ? "return_form" : "restart_oauth", draftAvailable };
+    const code = attempt.failureCode ?? "REAUTH_REQUIRED";
+    return { status: "failed", attemptId: attempt.id, revision: attempt.revision, code, retryAction: retryActionForFailedAttempt(attempt, code, draftAvailable), draftAvailable };
   }
   return { status: "processing", attemptId: attempt.id, revision: attempt.revision, stage: attempt.stage, retryAfterMs: 2000, submissionIntent: "unknown" };
 }
 
 function canExposeDraft(attempt: AttemptRecord, nowMs = Date.now()): boolean {
   return attempt.status === "cancelled" && attempt.failureCode === "OAUTH_CANCELLED" && attempt.draftPayloadEncrypted !== null && isFutureIso(attempt.draftExpiresAt, nowMs);
+}
+
+function retryActionForFailedAttempt(
+  attempt: AttemptRecord,
+  code: PublicErrorCode,
+  draftAvailable: boolean,
+): Extract<StatusResponse, { status: "failed" }>["retryAction"] {
+  if (draftAvailable) return "return_form";
+  if (canRestartOAuth(attempt)) return "restart_oauth";
+  if (code === "ACTIVE_PROCESSING" || code === "STALE_CONFIRMATION") return "retry_complete";
+  return "return_form";
+}
+
+function canRestartOAuth(attempt: AttemptRecord, nowMs = Date.now()): boolean {
+  return attempt.status === "failed"
+    && (attempt.failureCode === "PROVIDER_UNAVAILABLE" || attempt.failureCode === "PERMISSIONS_REQUIRED")
+    && attempt.draftPayloadEncrypted !== null
+    && isFutureIso(attempt.draftExpiresAt, nowMs);
 }
 
 function isReplayableCallbackStatus(status: AttemptRecord["status"]): boolean {

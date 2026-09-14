@@ -207,7 +207,7 @@ describe("Supabase RPC mapper", () => {
     expect(JSON.stringify(calls.map((call) => call.args.p_token_metadata))).not.toContain(token.accessToken);
   });
 
-  it("scrubs memory draft and temporary secrets except recoverable same-browser OAuth cancellation", async () => {
+  it("scrubs memory temporary secrets while preserving only restartable failure drafts", async () => {
     const repository = new InMemoryOnboardingRepository();
     const cancelled = await startMemoryAttempt(repository, "00000000-0000-4000-8000-000000000201");
     await repository.failAttempt({ attemptId: cancelled.attempt.id, browserBindingHash: "a".repeat(64), code: "OAUTH_CANCELLED", status: "cancelled", now: "2026-09-11T00:01:00.000Z" });
@@ -222,6 +222,19 @@ describe("Supabase RPC mapper", () => {
     const failed = await startMemoryAttempt(failureRepository, "00000000-0000-4000-8000-000000000202");
     await failureRepository.failAttempt({ attemptId: failed.attempt.id, browserBindingHash: "a".repeat(64), code: "PROVIDER_UNAVAILABLE", status: "failed", now: "2026-09-11T00:01:00.000Z" });
     expect(await failureRepository.findAttemptById(failed.attempt.id)).toMatchObject({
+      status: "failed",
+      draftPayloadEncrypted: { keyVersion: "test-v1", iv: "iv", tag: "tag", ciphertext: "draft" },
+      encryptedOAuthState: null,
+      encryptedCode: null,
+      encryptedShortToken: null,
+      encryptedLongToken: null,
+      candidate: null,
+    });
+
+    const storageRepository = new InMemoryOnboardingRepository();
+    const storageFailed = await startMemoryAttempt(storageRepository, "00000000-0000-4000-8000-000000000203");
+    await storageRepository.failAttempt({ attemptId: storageFailed.attempt.id, browserBindingHash: "a".repeat(64), code: "STORAGE_UNAVAILABLE", status: "failed", now: "2026-09-11T00:01:00.000Z" });
+    expect(await storageRepository.findAttemptById(storageFailed.attempt.id)).toMatchObject({
       status: "failed",
       draftPayloadEncrypted: null,
       encryptedOAuthState: null,
