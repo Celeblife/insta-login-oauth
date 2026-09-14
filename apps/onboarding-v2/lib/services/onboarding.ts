@@ -276,7 +276,8 @@ export class OnboardingService {
       if (attempt.status === "long_token_checkpointed") {
         const longToken = openJson<InstagramToken>(this.config.encryptionKeys, requireSealed(attempt.encryptedLongToken), checkpointAad(attempt.id, "long_token"));
         const account = await this.provider.fetchAccount({ token: longToken });
-        attempt = await this.repository.checkpointAccountCandidate({ attemptId: attempt.id, owner: lease.owner, fencingToken: lease.fencingToken, account, token: longToken, payload, requireConfirmation: account.username !== payload.instagramUsername, now: nowIso() });
+        const enteredUsername = payload.instagramUsername ?? "";
+        attempt = await this.repository.checkpointAccountCandidate({ attemptId: attempt.id, owner: lease.owner, fencingToken: lease.fencingToken, account, token: longToken, payload, requireConfirmation: Boolean(enteredUsername && account.username !== enteredUsername), now: nowIso() });
         logOnboardingEvent({ name: "account_checkpointed", attemptId: attempt.id, revision: attempt.revision, status: attempt.status });
       }
       if (attempt.status === "awaiting_account_confirmation") return toStatus(attempt);
@@ -321,7 +322,7 @@ export class OnboardingService {
   private toDraft(attempt: AttemptRecord, now: string): NonNullable<BootstrapResponse["draft"]> | undefined {
     if (!canExposeDraft(attempt, Date.parse(now))) return undefined;
     const payload = this.draftPayload(attempt);
-    return { attemptId: attempt.id, fullName: payload.fullName, email: payload.email, phone: payload.phone, instagramUsername: payload.instagramUsername };
+    return { attemptId: attempt.id, fullName: payload.fullName, email: payload.email, phone: payload.phone, instagramUsername: payload.instagramUsername ?? "" };
   }
 
   private consumedCallbackRedirect(attempt: AttemptRecord, code: string | null): { redirectPath: string } {

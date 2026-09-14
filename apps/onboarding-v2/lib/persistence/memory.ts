@@ -241,7 +241,7 @@ export class InMemoryOnboardingRepository implements OnboardingRepository {
   }): Promise<AttemptRecord> {
     const attempt = this.requireLease(input);
     attempt.candidate = {
-      enteredUsername: input.payload.instagramUsername,
+      enteredUsername: input.payload.instagramUsername ?? "",
       connectedUsername: input.account.username,
       account: input.account,
       token: { providerUserId: input.token.providerUserId, expiresAt: input.token.expiresAt, grantedScopes: input.token.grantedScopes, accessTokenHash: tokenHash(input.token.accessToken) },

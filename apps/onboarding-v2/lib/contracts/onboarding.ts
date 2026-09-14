@@ -14,7 +14,7 @@ export interface StartRequest {
   fullName: string;
   email: string;
   phone: string;
-  instagramUsername: string;
+  instagramUsername?: string | undefined;
   consents: ConsentInput;
   replaceAttemptId?: UUID | undefined;
 }
@@ -32,7 +32,7 @@ export interface BootstrapResponse {
     fullName: string;
     email: string;
     phone: string;
-    instagramUsername: string;
+    instagramUsername?: string | undefined;
   };
 }
 

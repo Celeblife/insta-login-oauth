@@ -96,7 +96,7 @@ test("UI02 apply validates fields, syncs consent indeterminate, and posts real s
   await page.getByLabel("이름 *").fill("김");
   await page.getByLabel("연락처 *").fill("+821012345678");
   await page.getByLabel("이메일 *").fill("creator@example.com");
-  await page.getByLabel("셀럽 ID *").fill("@Celeb.Life_01");
+  await expect(page.getByLabel("셀럽 ID *")).toHaveCount(0);
   await page.getByLabel("[필수] 만 14세 이상입니다.").check();
   await expect(page.locator("label.all-agree input")).toHaveJSProperty("indeterminate", true);
   await page.getByLabel("필수 항목 전체 동의").check();
@@ -106,9 +106,9 @@ test("UI02 apply validates fields, syncs consent indeterminate, and posts real s
     fullName: "김",
     phone: "+821012345678",
     email: "creator@example.com",
-    instagramUsername: "celeb.life_01",
     consents: { age: true, terms: true, privacy: true, instagramData: true },
   });
+  expect(posted).not.toHaveProperty("instagramUsername");
 });
 
 test("MOB06 apply form fields and footer geometry remain stable", async ({ page }) => {
@@ -130,7 +130,7 @@ test("MOB06 apply form fields and footer geometry remain stable", async ({ page 
       const footerBox = footer.getBoundingClientRect();
       const primaryBox = primary.getBoundingClientRect();
 
-      const fields = ["email", "instagram"].map((id) => {
+      const fields = ["email"].map((id) => {
         const input = form.querySelector<HTMLInputElement>(`#${id}`);
         const field = input?.closest<HTMLElement>(".field");
         const wrap = field?.querySelector<HTMLElement>(".input-wrap");
@@ -148,21 +148,10 @@ test("MOB06 apply form fields and footer geometry remain stable", async ({ page 
         };
       });
 
-      const hint = form.querySelector<HTMLElement>("#instagram-hint");
-      const instagram = form.querySelector<HTMLInputElement>("#instagram");
-      if (!hint || !instagram) throw new Error("Instagram hint geometry target missing");
-
-      const hintBox = hint.getBoundingClientRect();
-      const instagramBox = instagram.getBoundingClientRect();
-
       return {
         fields,
         footerBottom: footerBox.bottom,
         gridWidth: gridBox.width,
-        hintLeft: hintBox.left,
-        hintRight: hintBox.right,
-        hintTop: hintBox.top,
-        instagramBottom: instagramBox.bottom,
         primaryBottom: primaryBox.bottom,
         primaryTop: primaryBox.top,
         viewportHeight: window.innerHeight,
@@ -173,10 +162,6 @@ test("MOB06 apply form fields and footer geometry remain stable", async ({ page 
       expect(field.fieldWidth, `${field.id} field uses full form grid width at ${width}`).toBeGreaterThanOrEqual(geometry.gridWidth - 1);
       expect(field.inputWidth, `${field.id} input uses its full field wrapper width at ${width}`).toBeGreaterThanOrEqual(field.wrapWidth - 1);
     }
-    expect(geometry.hintTop).toBeGreaterThanOrEqual(geometry.instagramBottom);
-    expect(geometry.hintLeft).toBeGreaterThanOrEqual(0);
-    expect(geometry.hintRight).toBeLessThanOrEqual(width);
-
     if (width === 1440) {
       expect(geometry.primaryTop).toBeGreaterThanOrEqual(0);
       expect(geometry.primaryBottom).toBeLessThanOrEqual(geometry.viewportHeight);
@@ -210,7 +195,7 @@ test("UI07 restored cancellation draft starts fresh OAuth with replacement attem
 
   await page.goto("/apply");
   await expect(page.getByLabel("이름 *")).toHaveValue("김셀럽");
-  await expect(page.getByLabel("셀럽 ID *")).toHaveValue("restored_user");
+  await expect(page.getByLabel("셀럽 ID *")).toHaveCount(0);
   await page.getByLabel("필수 항목 전체 동의").check();
   await page.getByRole("button", { name: /동의하고 Instagram 연결/ }).click();
   await page.waitForURL("**/mock-instagram-restored");
@@ -220,9 +205,9 @@ test("UI07 restored cancellation draft starts fresh OAuth with replacement attem
     fullName: "김셀럽",
     phone: "+821012345678",
     email: "creator@example.com",
-    instagramUsername: "restored_user",
     consents: { age: true, terms: true, privacy: true, instagramData: true },
   });
+  expect(posted).not.toHaveProperty("instagramUsername");
   expect((posted as { requestKey: string }).requestKey).toMatch(/[0-9a-f-]{36}/);
 });
 

@@ -5,12 +5,11 @@ import type { StatusResponse } from "@/components/onboarding/types";
 const attemptId = "a33717b1-8009-40e4-a9a9-5d4e4ed4906d";
 
 describe("onboarding UI contract helpers", () => {
-  it("UI02 allows a one-character name and normalizes instagram handles", () => {
+  it("UI02 allows a one-character name without asking for a celebrity ID", () => {
     const errors = validateApplyFields({
       fullName: "김",
       phone: "010-0000-0000",
       email: "creator@example.com",
-      instagramUsername: "@Celeb.Life_01",
       consents: { age: true, terms: true, privacy: true, instagramData: true },
     });
 
@@ -23,7 +22,6 @@ describe("onboarding UI contract helpers", () => {
       fullName: "김셀럽",
       phone: "+821012345678",
       email: "creator@example.com",
-      instagramUsername: "celeblife_demo",
       consents: { age: true, terms: false, privacy: true, instagramData: true },
     });
 

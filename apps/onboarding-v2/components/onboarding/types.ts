@@ -14,7 +14,7 @@ export type StartRequest = {
   fullName: string;
   email: string;
   phone: string;
-  instagramUsername: string;
+  instagramUsername?: string;
   consents: ConsentInput;
   replaceAttemptId?: UUID;
 };
@@ -32,7 +32,7 @@ export type BootstrapResponse = {
     fullName: string;
     email: string;
     phone: string;
-    instagramUsername: string;
+    instagramUsername?: string;
   };
 };
 

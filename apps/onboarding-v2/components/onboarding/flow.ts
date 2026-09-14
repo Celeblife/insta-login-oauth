@@ -24,14 +24,12 @@ export function validateApplyFields(input: {
   fullName: string;
   phone: string;
   email: string;
-  instagramUsername: string;
   consents: Record<string, boolean>;
 }): FieldErrors {
   const errors: FieldErrors = {};
   const fullName = input.fullName.trim();
   const phone = normalizePhone(input.phone);
   const email = input.email.trim();
-  const instagramUsername = normalizeInstagramUsername(input.instagramUsername);
   const hasControl = /[\u0000-\u001F\u007F]/;
 
   if (!fullName) errors.fullName = "이름을 입력해 주세요.";
@@ -44,9 +42,6 @@ export function validateApplyFields(input: {
 
   if (!email) errors.email = "이메일을 입력해 주세요.";
   else if (email.length > 254 || hasControl.test(email) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "이메일 주소를 확인해 주세요.";
-
-  if (!instagramUsername) errors.instagramUsername = "인스타그램 아이디를 입력해 주세요.";
-  else if (!/^[a-z0-9_][a-z0-9_.]{0,29}$/.test(instagramUsername)) errors.instagramUsername = "영문, 숫자, 마침표, 밑줄로 된 아이디를 입력해 주세요.";
 
   if (!input.consents.age || !input.consents.terms || !input.consents.privacy || !input.consents.instagramData) {
     errors.consents = "필수 동의를 모두 확인해 주세요.";

@@ -57,7 +57,7 @@ export function validateStart(input: unknown, expectedPolicyBundleId: string): V
     fields.email = "이메일 주소를 확인해 주세요.";
   }
   if (!phone) fields.phone = "연락 가능한 전화번호를 확인해 주세요.";
-  if (!/^[a-z0-9_][a-z0-9_.]{0,29}$/.test(instagramUsername)) {
+  if (instagramUsername && !/^[a-z0-9_][a-z0-9_.]{0,29}$/.test(instagramUsername)) {
     fields.instagramUsername = "인스타그램 아이디를 확인해 주세요.";
   }
   if (!isUuid(input.requestKey)) {
@@ -103,7 +103,7 @@ export function canonicalPayloadHashPayload(value: StartRequest): unknown {
     fullName: value.fullName,
     email: value.email,
     phone: value.phone,
-    instagramUsername: value.instagramUsername,
+    instagramUsername: value.instagramUsername ?? "",
     consents: value.consents,
   };
 }

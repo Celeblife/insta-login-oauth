@@ -6,7 +6,7 @@ import { Icon } from "./icons";
 import type { PolicyKey } from "./policies";
 import { Steps, useOnboardingDialog } from "./shell";
 import type { BootstrapResponse, StartResponse } from "./types";
-import { normalizeInstagramUsername, normalizePhone, parseApiError, validateApplyFields, type FieldErrors } from "./flow";
+import { normalizePhone, parseApiError, validateApplyFields, type FieldErrors } from "./flow";
 
 const consentKeys = ["age", "terms", "privacy", "instagramData"] as const;
 type ConsentKey = (typeof consentKeys)[number];
@@ -23,7 +23,7 @@ export function ApplyClient() {
   const openDialog = useOnboardingDialog();
   const [csrfToken, setCsrfToken] = useState("");
   const [policyBundleId, setPolicyBundleId] = useState("");
-  const [form, setForm] = useState({ fullName: "", phone: "", email: "", instagramUsername: "" });
+  const [form, setForm] = useState({ fullName: "", phone: "", email: "" });
   const [restoredAttemptId, setRestoredAttemptId] = useState<string | null>(null);
   const [consents, setConsents] = useState<Record<ConsentKey, boolean>>({ age: false, terms: false, privacy: false, instagramData: false });
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -55,7 +55,6 @@ export function ApplyClient() {
             fullName: data.draft.fullName,
             phone: data.draft.phone,
             email: data.draft.email,
-            instagramUsername: data.draft.instagramUsername,
           });
           setRestoredAttemptId(data.draft.attemptId);
         } else {
@@ -86,7 +85,7 @@ export function ApplyClient() {
   };
 
   const firstInvalid = (nextErrors: FieldErrors) => {
-    const order = ["fullName", "phone", "email", "instagramUsername", "consents"] as const;
+    const order = ["fullName", "phone", "email", "consents"] as const;
     const key = order.find((item) => nextErrors[item]);
     if (!key) return;
     const selector = key === "consents" ? "[data-consent]:not(:checked)" : `[name="${key}"]`;
@@ -121,7 +120,6 @@ export function ApplyClient() {
           fullName: form.fullName.trim(),
           phone: normalizePhone(form.phone),
           email: form.email.trim(),
-          instagramUsername: normalizeInstagramUsername(form.instagramUsername),
           consents: { age: true, terms: true, privacy: true, instagramData: true },
           ...(restoredAttemptId ? { replaceAttemptId: restoredAttemptId } : {}),
         }),
@@ -177,17 +175,6 @@ export function ApplyClient() {
             <input className="has-icon" name="email" id="email" type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} aria-invalid={Boolean(errors.email)} aria-describedby="email-error" />
             <Icon id="i-mail" />
           </Field>
-          <Field
-            id="instagram"
-            name="instagramUsername"
-            label="셀럽 ID"
-            error={errors.instagramUsername}
-            hint={<p className="field-hint" id="instagram-hint">Instagram 계정명 참고값이며 소유권 판단에 쓰지 않습니다.</p>}
-          >
-            <span className="input-prefix">@</span>
-            <input className="has-prefix" name="instagramUsername" id="instagram" autoCapitalize="none" autoCorrect="off" value={form.instagramUsername} onChange={(event) => setForm({ ...form, instagramUsername: event.target.value })} onBlur={() => setForm((current) => ({ ...current, instagramUsername: normalizeInstagramUsername(current.instagramUsername) }))} aria-invalid={Boolean(errors.instagramUsername)} aria-describedby="instagram-error instagram-hint" />
-            <Icon id="i-ig" />
-          </Field>
         </div>
         <div className="consent-box">
           <label className="all-agree">
@@ -232,7 +219,7 @@ export function ApplyClient() {
 
 function Field({ id, name, label, error, hint, children }: { id: string; name: string; label: string; error?: string | undefined; hint?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className={`field ${name === "email" || name === "instagramUsername" ? "full" : ""}`}>
+    <div className={`field ${name === "email" ? "full" : ""}`}>
       <label htmlFor={id}>
         {label} <span className="req">*</span>
       </label>

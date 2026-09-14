@@ -218,6 +218,20 @@ describe("onboarding v2 route contract", () => {
     await expect(response.json()).resolves.toMatchObject({ error: { code: "SESSION_EXPIRED" } });
   });
 
+  it("UI02 starts without a submitted celebrity ID and stores the connected Instagram username", async () => {
+    const client = await bootstrapClient();
+    const started = await start(client, validStart({ instagramUsername: undefined }));
+    const state = stateFrom(started.body);
+    await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=user_connected_no_input&state=${state}`, { headers: { cookie: client.cookie } }));
+
+    const completed = await complete(client, attemptIdFrom(started.body));
+
+    expect(completed.body).toMatchObject({
+      status: "completed",
+      result: { fullName: "김셀럽", phone: "+821000000000", email: "creator@example.com", instagramUsername: "connected_no_input" },
+    });
+  });
+
   it("AUDIT01 AUDIT03 cancellation draft restart is idempotent for the same parent/key", async () => {
     vi.useFakeTimers({ now: new Date("2026-09-11T00:00:00.000Z") });
     const client = await bootstrapClient();
@@ -448,7 +462,7 @@ function jsonRequest(path: string, body: unknown, headers: HeadersInit = {}): Re
   return new Request(`${ORIGIN}${path}`, { method: "POST", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify(body) });
 }
 
-function validStart(overrides: Partial<{ requestKey: string; policyBundleId: string; fullName: string; email: string; phone: string; instagramUsername: string; replaceAttemptId: string; consents: { age: true; terms: true; privacy: true; instagramData: true } }> = {}) {
+function validStart(overrides: Partial<{ requestKey: string; policyBundleId: string; fullName: string; email: string; phone: string; instagramUsername: string | undefined; replaceAttemptId: string; consents: { age: true; terms: true; privacy: true; instagramData: true } }> = {}) {
   return { requestKey: randomUUID(), policyBundleId: "approved-bundle", fullName: "김셀럽", email: "creator@example.com", phone: "010-0000-0000", instagramUsername: "celeblife_demo", consents: { age: true, terms: true, privacy: true, instagramData: true }, ...overrides };
 }
 
