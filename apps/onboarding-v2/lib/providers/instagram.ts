@@ -108,7 +108,7 @@ class FetchInstagramProvider implements InstagramProvider {
         code: input.code,
       }),
     });
-    const token = shortTokenFromCodeExchange(json);
+    const token = shortTokenFromCodeExchange(json, this.config.instagram.requiredPermissions);
     assertRequiredScopes(token.grantedScopes, this.config.instagram.requiredPermissions);
     return token;
   }
@@ -173,7 +173,7 @@ class FetchInstagramProvider implements InstagramProvider {
   }
 }
 
-function shortTokenFromCodeExchange(json: unknown): InstagramShortToken {
+function shortTokenFromCodeExchange(json: unknown, requiredScopes: readonly string[]): InstagramShortToken {
   if (!isRecord(json)) throw new PublicApiError("PROVIDER_UNAVAILABLE");
   const row = codeExchangeRowFromResponse(json);
   if (typeof row.access_token !== "string" || !row.access_token.trim()) {
@@ -181,7 +181,7 @@ function shortTokenFromCodeExchange(json: unknown): InstagramShortToken {
   }
   const providerUserId = providerUserIdFromValue(row.user_id);
   if (!providerUserId) throw new PublicApiError("PROVIDER_UNAVAILABLE");
-  const grantedScopes = parseScopes(row);
+  const grantedScopes = parseCodeExchangeScopes(row, requiredScopes);
   if (!grantedScopes) throw new PublicApiError("PERMISSIONS_REQUIRED");
   return { accessToken: row.access_token, providerUserId, grantedScopes };
 }
@@ -231,6 +231,13 @@ function parseProviderJson(text: string): unknown {
 function parseScopes(json: Record<string, unknown>): readonly string[] | null {
   const raw = typeof json.scope === "string" ? json.scope : typeof json.permissions === "string" ? json.permissions : null;
   return raw ? raw.split(/[,\s]+/u).map((scope) => scope.trim()).filter(Boolean) : null;
+}
+
+function parseCodeExchangeScopes(json: Record<string, unknown>, requiredScopes: readonly string[]): readonly string[] | null {
+  const hasScope = Object.prototype.hasOwnProperty.call(json, "scope");
+  const hasPermissions = Object.prototype.hasOwnProperty.call(json, "permissions");
+  if (!hasScope && !hasPermissions) return requiredScopes;
+  return parseScopes(json);
 }
 
 function assertRequiredScopes(grantedScopes: readonly string[], requiredScopes: readonly string[]): void {

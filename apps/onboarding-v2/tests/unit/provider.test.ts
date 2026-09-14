@@ -64,6 +64,26 @@ describe("Instagram provider official response contract", () => {
     expect(short).toMatchObject({ accessToken: "short", providerUserId: "1789" });
   });
 
+  it("accepts wrapped code-exchange rows that omit permission fields by carrying required scopes", async () => {
+    const short = await expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: "1789" }] }));
+
+    expect(short).toMatchObject({
+      accessToken: "short",
+      providerUserId: "1789",
+      grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+    });
+  });
+
+  it("accepts unwrapped code-exchange rows that omit permission fields by carrying required scopes", async () => {
+    const short = await expectWithFetch(jsonResponse({ access_token: "short", user_id: "1789" }));
+
+    expect(short).toMatchObject({
+      accessToken: "short",
+      providerUserId: "1789",
+      grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+    });
+  });
+
   it("AU01 maps official one-row /me wrapper and media_creator account_type to creator", async () => {
     const provider = createInstagramProvider(getConfig());
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ data: [{ user_id: "1789", username: "creator", account_type: "media_creator" }] })));
@@ -155,6 +175,9 @@ describe("Instagram provider official response contract", () => {
 
   it("FINAL11 rejects missing-permission, malformed user_id, mismatched user_id, malformed long expiry, and oversized chunked responses", async () => {
     await expect(expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: "1789", permissions: "instagram_business_basic" }] }))).rejects.toMatchObject({ code: "PERMISSIONS_REQUIRED" });
+    await expect(expectWithFetch(jsonResponse({ access_token: "short", user_id: "1789", scope: "instagram_business_basic" }))).rejects.toMatchObject({ code: "PERMISSIONS_REQUIRED" });
+    await expect(expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: "1789", permissions: "" }] }))).rejects.toMatchObject({ code: "PERMISSIONS_REQUIRED" });
+    await expect(expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: "1789", scope: [] }] }))).rejects.toMatchObject({ code: "PERMISSIONS_REQUIRED" });
     for (const userId of ["", 1.5, -1, Number.NaN]) {
       await expect(expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: userId, permissions: "instagram_business_basic,instagram_business_manage_insights" }] }))).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
     }
