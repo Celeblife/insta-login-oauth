@@ -34,12 +34,15 @@ All internal routes support `GET` for Vercel Cron and `POST` for protected manua
 - `GET|POST /internal/notification-retry`
 - `GET|POST /internal/onboarding-cleanup`
 
-SMTP is disabled by default with `MAIL_ENABLED=false`. The notification recipient is fixed to
-`dkssud374@celeblife.co.kr`; user input is never used as To/From/Reply-To/CC/BCC. Canonical SMTP
-configuration is `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, and `SMTP_REQUIRE_TLS=true` for
-STARTTLS. Legacy `SMTP_USERNAME`/`SMTP_FROM` are tolerated only as fallback names. Token refresh
-uses the allowlisted Meta endpoint `https://graph.instagram.com/refresh_access_token` and does not
-require or send an app secret.
+SMTP is disabled by default with `MAIL_ENABLED=false`. The approved provider defaults are NAVER
+WORKS at `smtp.worksmobile.com:465` with SSL, using `dkssud374@celeblife.co.kr` as both the SMTP
+account and sender. `SMTP_PASSWORD` must contain a NAVER WORKS third-party app password, never the
+member's normal account password. The notification recipient is fixed to that same address; user
+input is never used as To/From/Reply-To/CC/BCC. Explicit `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, and
+`MAIL_FROM` values may override defaults for isolated testing, while `SMTP_SECURE=true` and
+`SMTP_REQUIRE_TLS=true` remain the production baseline. Legacy `SMTP_USERNAME`/`SMTP_FROM` are
+tolerated only as fallback names. Token refresh uses the allowlisted Meta endpoint
+`https://graph.instagram.com/refresh_access_token` and does not require or send an app secret.
 
 ## Verification
 

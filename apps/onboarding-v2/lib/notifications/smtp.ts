@@ -4,6 +4,9 @@ import type { NotificationMessage } from "./message";
 
 const CONTROL = /[\u0000-\u001f\u007f]/;
 const FIXED_NOTIFICATION_TO = "dkssud374@celeblife.co.kr";
+const NAVER_WORKS_SMTP_HOST = "smtp.worksmobile.com";
+const NAVER_WORKS_SMTP_PORT = 465;
+const NAVER_WORKS_SMTP_ACCOUNT = "dkssud374@celeblife.co.kr";
 const HOSTNAME = /^(?=.{1,253}$)(?!-)(?:[A-Za-z0-9-]{1,63}\.)+[A-Za-z]{2,63}$/;
 
 export type SmtpConfig = {
@@ -40,13 +43,13 @@ export function readSmtpConfig(env: Record<string, string | undefined> = process
 
   return {
     enabled,
-    host: env.SMTP_HOST,
-    port: Number.parseInt(env.SMTP_PORT || "465", 10),
+    host: env.SMTP_HOST || NAVER_WORKS_SMTP_HOST,
+    port: Number.parseInt(env.SMTP_PORT || String(NAVER_WORKS_SMTP_PORT), 10),
     secure: env.SMTP_SECURE !== "false",
     requireTLS: env.SMTP_REQUIRE_TLS !== "false",
-    username: env.SMTP_USER ?? env.SMTP_USERNAME,
+    username: env.SMTP_USER ?? env.SMTP_USERNAME ?? NAVER_WORKS_SMTP_ACCOUNT,
     password: env.SMTP_PASSWORD,
-    from: env.MAIL_FROM ?? env.SMTP_FROM,
+    from: env.MAIL_FROM ?? env.SMTP_FROM ?? NAVER_WORKS_SMTP_ACCOUNT,
     to,
     timeoutMs: Number.parseInt(env.SMTP_TIMEOUT_MS || "10000", 10),
     messageIdDomain: env.SMTP_MESSAGE_ID_DOMAIN || "celeblife.co.kr",

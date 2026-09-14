@@ -34,6 +34,11 @@ External side effects are fail-closed:
 - side-effecting jobs accept only exact `APP_ENV=staging` or `APP_ENV=production` and do not alias preview, development, or test environments;
 - a Vercel deployment whose `VERCEL_ENV` is `production` is not by itself company production.
 
+The approved mail transport is NAVER WORKS SMTP. The non-secret defaults are
+`smtp.worksmobile.com:465`, SSL enabled, and `dkssud374@celeblife.co.kr` for the authenticated
+account, sender, and fixed internal recipient. Store only a NAVER WORKS third-party app password in
+`SMTP_PASSWORD`; never use or record the member's normal account password.
+
 Before any approved rollout, record the non-secret target identities and compare them with the protected settings. A mismatch must stop before opening a provider, SMTP, or database side-effect connection.
 
 ## Scheduled jobs

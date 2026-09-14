@@ -11,6 +11,19 @@ afterEach(() => {
 });
 
 describe("notification message and SMTP guard", () => {
+  it("MAIL12 defaults to the approved NAVER WORKS SMTP account", () => {
+    expect(readSmtpConfig({})).toMatchObject({
+      enabled: false,
+      host: "smtp.worksmobile.com",
+      port: 465,
+      secure: true,
+      requireTLS: true,
+      username: "dkssud374@celeblife.co.kr",
+      from: "dkssud374@celeblife.co.kr",
+      to: "dkssud374@celeblife.co.kr",
+    });
+  });
+
   it("SE03 MA04 escapes user content and keeps deterministic event/message ids", () => {
     const message = buildNotification({
       requestId: "00000000-0000-4000-8000-000000000123",
