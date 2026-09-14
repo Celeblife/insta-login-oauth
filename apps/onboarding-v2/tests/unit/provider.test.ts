@@ -46,6 +46,24 @@ describe("Instagram provider official response contract", () => {
     expect(paths).toEqual(["/oauth/access_token", "/access_token", "/v22.0/me"]);
   });
 
+  it("accepts numeric wrapped code-exchange user_id by normalizing it to string", async () => {
+    const short = await expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: 1789, permissions: "instagram_business_basic,instagram_business_manage_insights" }] }));
+
+    expect(short).toMatchObject({ accessToken: "short", providerUserId: "1789" });
+  });
+
+  it("preserves a large numeric code-exchange user_id JSON token without rounding", async () => {
+    const short = await expectWithFetch(rawJsonResponse('{"data":[{"access_token":"short","user_id":17891234567890123,"permissions":"instagram_business_basic,instagram_business_manage_insights"}]}'));
+
+    expect(short).toMatchObject({ accessToken: "short", providerUserId: "17891234567890123" });
+  });
+
+  it("accepts unwrapped code-exchange rows for backward compatibility", async () => {
+    const short = await expectWithFetch(jsonResponse({ access_token: "short", user_id: "1789", permissions: "instagram_business_basic,instagram_business_manage_insights" }));
+
+    expect(short).toMatchObject({ accessToken: "short", providerUserId: "1789" });
+  });
+
   it("AU01 maps official one-row /me wrapper and media_creator account_type to creator", async () => {
     const provider = createInstagramProvider(getConfig());
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ data: [{ user_id: "1789", username: "creator", account_type: "media_creator" }] })));
@@ -60,6 +78,38 @@ describe("Instagram provider official response contract", () => {
         },
       }),
     ).resolves.toMatchObject({ accountType: "creator" });
+  });
+
+  it("normalizes numeric /me user_id before matching the token subject", async () => {
+    const provider = createInstagramProvider(getConfig());
+    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ user_id: 1789, username: "creator", account_type: "CREATOR" })));
+
+    await expect(
+      provider.fetchAccount({
+        token: {
+          accessToken: "long",
+          providerUserId: "1789",
+          expiresAt: new Date().toISOString(),
+          grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+        },
+      }),
+    ).resolves.toMatchObject({ providerAccountId: "1789", username: "creator" });
+  });
+
+  it("preserves a large numeric /me user_id JSON token before token subject matching", async () => {
+    const provider = createInstagramProvider(getConfig());
+    vi.stubGlobal("fetch", vi.fn(async () => rawJsonResponse('{"user_id":17891234567890123,"username":"creator","account_type":"CREATOR"}')));
+
+    await expect(
+      provider.fetchAccount({
+        token: {
+          accessToken: "long",
+          providerUserId: "17891234567890123",
+          expiresAt: new Date().toISOString(),
+          grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"],
+        },
+      }),
+    ).resolves.toMatchObject({ providerAccountId: "17891234567890123", username: "creator" });
   });
 
   it("rejects empty, multirow, and malformed /me data wrappers", async () => {
@@ -103,9 +153,12 @@ describe("Instagram provider official response contract", () => {
     await expect(provider.fetchAccount({ token })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
   });
 
-  it("FINAL11 rejects unwrapped, missing-permission, mismatched user_id, malformed long expiry, and oversized chunked responses", async () => {
-    await expect(expectWithFetch(jsonResponse({ access_token: "short", user_id: "1789", permissions: "instagram_business_basic,instagram_business_manage_insights" }))).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
+  it("FINAL11 rejects missing-permission, malformed user_id, mismatched user_id, malformed long expiry, and oversized chunked responses", async () => {
     await expect(expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: "1789", permissions: "instagram_business_basic" }] }))).rejects.toMatchObject({ code: "PERMISSIONS_REQUIRED" });
+    for (const userId of ["", 1.5, -1, Number.NaN]) {
+      await expect(expectWithFetch(jsonResponse({ data: [{ access_token: "short", user_id: userId, permissions: "instagram_business_basic,instagram_business_manage_insights" }] }))).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
+    }
+    await expect(expectWithFetch(rawJsonResponse('{"data":[{"access_token":"short","user_id":1e3,"permissions":"instagram_business_basic,instagram_business_manage_insights"}]}'))).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
 
     const provider = createInstagramProvider(getConfig());
     await expect(provider.exchangeShortTokenForLongToken({ shortToken: { accessToken: "short", providerUserId: "1789", grantedScopes: ["instagram_business_basic", "instagram_business_manage_insights"] } })).rejects.toMatchObject({ code: "PROVIDER_UNAVAILABLE" });
@@ -120,6 +173,10 @@ describe("Instagram provider official response contract", () => {
 
 function jsonResponse(value: unknown): Response {
   return new Response(JSON.stringify(value), { status: 200, headers: { "content-type": "application/json" } });
+}
+
+function rawJsonResponse(value: string): Response {
+  return new Response(value, { status: 200, headers: { "content-type": "application/json" } });
 }
 
 async function expectWithFetch(response: Response) {

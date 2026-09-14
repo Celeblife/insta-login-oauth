@@ -129,19 +129,19 @@ class FetchInstagramProvider implements InstagramProvider {
     url.searchParams.set("fields", "user_id,username,account_type");
     url.searchParams.set("access_token", input.token.accessToken);
     const json = accountRowFromResponse(await this.fetchJson(url, { method: "GET" }));
+    const providerUserId = isRecord(json) ? providerUserIdFromValue(json.user_id) : null;
     if (
       !isRecord(json) ||
-      typeof json.user_id !== "string" ||
-      !/^[0-9A-Za-z_:-]{1,128}$/.test(json.user_id) ||
+      !providerUserId ||
       typeof json.username !== "string" ||
       !/^[a-z0-9_][a-z0-9_.]{0,29}$/i.test(json.username)
     ) {
       throw new PublicApiError("PROVIDER_UNAVAILABLE");
     }
-    if (json.user_id !== input.token.providerUserId) throw new PublicApiError("PROVIDER_UNAVAILABLE");
+    if (providerUserId !== input.token.providerUserId) throw new PublicApiError("PROVIDER_UNAVAILABLE");
     const accountType = accountTypeFromOfficial(json.account_type);
     if (accountType === "personal") throw new PublicApiError("UNSUPPORTED_ACCOUNT");
-    return { providerAccountId: json.user_id, username: json.username.toLowerCase(), accountType };
+    return { providerAccountId: providerUserId, username: json.username.toLowerCase(), accountType };
   }
 
   private assertAllowedUrl(value: string): URL {
@@ -162,7 +162,7 @@ class FetchInstagramProvider implements InstagramProvider {
       const length = Number(response.headers.get("content-length") ?? "0");
       if (length > this.config.instagram.responseSizeLimitBytes) throw new PublicApiError("PROVIDER_UNAVAILABLE");
       const text = await readBoundedResponseText(response, this.config.instagram.responseSizeLimitBytes);
-      return JSON.parse(text) as unknown;
+      return parseProviderJson(text);
     } catch (error) {
       if (error instanceof PublicApiError) throw error;
       if (error instanceof DOMException && error.name === "AbortError") throw new AmbiguousProviderExchangeError();
@@ -174,16 +174,16 @@ class FetchInstagramProvider implements InstagramProvider {
 }
 
 function shortTokenFromCodeExchange(json: unknown): InstagramShortToken {
-  if (!isRecord(json) || !Array.isArray(json.data) || json.data.length !== 1 || !isRecord(json.data[0])) {
+  if (!isRecord(json)) throw new PublicApiError("PROVIDER_UNAVAILABLE");
+  const row = codeExchangeRowFromResponse(json);
+  if (typeof row.access_token !== "string" || !row.access_token.trim()) {
     throw new PublicApiError("PROVIDER_UNAVAILABLE");
   }
-  const row = json.data[0];
-  if (typeof row.access_token !== "string" || !row.access_token.trim() || typeof row.user_id !== "string" || !row.user_id.trim()) {
-    throw new PublicApiError("PROVIDER_UNAVAILABLE");
-  }
+  const providerUserId = providerUserIdFromValue(row.user_id);
+  if (!providerUserId) throw new PublicApiError("PROVIDER_UNAVAILABLE");
   const grantedScopes = parseScopes(row);
   if (!grantedScopes) throw new PublicApiError("PERMISSIONS_REQUIRED");
-  return { accessToken: row.access_token, providerUserId: row.user_id, grantedScopes };
+  return { accessToken: row.access_token, providerUserId, grantedScopes };
 }
 
 function longTokenFromJson(json: unknown, shortToken: InstagramShortToken): InstagramToken {
@@ -204,6 +204,28 @@ function accountRowFromResponse(json: unknown): unknown {
     return json.data[0];
   }
   return json;
+}
+
+function codeExchangeRowFromResponse(json: Record<string, unknown>): Record<string, unknown> {
+  if (Object.prototype.hasOwnProperty.call(json, "data")) {
+    if (!Array.isArray(json.data)) throw new PublicApiError("PROVIDER_UNAVAILABLE");
+    if (json.data.length !== 1 || !isRecord(json.data[0])) throw new PublicApiError("PROVIDER_UNAVAILABLE");
+    return json.data[0];
+  }
+  return json;
+}
+
+function providerUserIdFromValue(value: unknown): string | null {
+  if (typeof value === "string") return /^[0-9A-Za-z_:-]{1,128}$/u.test(value) ? value : null;
+  return null;
+}
+
+function parseProviderJson(text: string): unknown {
+  return JSON.parse(text, (key: string, value: unknown, context?: { source?: string }) => {
+    if (key !== "user_id" || typeof value !== "number") return value;
+    const source = context?.source;
+    return source && /^[0-9]+$/u.test(source) ? source : null;
+  }) as unknown;
 }
 
 function parseScopes(json: Record<string, unknown>): readonly string[] | null {
