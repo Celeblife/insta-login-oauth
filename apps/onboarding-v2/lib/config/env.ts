@@ -44,7 +44,7 @@ export type AppConfig = {
 
 const DEFAULT_TEST_KEY = Buffer.from("0".repeat(64), "hex");
 const DEFAULT_PAYLOAD_HASH_TEST_KEY = Buffer.from("1".repeat(64), "hex");
-const DEFAULT_SCOPES = ["instagram_business_basic", "instagram_business_manage_insights"] as const;
+const V1_INSTAGRAM_REQUIRED_PERMISSIONS = ["instagram_business_basic", "instagram_business_manage_insights"] as const;
 const INTERNAL_NOTIFICATION_EMAIL = "dkssud374@celeblife.co.kr";
 
 export function getConfig(): AppConfig {
@@ -99,10 +99,7 @@ export function getConfig(): AppConfig {
       graphBaseUrl:
         process.env.INSTAGRAM_GRAPH_BASE_URL ?? "https://graph.instagram.com",
       graphApiVersion: graphApiVersion(appEnv),
-      requiredPermissions: (process.env.INSTAGRAM_SCOPES ?? process.env.INSTAGRAM_REQUIRED_PERMISSIONS ?? DEFAULT_SCOPES.join(","))
-        .split(",")
-        .map((scope) => scope.trim())
-        .filter(Boolean),
+      requiredPermissions: V1_INSTAGRAM_REQUIRED_PERMISSIONS,
       allowedHosts: ["www.instagram.com", "api.instagram.com", "graph.instagram.com"],
       requestTimeoutMs: positiveInteger(process.env.PROVIDER_TIMEOUT_MS ?? process.env.INSTAGRAM_REQUEST_TIMEOUT_MS ?? "10000"),
       responseSizeLimitBytes: positiveInteger(process.env.INSTAGRAM_RESPONSE_LIMIT_BYTES ?? "32768"),
@@ -232,7 +229,7 @@ function validateInstagramConfig(config: AppConfig): void {
   ) throw new PublicApiError("CONFIGURATION_ERROR");
   if (!config.instagram.clientId || !config.instagram.clientSecret) throw new PublicApiError("CONFIGURATION_ERROR");
   if ((config.appEnv === "staging" || config.appEnv === "production") && isKnownMockInstagramCredential(config.instagram.clientId, config.instagram.clientSecret)) throw new PublicApiError("CONFIGURATION_ERROR");
-  if (DEFAULT_SCOPES.some((scope) => !config.instagram.requiredPermissions.includes(scope))) throw new PublicApiError("CONFIGURATION_ERROR");
+  if (config.instagram.requiredPermissions !== V1_INSTAGRAM_REQUIRED_PERMISSIONS) throw new PublicApiError("CONFIGURATION_ERROR");
 }
 
 function isKnownMockInstagramCredential(clientId: string, clientSecret: string): boolean {

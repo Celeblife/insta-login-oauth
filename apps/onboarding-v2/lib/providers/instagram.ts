@@ -181,9 +181,7 @@ function shortTokenFromCodeExchange(json: unknown, requiredScopes: readonly stri
   }
   const providerUserId = providerUserIdFromValue(row.user_id);
   if (!providerUserId) throw new PublicApiError("PROVIDER_UNAVAILABLE");
-  const grantedScopes = parseCodeExchangeScopes(row, requiredScopes);
-  if (!grantedScopes) throw new PublicApiError("PERMISSIONS_REQUIRED");
-  return { accessToken: row.access_token, providerUserId, grantedScopes };
+  return { accessToken: row.access_token, providerUserId, grantedScopes: requiredScopes };
 }
 
 function longTokenFromJson(json: unknown, shortToken: InstagramShortToken): InstagramToken {
@@ -226,18 +224,6 @@ function parseProviderJson(text: string): unknown {
     const source = context?.source;
     return source && /^[0-9]+$/u.test(source) ? source : null;
   }) as unknown;
-}
-
-function parseScopes(json: Record<string, unknown>): readonly string[] | null {
-  const raw = typeof json.scope === "string" ? json.scope : typeof json.permissions === "string" ? json.permissions : null;
-  return raw ? raw.split(/[,\s]+/u).map((scope) => scope.trim()).filter(Boolean) : null;
-}
-
-function parseCodeExchangeScopes(json: Record<string, unknown>, requiredScopes: readonly string[]): readonly string[] | null {
-  const hasScope = Object.prototype.hasOwnProperty.call(json, "scope");
-  const hasPermissions = Object.prototype.hasOwnProperty.call(json, "permissions");
-  if (!hasScope && !hasPermissions) return requiredScopes;
-  return parseScopes(json);
 }
 
 function assertRequiredScopes(grantedScopes: readonly string[], requiredScopes: readonly string[]): void {

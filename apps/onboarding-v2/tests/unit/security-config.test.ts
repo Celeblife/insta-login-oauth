@@ -204,6 +204,19 @@ describe("security/config invariants", () => {
     expect(getConfig().instagram.redirectUri).toBe("http://localhost:3000/auth/callback");
   });
 
+  it("keeps Instagram scopes fixed to the V1 contract even when legacy env scope overrides are hostile", () => {
+    process.env.APP_ENV = "local";
+    process.env.APP_BASE_URL = "http://localhost:3000";
+    process.env.ONBOARDING_PROVIDER = "mock";
+    process.env.INSTAGRAM_SCOPES = "instagram_business_basic,evil_extra_scope";
+    process.env.INSTAGRAM_REQUIRED_PERMISSIONS = "only_legacy_scope";
+
+    expect(getConfig().instagram.requiredPermissions).toEqual([
+      "instagram_business_basic",
+      "instagram_business_manage_insights",
+    ]);
+  });
+
   it("OP01 staging instagram mode rejects missing or known mock credentials while local mock remains valid", () => {
     process.env.APP_ENV = "local";
     process.env.APP_BASE_URL = "http://localhost:3000";
