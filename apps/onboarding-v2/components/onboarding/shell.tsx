@@ -52,6 +52,18 @@ export function OnboardingShell({ children, contactEmail }: ShellProps) {
     const handleClose = () => triggerRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Tab" || !node.open) return;
+      const closeButton = node.querySelector<HTMLElement>("[data-close-icon]");
+      const primaryClose = node.querySelector<HTMLElement>("[data-close-primary]");
+      if (event.shiftKey && document.activeElement === primaryClose && closeButton) {
+        event.preventDefault();
+        closeButton.focus();
+        return;
+      }
+      if (!event.shiftKey && document.activeElement === closeButton && primaryClose) {
+        event.preventDefault();
+        primaryClose.focus();
+        return;
+      }
       const focusables = Array.from(
         node.querySelectorAll<HTMLElement>("button, a[href], input, textarea, select, [tabindex]:not([tabindex='-1'])"),
       ).filter((element) => !element.hasAttribute("disabled") && element.offsetParent !== null);
@@ -103,7 +115,7 @@ export function OnboardingShell({ children, contactEmail }: ShellProps) {
       <dialog className="dialog" ref={dialogRef} aria-labelledby="dialog-title">
         <div className="dialog-head">
           <h2 id="dialog-title">{dialog ? policyLabels[dialog] : ""}</h2>
-          <button type="button" className="close-btn" aria-label="닫기" onClick={closeDialog}>
+          <button type="button" className="close-btn" aria-label="닫기" onClick={closeDialog} data-close-icon>
             <Icon id="i-cross" />
           </button>
         </div>

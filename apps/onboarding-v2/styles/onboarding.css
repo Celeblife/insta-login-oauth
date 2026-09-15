@@ -90,6 +90,11 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+[data-celeblife-production="true"] .policy-document {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
 
 /* Important small controls: the project target is 44px, not a blanket WCAG-AA claim. */
 [data-celeblife-production="true"] .policy-link,
@@ -295,6 +300,16 @@ body[data-celeblife-production="true"] {
   background: #fbf8ff;
   color: #776583;
   padding: 12px 14px;
+}
+
+.policy-document {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 @media (max-width: 520px) {

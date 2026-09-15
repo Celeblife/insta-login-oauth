@@ -419,6 +419,25 @@ test("UI08 focus loop escape and trigger return use the common dialog", async ({
   await expect(trigger).toBeFocused();
 });
 
+test("UI08 terms dialog renders the v1 detailed policy body", async ({ page }) => {
+  await page.goto("/apply");
+  await page.getByRole("button", { name: "서비스 이용약관에 동의합니다. 보기" }).click();
+  await expect(page.getByRole("dialog", { name: "서비스 이용약관" })).toBeVisible();
+  await expect(page.getByText("제25조 (개별 캠페인 조건의 우선)")).toBeVisible();
+  await expect(page.getByText("별표 1 | 소싱 제품 보호 예외 판단 기준")).toBeVisible();
+  await expect(page.getByText("별표 2 | 노쇼·취소 운영 원칙")).toBeVisible();
+  await expect(page.getByText("DM, 문서 등 기록이 남는 방식")).toBeVisible();
+});
+
+test("UI08 privacy collection dialog renders the v1 detailed policy body", async ({ page }) => {
+  await page.goto("/apply");
+  await page.getByRole("button", { name: "개인정보 수집·이용에 동의합니다. 보기" }).click();
+  await expect(page.getByRole("dialog", { name: "개인정보 수집·이용" })).toBeVisible();
+  await expect(page.getByText("최종 업데이트: 2026년 8월 26일")).toBeVisible();
+  await expect(page.getByText("Instagram 개인 메시지(DM)는 수집하거나 분석하지 않습니다.")).toBeVisible();
+  await expect(page.getByText("본 개인정보처리방침은 2026년 8월 26일부터 시행합니다.")).toBeVisible();
+});
+
 test("MOB01 MOB02 MOB05 reduced motion and responsive overflow matrix stay stable", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [320, 768, 860, 861, 1080, 1440]) {
@@ -610,12 +629,16 @@ test("UI05 contact edit opens public CONTACT_EMAIL modal without internal notifi
   await expect(page.getByText("dkssud374@celeblife.co.kr")).toHaveCount(0);
 });
 
-test("G07 public policy pages render configured public contact and never internal notification address", async ({ page }) => {
-  for (const path of ["/policies/privacy", "/policies/deletion"]) {
-    await page.goto(path);
-    await expect(page.getByRole("link", { name: "support@example.com" })).toHaveAttribute("href", "mailto:support@example.com");
-    await expect(page.getByText("dkssud374@celeblife.co.kr")).toHaveCount(0);
-  }
+test("G07 public policy pages render v1 privacy body and configured deletion contact", async ({ page }) => {
+  await page.goto("/policies/privacy");
+  await expect(page.getByText("최종 업데이트: 2026년 8월 26일")).toBeVisible();
+  await expect(page.getByText("Instagram 개인 메시지(DM)는 수집하거나 분석하지 않습니다.")).toBeVisible();
+  await expect(page.getByText("본 개인정보처리방침은 2026년 8월 26일부터 시행합니다.")).toBeVisible();
+  await expect(page.getByText("dkssud374@celeblife.co.kr")).toHaveCount(0);
+
+  await page.goto("/policies/deletion");
+  await expect(page.getByRole("link", { name: "support@example.com" })).toHaveAttribute("href", "mailto:support@example.com");
+  await expect(page.getByText("dkssud374@celeblife.co.kr")).toHaveCount(0);
 });
 
 test("UI10 complete direct access does not render success without DB completed status", async ({ page }) => {
