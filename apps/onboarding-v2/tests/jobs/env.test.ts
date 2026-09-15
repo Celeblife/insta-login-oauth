@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { assertInternalJobRequest } from "@/lib/jobs/env";
+import { assertInternalJobRequest, buildTrustedJobContext } from "@/lib/jobs/env";
 
 const originalEnv = { ...process.env };
 
@@ -115,6 +115,19 @@ describe("internal job guard", () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = jwtWithRole("service_role");
 
     expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: true,
+    });
+  });
+
+  it("OP02 keeps CRON_SECRET on HTTP jobs but allows trusted in-process jobs through the same target guard", () => {
+    setValidJobEnv();
+    delete process.env.CRON_SECRET;
+
+    expect(assertInternalJobRequest(request(), "TOKEN_REFRESH_ENABLED")).toMatchObject({
+      ok: false,
+      code: "UNAUTHORIZED_JOB",
+    });
+    expect(buildTrustedJobContext("TOKEN_REFRESH_ENABLED")).toMatchObject({
       ok: true,
     });
   });

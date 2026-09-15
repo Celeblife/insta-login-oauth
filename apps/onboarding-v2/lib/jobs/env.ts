@@ -12,6 +12,8 @@ export type JobGuardResult =
   | { ok: true; owner: string; supabase: SupabaseClient }
   | { ok: false; status: number; code: string };
 
+type JobSwitchGuardResult = { ok: true; appEnv: AppEnvironment } | { ok: false; status: number; code: string };
+
 function constantTimeEqual(actual: string, expected: string): boolean {
   const actualDigest = createHash("sha256").update(actual).digest();
   const expectedDigest = createHash("sha256").update(expected).digest();
@@ -19,17 +21,8 @@ function constantTimeEqual(actual: string, expected: string): boolean {
 }
 
 export function assertInternalJobRequest(request: Request, requiredFlag: string): JobGuardResult {
-  if (process.env.INTERNAL_JOBS_ENABLED !== "true") {
-    return { ok: false, status: 503, code: "INTERNAL_JOBS_DISABLED" };
-  }
-  if (process.env[requiredFlag] !== "true") {
-    return { ok: false, status: 503, code: `${requiredFlag}_DISABLED` };
-  }
-
-  const appEnv = jobAppEnv(process.env.APP_ENV);
-  if (!appEnv) {
-    return { ok: false, status: 412, code: "APP_ENV_GUARD_FAILED" };
-  }
+  const switches = assertJobSwitches(requiredFlag);
+  if (!switches.ok) return switches;
 
   const expectedSecret = process.env.CRON_SECRET;
   const authorization = request.headers.get("authorization") ?? "";
@@ -37,6 +30,17 @@ export function assertInternalJobRequest(request: Request, requiredFlag: string)
   if (!expectedSecret || !constantTimeEqual(suppliedSecret, expectedSecret)) {
     return { ok: false, status: 401, code: "UNAUTHORIZED_JOB" };
   }
+
+  return buildTrustedJobContextAfterSwitches(switches);
+}
+
+export function buildTrustedJobContext(requiredFlag: string): JobGuardResult {
+  return buildTrustedJobContextAfterSwitches(assertJobSwitches(requiredFlag));
+}
+
+function buildTrustedJobContextAfterSwitches(switches: JobSwitchGuardResult): JobGuardResult {
+  if (!switches.ok) return switches;
+  const appEnv = switches.appEnv;
 
   let expectedProjectRef;
   try {
@@ -95,6 +99,21 @@ export function assertInternalJobRequest(request: Request, requiredFlag: string)
       global: { headers: { "X-Client-Info": "celeblife-onboarding-v2-jobs" } },
     }),
   };
+}
+
+function assertJobSwitches(requiredFlag: string): JobSwitchGuardResult {
+  if (process.env.INTERNAL_JOBS_ENABLED !== "true") {
+    return { ok: false, status: 503, code: "INTERNAL_JOBS_DISABLED" };
+  }
+  if (process.env[requiredFlag] !== "true") {
+    return { ok: false, status: 503, code: `${requiredFlag}_DISABLED` };
+  }
+
+  const appEnv = jobAppEnv(process.env.APP_ENV);
+  if (!appEnv) {
+    return { ok: false, status: 412, code: "APP_ENV_GUARD_FAILED" };
+  }
+  return { ok: true, appEnv };
 }
 
 function jobAppEnv(value: string | undefined): AppEnvironment | undefined {
