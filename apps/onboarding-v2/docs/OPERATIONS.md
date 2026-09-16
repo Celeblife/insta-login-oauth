@@ -48,10 +48,10 @@ Before any approved rollout, record the non-secret target identities and compare
 | Job | Route | UTC schedule | Required flag |
 | --- | --- | --- | --- |
 | Token refresh | `/internal/token-refresh` | `23 0 * * *` | `TOKEN_REFRESH_ENABLED=true` |
-| Notification retry | `/internal/notification-retry` | `*/5 * * * *` | `NOTIFICATION_RETRY_ENABLED=true` |
+| Notification retry | `/internal/notification-retry` | `13 1 * * *` | `NOTIFICATION_RETRY_ENABLED=true` |
 | Session cleanup | `/internal/onboarding-cleanup` | `43 0 * * *` | `ONBOARDING_CLEANUP_ENABLED=true` |
 
-Vercel Cron invokes these routes with `GET`. Manual protected `POST` calls may be retained for controlled staging diagnostics. A 5-minute schedule requires a compatible commercial plan; until that gate is confirmed, keep all job flags off. Cron delivery is best effort, so database leases, due times, stale-processing recovery, and job health queries are the recovery source of truth.
+Vercel Cron invokes these routes with `GET`. Manual protected `POST` calls may be retained for controlled staging diagnostics. Notification retry is scheduled once daily for Vercel Hobby compatibility; immediate after-response delivery remains the primary notification path after a registration is accepted. Cron delivery is best effort, so database leases, due times, stale-processing recovery, and job health queries are the recovery source of truth.
 
 ## Observability
 

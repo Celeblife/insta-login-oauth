@@ -7,7 +7,7 @@
     },
     {
       "path": "/internal/notification-retry",
-      "schedule": "*/5 * * * *"
+      "schedule": "13 1 * * *"
     },
     {
       "path": "/internal/onboarding-cleanup",
