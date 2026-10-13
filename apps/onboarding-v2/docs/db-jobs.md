@@ -37,9 +37,14 @@ All internal routes support `GET` for Vercel Cron and `POST` for protected manua
 SMTP is disabled by default with `MAIL_ENABLED=false`. The approved provider defaults are NAVER
 WORKS at `smtp.worksmobile.com:465` with SSL, using `dkssud374@celeblife.co.kr` as both the SMTP
 account and sender. `SMTP_PASSWORD` must contain a NAVER WORKS third-party app password, never the
-member's normal account password. The notification recipient is fixed to that same address; user
-input is never used as To/From/Reply-To/CC/BCC. Explicit `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, and
-`MAIL_FROM` values may override defaults for isolated testing, while `SMTP_SECURE=true` and
+member's normal account password. The primary notification recipient is fixed to that same address;
+`NOTIFICATION_ADDITIONAL_TO` may add one optional internal bare mailbox and is empty by default.
+User input is never used as To/From/Reply-To/CC/BCC. The app sends one message with all configured
+To recipients visible, de-duplicates an additional address that matches the primary recipient, and
+marks the outbox event sent only when every configured recipient appears in SMTP `accepted` and
+`rejected` is empty. The SQL sent RPC still guards the primary recipient floor; the app performs the
+full configured-recipient check before calling it. Explicit `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+and `MAIL_FROM` values may override defaults for isolated testing, while `SMTP_SECURE=true` and
 `SMTP_REQUIRE_TLS=true` remain the production baseline. Legacy `SMTP_USERNAME`/`SMTP_FROM` are
 tolerated only as fallback names. Token refresh uses the allowlisted Meta endpoint
 `https://graph.instagram.com/refresh_access_token` and does not require or send an app secret.

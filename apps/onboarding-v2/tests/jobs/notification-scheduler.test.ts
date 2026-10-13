@@ -94,6 +94,34 @@ describe("notification retry after-response scheduler", () => {
     expect(afterFn).toHaveBeenCalledOnce();
     expect(runNotificationRetryJobMock).not.toHaveBeenCalled();
   });
+
+  it("contains deferred retry failures and logs only the fixed failure code", async () => {
+    setValidJobEnv();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    runNotificationRetryJobMock.mockRejectedValue(
+      new Error("second-recipient-sentinel@example.test provider secret"),
+    );
+    const tasks: Array<() => Promise<void>> = [];
+
+    scheduleNotificationRetryAfterResponse("complete", {
+      after: (task) => {
+        tasks.push(task as () => Promise<void>);
+      },
+    });
+
+    expect(tasks).toHaveLength(1);
+    const task = tasks[0];
+    if (!task) throw new Error("expected deferred notification retry task");
+    await expect(task()).resolves.toBeUndefined();
+    expect(runNotificationRetryJobMock).toHaveBeenCalledOnce();
+    expect(warn).toHaveBeenCalledWith("[notification-retry-after-response]", {
+      outcome: "failed",
+      trigger: "complete",
+      code: "JOB_ERROR",
+    });
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("second-recipient-sentinel@example.test");
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("provider secret");
+  });
 });
 
 function completed(): Extract<StatusResponse, { status: "completed" }> {

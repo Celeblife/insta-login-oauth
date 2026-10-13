@@ -22,6 +22,32 @@ describe("onboarding validation canonical payload", () => {
       value: { fullName: "김셀럽", phone: "+821000000000", email: "creator@example.com", instagramUsername: "" },
     });
   });
+
+  it("drops notification recipient override fields from accepted start requests", () => {
+    const result = validateStart(
+      {
+        ...validStart(),
+        to: "attacker-to@example.test",
+        cc: "attacker-cc@example.test",
+        additionalTo: "attacker-additional@example.test",
+      },
+      "approved-bundle",
+    );
+
+    expect(result).toMatchObject({ ok: true });
+    expect(result.ok && result.value).toEqual({
+      requestKey: expect.any(String),
+      policyBundleId: "approved-bundle",
+      fullName: "김셀럽",
+      email: "creator@example.com",
+      phone: "+821000000000",
+      instagramUsername: "celeblife_demo",
+      consents: { age: true, terms: true, privacy: true, instagramData: true },
+    });
+    expect(result.ok && result.value).not.toHaveProperty("to");
+    expect(result.ok && result.value).not.toHaveProperty("cc");
+    expect(result.ok && result.value).not.toHaveProperty("additionalTo");
+  });
 });
 
 function validStart(overrides: Partial<StartRequest> = {}): StartRequest {

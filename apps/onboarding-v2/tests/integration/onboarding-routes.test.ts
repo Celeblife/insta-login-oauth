@@ -51,6 +51,30 @@ describe("onboarding v2 route contract", () => {
     await expect(conflict.json()).resolves.toMatchObject({ error: { code: "IDEMPOTENCY_CONFLICT" } });
   });
 
+  it("does not expose configured or request-supplied notification recipients in public responses", async () => {
+    process.env.NOTIFICATION_ADDITIONAL_TO = "second-recipient-sentinel@example.test";
+    const client = await bootstrapClient();
+    assertNoNotificationRecipientLeak(client.body);
+    const payload = {
+      ...validStart({ instagramUsername: "recipient_boundary" }),
+      to: "request-to-sentinel@example.test",
+      cc: "request-cc-sentinel@example.test",
+      additionalTo: "request-additional-sentinel@example.test",
+    };
+
+    const started = await start(client, payload);
+    expect(started.status).toBe(201);
+    assertNoNotificationRecipientLeak(started.body);
+
+    const callback = await callbackGet(new Request(`${ORIGIN}/auth/instagram/callback?code=user_recipient_boundary&state=${stateFrom(started.body)}`, { headers: { cookie: client.cookie } }));
+    expect(callback.status).toBe(303);
+    const completed = await complete(client, attemptIdFrom(started.body));
+    expect(completed.statusCode).toBe(200);
+    expect(completed.body).toMatchObject({ status: "completed" });
+    assertNoNotificationRecipientLeak(completed.body);
+    assertNoNotificationRecipientLeak(await getStatus(client, attemptIdFrom(started.body)));
+  });
+
   it("AU07 callback checkpoints raw code, invalidates state, clean-303s to connecting, then complete finalizes", async () => {
     vi.useFakeTimers({ now: new Date("2026-09-11T00:00:00.000Z") });
     const client = await bootstrapClient();
@@ -551,4 +575,13 @@ function stableJson(value: unknown): string {
     .sort()
     .map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`)
     .join(",")}}`;
+}
+
+function assertNoNotificationRecipientLeak(value: unknown): void {
+  const text = JSON.stringify(value);
+  expect(text).not.toContain("NOTIFICATION_ADDITIONAL_TO");
+  expect(text).not.toContain("second-recipient-sentinel@example.test");
+  expect(text).not.toContain("request-to-sentinel@example.test");
+  expect(text).not.toContain("request-cc-sentinel@example.test");
+  expect(text).not.toContain("request-additional-sentinel@example.test");
 }

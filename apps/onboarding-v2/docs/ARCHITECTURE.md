@@ -43,14 +43,14 @@ OAuth cancellation destroys provider credentials/state but may retain the origin
 - The newest successfully finalized authorization for an Instagram account wins according to PostgreSQL timestamp precision and canonical UUID tie-breaking.
 - Reconnection preserves the existing v2 user and first review state, creates a `not_requested` connection record, and creates no new analysis request.
 - Token refresh updates use row-version and eligibility predicates in the same statement; deletion is never repaired with an upsert.
-- Outbox claims and terminal writes require owner, fencing value, and an unexpired lease. SMTP acceptance can still lead to duplicate delivery if the sent-state write is lost; the stable event key and Message-ID reduce, but do not eliminate, that risk.
+- Outbox claims and terminal writes require owner, fencing value, and an unexpired lease. Notification recipients come only from server configuration: the fixed primary recipient plus at most one optional additional recipient. The app uses a single message To list and records sent only after all configured recipients are accepted and none are rejected. SMTP acceptance can still lead to duplicate delivery if the sent-state write is lost, or if one configured recipient accepted a partially failed attempt before an event-level retry; the stable event key and Message-ID reduce, but do not eliminate, that risk.
 
 ## Security invariants
 
 - Mutating browser endpoints require exact configured Origin, browser binding, CSRF, bounded JSON size, and strict schema validation.
 - Attempt UUIDs, OAuth state, or success query parameters are never authorization credentials.
 - OAuth query values receive `no-store`/`no-referrer` handling and are absent from typed logs.
-- Provider hosts, API version, callback URL, required permissions, notification recipient, and sender are server configuration, never request-controlled.
+- Provider hosts, API version, callback URL, required permissions, notification recipients, and sender are server configuration, never request-controlled.
 - Production, and staging when Supabase-backed, require an exact canonical Supabase project URL plus matching expected Supabase ref and actual/expected Vercel project ID before a client is constructed. The expected ref is read from `SUPABASE_EXPECTED_PROJECT_REF` with legacy `SUPABASE_PRODUCTION_PROJECT_REF` fallback, and conflicting configured refs fail closed. Server database access accepts only `sb_secret_*` or JWT `service_role` keys from `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, or legacy `SUPABASE_KEY`; conflicting configured values fail closed.
 - Missing or invalid provider `expires_in` and unverifiable required permissions fail closed.
 - Service-role keys and lifecycle RPC execution are server-only; `anon` and `authenticated` receive no direct table/RPC privilege for v2 private objects.
