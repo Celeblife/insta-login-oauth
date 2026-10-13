@@ -1,12 +1,24 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { runNotificationRetryJob } from "@/lib/jobs/notification-retry";
 import { buildNotification } from "@/lib/notifications/message";
-import { classifySmtpFailure, readSmtpConfig, sendNotificationMail } from "@/lib/notifications/smtp";
+import { classifySmtpFailure, readSmtpConfig, sendNotificationMail, type SmtpConfig } from "@/lib/notifications/smtp";
+
+const { createTransportMock, sendMailMock } = vi.hoisted(() => ({
+  createTransportMock: vi.fn(),
+  sendMailMock: vi.fn(),
+}));
+
+vi.mock("nodemailer", () => ({
+  default: { createTransport: createTransportMock },
+}));
 
 const originalEnv = { ...process.env };
 
 afterEach(() => {
+  vi.restoreAllMocks();
+  createTransportMock.mockReset();
+  sendMailMock.mockReset();
   process.env = { ...originalEnv };
 });
 
@@ -21,6 +33,14 @@ describe("notification message and SMTP guard", () => {
       username: "dkssud374@celeblife.co.kr",
       from: "dkssud374@celeblife.co.kr",
       to: "dkssud374@celeblife.co.kr",
+    });
+    expect(readSmtpConfig({ NOTIFICATION_ADDITIONAL_TO: "" })).not.toHaveProperty("additionalTo");
+    expect(readSmtpConfig({ NOTIFICATION_ADDITIONAL_TO: "   " })).not.toHaveProperty("additionalTo");
+    expect(readSmtpConfig({ NOTIFICATION_ADDITIONAL_TO: " Second.User+alerts@example.com " })).toMatchObject({
+      additionalTo: "Second.User+alerts@example.com",
+    });
+    expect(readSmtpConfig({ NOTIFICATION_ADDITIONAL_TO: " DKSSUD374@celeblife.co.kr " })).toMatchObject({
+      additionalTo: "DKSSUD374@celeblife.co.kr",
     });
   });
 
@@ -63,6 +83,24 @@ describe("notification message and SMTP guard", () => {
     expect(() => readSmtpConfig({ NOTIFICATION_TO: "someone@example.com" })).toThrow(
       "INVALID_NOTIFICATION_TO",
     );
+    for (const additionalTo of [
+      "second@example.com,third@example.com",
+      "second@example.com;third@example.com",
+      "Second User <second@example.com>",
+      "group:second@example.com;",
+      "second example@example.com",
+      "second@example.com\r\nBcc: attacker@example.com",
+      "second@example.com\t",
+      " second@example.com\u00a0",
+      "홍길동@example.com",
+      "second@localhost",
+      `${"a".repeat(65)}@example.com`,
+      `${"a".repeat(242)}@example.com`,
+    ]) {
+      expect(() => readSmtpConfig({ NOTIFICATION_ADDITIONAL_TO: additionalTo })).toThrow(
+        "INVALID_NOTIFICATION_ADDITIONAL_TO",
+      );
+    }
     await expect(
       sendNotificationMail(
         buildNotification({
@@ -88,6 +126,118 @@ describe("notification message and SMTP guard", () => {
         },
       ),
     ).rejects.toThrow("SMTP_DISABLED");
+  });
+
+  it("MAIL11 sends primary only when no additional recipient is configured", async () => {
+    createTransportMock.mockReturnValue({ sendMail: sendMailMock });
+    sendMailMock.mockResolvedValue({
+      accepted: ["dkssud374@celeblife.co.kr"],
+      rejected: [],
+    });
+
+    const result = await sendNotificationMail(message(), smtpConfig());
+
+    expect(createTransportMock).toHaveBeenCalledOnce();
+    const mail = sendMailMock.mock.calls[0]?.[0];
+    expect(mail).toMatchObject({
+      to: ["dkssud374@celeblife.co.kr"],
+    });
+    expect(mail).not.toHaveProperty("cc");
+    expect(mail).not.toHaveProperty("bcc");
+    expect(result).toMatchObject({
+      accepted: ["dkssud374@celeblife.co.kr"],
+      rejected: [],
+      messageId: "<celeblife-00000000-0000-4000-8000-000000000123@celeblife.co.kr>",
+    });
+  });
+
+  it("MAIL11 sends to the primary and one configured additional recipient", async () => {
+    createTransportMock.mockReturnValue({ sendMail: sendMailMock });
+    sendMailMock.mockResolvedValue({
+      accepted: ["second@example.com", "DKSSUD374@celeblife.co.kr"],
+      rejected: [],
+    });
+
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "second@example.com" }))).resolves.toMatchObject({
+      accepted: ["second@example.com", "DKSSUD374@celeblife.co.kr"],
+      rejected: [],
+    });
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: ["dkssud374@celeblife.co.kr", "second@example.com"],
+      }),
+    );
+  });
+
+  it("MAIL11 dedupes the primary recipient and rejects partial or malformed SMTP acceptance", async () => {
+    createTransportMock.mockReturnValue({ sendMail: sendMailMock });
+    sendMailMock.mockResolvedValueOnce({
+      accepted: ["DKSSUD374@celeblife.co.kr"],
+      rejected: [],
+    });
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "DKSSUD374@celeblife.co.kr" }))).resolves.toMatchObject({
+      accepted: ["DKSSUD374@celeblife.co.kr"],
+      rejected: [],
+    });
+    expect(sendMailMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        to: ["dkssud374@celeblife.co.kr"],
+      }),
+    );
+
+    sendMailMock.mockResolvedValueOnce({
+      accepted: ["dkssud374@celeblife.co.kr"],
+      rejected: ["second@example.com"],
+    });
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "second@example.com" }))).rejects.toThrow(
+      "SMTP_ACCEPTED_RECIPIENT_REQUIRED",
+    );
+
+    sendMailMock.mockResolvedValueOnce({
+      accepted: ["dkssud374@celeblife.co.kr"],
+      rejected: [],
+    });
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "second@example.com" }))).rejects.toThrow(
+      "SMTP_ACCEPTED_RECIPIENT_REQUIRED",
+    );
+
+    sendMailMock.mockResolvedValueOnce({
+      accepted: "dkssud374@celeblife.co.kr",
+      rejected: [],
+    });
+    await expect(sendNotificationMail(message(), smtpConfig())).rejects.toThrow("SMTP_ACCEPTED_RECIPIENT_REQUIRED");
+
+    sendMailMock.mockResolvedValueOnce({
+      accepted: ["dkssud374@celeblife.co.kr", "second@example.com"],
+      rejected: undefined,
+    });
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "second@example.com" }))).rejects.toThrow(
+      "SMTP_ACCEPTED_RECIPIENT_REQUIRED",
+    );
+
+    sendMailMock.mockResolvedValueOnce({
+      accepted: ["dkssud374@celeblife.co.kr", 123],
+      rejected: [],
+    });
+    await expect(sendNotificationMail(message(), smtpConfig())).rejects.toThrow("SMTP_ACCEPTED_RECIPIENT_REQUIRED");
+
+    sendMailMock.mockResolvedValueOnce({
+      accepted: ["dkssud374@celeblife.co.kr", "second@example.com"],
+      rejected: ["unexpected@example.com"],
+    });
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "second@example.com" }))).rejects.toThrow(
+      "SMTP_ACCEPTED_RECIPIENT_REQUIRED",
+    );
+  });
+
+  it("MAIL11 validates direct SMTP config recipients before opening a transport", async () => {
+    await expect(sendNotificationMail(message(), smtpConfig({ to: "attacker@example.com" }))).rejects.toThrow(
+      "INVALID_NOTIFICATION_TO",
+    );
+    await expect(sendNotificationMail(message(), smtpConfig({ additionalTo: "Bad User <bad@example.com>" }))).rejects.toThrow(
+      "INVALID_NOTIFICATION_ADDITIONAL_TO",
+    );
+    expect(createTransportMock).not.toHaveBeenCalled();
   });
 
   it("MAIL12 uses canonical SMTP env names and fails closed without STARTTLS", async () => {
@@ -190,3 +340,31 @@ describe("notification message and SMTP guard", () => {
     ]);
   });
 });
+
+function message() {
+  return buildNotification({
+    requestId: "00000000-0000-4000-8000-000000000123",
+    fullName: "Creator",
+    email: "creator@example.com",
+    phone: "+821012345678",
+    instagramUsername: "actual.creator",
+    receivedAt: "2026-09-11T00:00:00Z",
+  });
+}
+
+function smtpConfig(overrides: Partial<SmtpConfig> = {}): SmtpConfig {
+  return {
+    enabled: true,
+    host: "smtp.example.com",
+    port: 465,
+    secure: true,
+    requireTLS: true,
+    username: "user",
+    password: "password",
+    from: "no-reply@celeblife.co.kr",
+    to: "dkssud374@celeblife.co.kr",
+    timeoutMs: 10000,
+    messageIdDomain: "celeblife.co.kr",
+    ...overrides,
+  };
+}

@@ -8,6 +8,11 @@ const NAVER_WORKS_SMTP_HOST = "smtp.worksmobile.com";
 const NAVER_WORKS_SMTP_PORT = 465;
 const NAVER_WORKS_SMTP_ACCOUNT = "dkssud374@celeblife.co.kr";
 const HOSTNAME = /^(?=.{1,253}$)(?!-)(?:[A-Za-z0-9-]{1,63}\.)+[A-Za-z]{2,63}$/;
+const NON_ASCII_PRINTABLE = /[^\x20-\x7e]/;
+const DOT_ATOM = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+";
+const ASCII_MAILBOX = new RegExp(
+  `^(?=.{1,254}$)(?=.{1,64}@)${DOT_ATOM}(?:\\.${DOT_ATOM})*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$`,
+);
 
 export type SmtpConfig = {
   enabled: boolean;
@@ -19,6 +24,7 @@ export type SmtpConfig = {
   password: string | undefined;
   from: string | undefined;
   to: string;
+  additionalTo?: string;
   timeoutMs: number;
   messageIdDomain: string;
 };
@@ -64,10 +70,41 @@ function requireHeaderValue(name: string, value: string | undefined): string {
   return value;
 }
 
+function normalizeAdditionalRecipient(value: string | undefined): string | undefined {
+  if (value === undefined) return undefined;
+  if (CONTROL.test(value) || NON_ASCII_PRINTABLE.test(value)) throw new Error("INVALID_NOTIFICATION_ADDITIONAL_TO");
+
+  const trimmed = value.replace(/^ +| +$/g, "");
+  if (!trimmed) return undefined;
+  if (!ASCII_MAILBOX.test(trimmed)) throw new Error("INVALID_NOTIFICATION_ADDITIONAL_TO");
+
+  return trimmed;
+}
+
+function resolveNotificationRecipients(config: { to: string; additionalTo?: string | undefined }): string[] {
+  if (config.to !== FIXED_NOTIFICATION_TO) throw new Error("INVALID_NOTIFICATION_TO");
+
+  const recipients = [FIXED_NOTIFICATION_TO];
+  const additionalTo = normalizeAdditionalRecipient(config.additionalTo);
+  if (additionalTo && additionalTo.toLowerCase() !== FIXED_NOTIFICATION_TO.toLowerCase()) {
+    recipients.push(additionalTo);
+  }
+  return recipients;
+}
+
+function normalizeSmtpAddressList(value: unknown): string[] {
+  if (!Array.isArray(value)) throw new Error("SMTP_ACCEPTED_RECIPIENT_REQUIRED");
+  if (!value.every((address): address is string => typeof address === "string")) {
+    throw new Error("SMTP_ACCEPTED_RECIPIENT_REQUIRED");
+  }
+  return value;
+}
+
 export function readSmtpConfig(env: Record<string, string | undefined> = process.env): SmtpConfig {
   const enabled = env.MAIL_ENABLED === "true";
   const to = env.NOTIFICATION_TO || FIXED_NOTIFICATION_TO;
-  if (to !== FIXED_NOTIFICATION_TO) throw new Error("INVALID_NOTIFICATION_TO");
+  const additionalTo = normalizeAdditionalRecipient(env.NOTIFICATION_ADDITIONAL_TO);
+  resolveNotificationRecipients({ to, additionalTo });
 
   return {
     enabled,
@@ -79,6 +116,7 @@ export function readSmtpConfig(env: Record<string, string | undefined> = process
     password: env.SMTP_PASSWORD,
     from: env.MAIL_FROM ?? env.SMTP_FROM ?? NAVER_WORKS_SMTP_ACCOUNT,
     to,
+    ...(additionalTo ? { additionalTo } : {}),
     timeoutMs: Number.parseInt(env.SMTP_TIMEOUT_MS || "10000", 10),
     messageIdDomain: env.SMTP_MESSAGE_ID_DOMAIN || "celeblife.co.kr",
   };
@@ -108,6 +146,7 @@ export async function sendNotificationMail(
   config = readSmtpConfig(),
 ): Promise<SendMailResult> {
   assertCompleteConfig(config);
+  const recipients = resolveNotificationRecipients(config);
 
   const transportOptions: SMTPTransport.Options = {
     host: config.host,
@@ -126,21 +165,24 @@ export async function sendNotificationMail(
   const messageId = `<${message.messageIdLocal}@${config.messageIdDomain}>`;
   const result = await transporter.sendMail({
     from: requireHeaderValue("MAIL_FROM", config.from),
-    to: config.to,
+    to: recipients,
     subject: message.subject,
     text: message.text,
     html: message.html,
     messageId,
   });
 
-  const accepted = result.accepted.map(String);
-  if (!accepted.some((address) => address.toLowerCase() === FIXED_NOTIFICATION_TO.toLowerCase())) {
+  const accepted = normalizeSmtpAddressList(result.accepted);
+  const rejected = normalizeSmtpAddressList(result.rejected);
+  const acceptedSet = new Set(accepted.map((address) => address.toLowerCase()));
+  const allRecipientsAccepted = recipients.every((address) => acceptedSet.has(address.toLowerCase()));
+  if (!allRecipientsAccepted || rejected.length > 0) {
     throw new Error("SMTP_ACCEPTED_RECIPIENT_REQUIRED");
   }
 
   return {
     accepted,
-    rejected: result.rejected.map(String),
+    rejected,
     messageId,
   };
 }

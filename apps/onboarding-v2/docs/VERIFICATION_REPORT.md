@@ -1,5 +1,104 @@
 # Onboarding v2 verification report
 
+## 2026-10-13: production rollout for optional additional notification recipient
+
+Production rollout was authorized and performed for project `celeblife`. The previous production
+deployment was `dpl_ERfabvE13tWhcYU4TfJymkp9htbJ`; the rollout deployed
+`dpl_7c4ocTeRJ2B2D3251X2yiCzQtymY` at
+`https://celeblife-fuaa80uck-jun99s-projects.vercel.app` and then promoted it to production aliases.
+The source snapshot was built from base commit `475abd538ed53213639a7375af07f34fd6c0d41a` plus the
+then-uncommitted additional-recipient changes. The rollout preceded Git integration; deployment IDs
+above identify that validated snapshot.
+
+| Production evidence | Result | Detail |
+|---|---|---|
+| Pre-rollout production state captured | PASS | Previous deployment and production env metadata recorded in `.omx/evidence/additional-notification-recipient/production-rollout-before.json` |
+| Production env update | PASS | Added one `NOTIFICATION_ADDITIONAL_TO` production variable; 71 preexisting env entries unchanged; secret values were not retrieved |
+| Source snapshot manifest | PASS | 444 files, manifest SHA-256 `c4ac42b216d3298ec71a0fe26233072d91be8d175f2ec2fc7d46d46617d816ff` |
+| Isolated production deployment | PASS | `vercel deploy --prod --skip-domain` completed successfully for `dpl_7c4ocTeRJ2B2D3251X2yiCzQtymY` |
+| Deployment metadata | PASS | Deployment ready, target `production`, expected cron routes present, runtime env keys include `NOTIFICATION_ADDITIONAL_TO` |
+| Staged authenticated smoke | PASS | Six GET probes passed for `/`, `/Login`, `/apply`, `/policies/terms`, `/policies/privacy`, and `/api/onboarding/bootstrap` |
+| Production promotion | PASS | New deployment promoted to production aliases |
+| Public live smoke | PASS | Same six public alias probes returned 200 with HSTS/CSP and no new recipient config exposure |
+| Own-account reconnection and inbox delivery to initial additional recipient | USER_REPORTED_PASS | User confirmed the live test worked after rollout; inbox contents were not independently inspected in this workspace |
+| Production additional-recipient replacement | PASS | Replaced the additional recipient with a colleague NAVER WORKS address on deployment `dpl_H2GAY9UWmJK2zaZdCBtYGGXh4RXw`; staged and public smoke checks passed |
+| New colleague inbox delivery | USER_REPORTED_PASS | User confirmed the replacement recipient received the live test email; inbox contents were not independently inspected in this workspace |
+
+The additional recipient address itself is intentionally omitted from this tracked report. Evidence
+for the environment write records only metadata: the new value was verified during rollout, but
+tracked docs do not contain the address or SMTP credentials. A public privacy page already contained
+the same Gmail address as a public contact before this promotion; the live smoke treated that as unchanged
+public page content, not exposure of the new server-side recipient setting.
+
+No SQL migration, Meta dashboard mutation, manual internal job run, cron trigger, SMTP credential retrieval,
+or production email backfill was performed as part of this rollout. Existing SMTP settings were
+retained through the initial rollout and the replacement. The initial live inbox result is
+user-reported only. The replacement recipient inbox delivery is also user-reported only; it was
+not independently inspected in this workspace.
+
+The replacement rollout deployed `dpl_H2GAY9UWmJK2zaZdCBtYGGXh4RXw` at
+`https://celeblife-ro6eyw5dd-jun99s-projects.vercel.app`. `NOTIFICATION_ADDITIONAL_TO` was updated,
+the prior additional recipient was removed from that setting, SMTP credentials were unchanged, and
+71 other production env entries were preserved. Staged smoke and public production smoke each passed
+3/3 route checks for `/Login`, `/apply`, and `/api/onboarding/bootstrap`; both public aliases were
+verified. The smoke checks found no recipient config exposure.
+
+## 2026-10-12: optional additional notification recipient
+
+Local implementation is complete on `codex/additional-notification-recipient`, based on `475abd5`.
+The required primary recipient is preserved; server-only `NOTIFICATION_ADDITIONAL_TO` accepts one
+optional bare mailbox. The SMTP adapter validates configuration before opening transport and only
+reports success when all configured recipients are accepted and none are rejected. Duplicate primary
+addresses are de-duplicated. The new setting is blank in `.env.example`; no real additional address
+or local mail credentials were configured for this change.
+
+| Fresh evidence | Result | Detail |
+|---|---|---|
+| Approved handoff reference suite | PASS | 131/131 |
+| Full app verification | PASS | ESLint, TypeScript, Vitest, production build, production headers, artifact scan, protected-root check |
+| Final Vitest run after additional retry regressions | PASS | 125 passed; 23 PostgreSQL tests skipped |
+| Chromium desktop/mobile E2E, including automated accessibility checks | PASS | 62/62 |
+| Additional-recipient browser artifact scan | PASS | 17 production browser files checked; no config-key or test-address leaks |
+| Independent implementation review | APPROVE | No findings; reviewed SMTP behavior and retry regression tests |
+| Handoff HTML navigation/content validation | PASS | 16 navigation entries; no duplicate IDs or missing internal targets |
+| PostgreSQL runtime tests | NOT_RUN | Local PostgreSQL server binaries/configuration unavailable; all 23 gated tests skipped |
+| Real SMTP authentication/inbox delivery, Meta, Supabase, deployment | NOT_RUN | Outside this local implementation; mock transport/provider and memory repository used |
+
+Commands were run with isolated test values and external jobs/mail disabled (SMTP unit/job tests
+enable only a mocked transport):
+
+```sh
+npm run test:reference
+npm run verify
+npm run test
+npm run test:e2e -- --workers=2
+git diff --check
+```
+
+The full verification initially included 121 passing app tests; four added retry regressions were
+then included in the final 125-test passing run. Production source did not change between those
+runs. Local command logs and result metadata are under the Git-ignored
+`.omx/evidence/additional-notification-recipient/` directory at the repository root.
+
+Coverage includes absent/blank/invalid/duplicate additional recipients, full and partial SMTP
+acceptance, failure sanitization, the same event retrying with stable IDs, a single configuration
+snapshot per batch, the next invocation reading changed settings, disabled mail, stale sent writes,
+and recipient configuration remaining absent from public API responses. Two DB assertions were
+added for the existing primary-recipient SQL contract, but are part of the 23 unexecuted DB tests.
+
+There is no SQL migration, dependency, lockfile, UI, root legacy application, or cron change. The
+separate `codex/onboarding-v2` worktree remains unchanged. Event-level retries are preserved: partial
+SMTP acceptance can cause a recipient who already received a message to receive it again. The
+application enforces acceptance of all configured recipients; the unchanged SQL RPC enforces the
+primary-recipient minimum. SMTP acceptance does not establish inbox delivery.
+
+The handoff Markdown was rebuilt from source. The HTML was updated with matching source changes and
+validated; the Python HTML generator could not run because the local environment lacks `bs4`.
+Historical verification artifacts were preserved. At the end of the local-only implementation phase,
+this change was not committed, pushed, or deployed.
+
+## Historical baseline: 2026-09-12
+
 Captured: 2026-09-12 (Asia/Seoul)
 
 ## Scope and outcome

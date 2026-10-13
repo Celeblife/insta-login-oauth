@@ -885,6 +885,50 @@ describe.skipIf(!canRunPostgres)("onboarding v2 postgres migration", () => {
     });
   });
 
+  it("MAIL11 keeps sent RPC compatible when SMTP accepts primary and additional recipients", async () => {
+    await withDb(async (client) => {
+      await putSavingAttempt(client);
+      await finalize(client);
+      const claimed = await client.query(
+        "SELECT * FROM public.claim_notification_outbox_v2($1,$2,$3)",
+        [ownerA, 5, 90],
+      );
+
+      expect(
+        (await callNamed(client, "mark_notification_outbox_sent_v2", {
+          p_outbox_id: claimed.rows[0].outbox_id,
+          p_owner: ownerA,
+          p_delivery: {
+            accepted: ["dkssud374@celeblife.co.kr", "second-recipient@example.test"],
+            rejected: [],
+          },
+        })).rows[0].result,
+      ).toBe(true);
+    });
+  });
+
+  it("MAIL11 still rejects sent RPC delivery when the primary recipient is missing", async () => {
+    await withDb(async (client) => {
+      await putSavingAttempt(client);
+      await finalize(client);
+      const claimed = await client.query(
+        "SELECT * FROM public.claim_notification_outbox_v2($1,$2,$3)",
+        [ownerA, 5, 90],
+      );
+
+      await expect(
+        callNamed(client, "mark_notification_outbox_sent_v2", {
+          p_outbox_id: claimed.rows[0].outbox_id,
+          p_owner: ownerA,
+          p_delivery: {
+            accepted: ["second-recipient@example.test"],
+            rejected: [],
+          },
+        }),
+      ).rejects.toThrow(/SMTP_ACCEPTED_RECIPIENT_REQUIRED/);
+    });
+  });
+
   it("TO05 AUDIT06 AUDIT07 transitions invalid refresh to reauth via CAS and never recreates deleted rows", async () => {
     await withDb(async (client) => {
       const user = await client.query("INSERT INTO public.users(instagram_id, instagram_username) VALUES ('ig-refresh','refresh.creator') RETURNING id");

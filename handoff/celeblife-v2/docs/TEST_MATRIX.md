@@ -80,8 +80,9 @@
 | RESET02 | 새 실셀럽 또는 기존 테스트 계정의 v2 재등록 발생 | allowlist/row 변경/v2 root 검증으로 해당 데이터 삭제 거절 |
 | RESET03 | 전환 중 토큰 갱신/legacy callback 도착 | 정리 경합 차단, 정상 신규 데이터 보존 |
 | RESET04 | 초기화 후 본인 계정 처음부터 재등록 | 새 동의/토큰/최초 접수/신규 알림, 구 테스트 자료 복원 없음 |
-| MAIL11 | 수신 주소 고정 | dkssud374@celeblife.co.kr, 프런트 입력 주소로 덮어쓰기 불가 |
+| MAIL11 | 수신 주소 보호와 선택적 추가 수신자 | 기본 dkssud374@celeblife.co.kr 유지, 선택적 `NOTIFICATION_ADDITIONAL_TO` 한 명만 허용, 프런트 입력 주소로 덮어쓰기 불가 |
 | MAIL12 | 같은 계정 발신 기본안 | SMTP 설정 없으면 disabled/명시 오류, 성공으로 추정 금지 |
+| MAIL13 | 두 To 수신자의 SMTP 결과 | 설정된 모든 To가 accepted이고 rejected가 비어야 sent. 일부 accepted 뒤 retry는 중복 가능 |
 
 
 ## v1.2 추가 인수 조건 — 모두 실제 앱 실행 필요

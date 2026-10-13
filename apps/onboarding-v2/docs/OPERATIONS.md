@@ -38,6 +38,16 @@ The approved mail transport is NAVER WORKS SMTP. The non-secret defaults are
 `smtp.worksmobile.com:465`, SSL enabled, and `dkssud374@celeblife.co.kr` for the authenticated
 account, sender, and fixed internal recipient. Store only a NAVER WORKS third-party app password in
 `SMTP_PASSWORD`; never use or record the member's normal account password.
+`NOTIFICATION_ADDITIONAL_TO` may add one internal recipient as a bare mailbox. Leave it empty unless
+an approved address is supplied through the secret/config store. The fixed recipient remains
+mandatory, a duplicate of it is de-duplicated, and the app treats the notification as sent only when
+every configured To recipient is accepted by SMTP with no rejected recipients. Both recipients are
+visible to each other in the message To header.
+
+Recipient settings are read when the notification job runs. Changing `NOTIFICATION_ADDITIONAL_TO`
+affects future attempts for still-pending or recoverable processing events, but it does not backfill
+events already marked sent or dead. Because retry remains event-level, a partial SMTP acceptance can
+cause a later retry to duplicate mail to a recipient that already received the earlier attempt.
 
 Before any approved rollout, record the non-secret target identities and compare them with the protected settings. A mismatch must stop before opening a provider, SMTP, or database side-effect connection.
 

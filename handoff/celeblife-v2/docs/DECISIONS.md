@@ -62,3 +62,12 @@
 - A02: 연결 해제/권한 변경도 row_version 증가. refresh는 현재 상태 검증 UPDATE만, 삭제 행 재생성 금지.
 - A03: 통합 문서의 내부 숫자 제목이 최상위 목차로 잘못 편입되던 생성기 수정. 고유 anchor/실제 목적지 검사 추가.
 - 이전의 '최종'은 운영 무결함 의미가 아니다. 실제 결함·설계 보완·실서비스 NOT_RUN을 따로 보고한다.
+
+## 2026-10-12 / 추가 알림 수신자 로컬 변경
+
+- 사용자 요청으로 기본 담당자 `dkssud374@celeblife.co.kr`는 유지하면서 서버 설정 `NOTIFICATION_ADDITIONAL_TO`로 내부 수신자 한 명을 추가할 수 있게 확장한다.
+- 추가 수신자는 단일 bare mailbox만 허용하고 Git 예시에는 실제 주소를 넣지 않는다. 기본 수신자와 같은 주소는 중복 제거한다.
+- 한 메시지의 To 배열에 모든 configured recipient를 넣으므로 수신자 주소가 서로 보인다. 모든 To가 SMTP `accepted`에 있고 `rejected`가 비어야 sent로 기록한다.
+- DB migration은 추가하지 않는다. SQL sent RPC는 기본 수신자 하한을 지키고, 앱 SMTP adapter가 전체 configured recipient 조건을 검사한다.
+- 수신자 설정은 job 실행 시점에 적용된다. pending/회수 가능한 processing 이벤트에는 새 설정이 적용될 수 있으나 sent/dead 이벤트는 자동 재발송하지 않는다.
+- 이벤트 단위 retry를 유지하므로 일부 accepted 뒤 실패하면 이미 받은 수신자에게 중복 메일이 갈 수 있다. 수신자별 durable delivery는 별도 요구가 생길 때 다시 설계한다.
