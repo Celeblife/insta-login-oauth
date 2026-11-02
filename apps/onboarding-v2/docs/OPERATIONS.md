@@ -87,6 +87,35 @@ Monitor last successful run, oldest overdue refresh, oldest pending notification
 6. Run the read-only reset inspection against the exact approved target and immutable allowlist. This app does not provide an execution mode; it must report zero writes.
 7. After an explicit production approval, apply the additive migration, deploy, drain in-flight callbacks, assign token-refresh ownership to one service, then enable jobs one at a time.
 
+## Pausing the production deployment
+
+Vercel can pause the whole `celeblife` project without touching deployments, code, environment variables, or domains. While paused, every alias (including `celeblife.vercel.app` and `insta-login-oauth-preview.vercel.app`) returns `503 DEPLOYMENT_PAUSED`. Unpausing restores the same production deployment immediately; no redeploy is needed.
+
+The installed Vercel CLI has no pause command, so call the REST API with the CLI's stored login token. The endpoint needs the project and team IDs, not their names; run `vercel link` at the repository root once to write them to the untracked `.vercel/project.json`.
+
+```sh
+# run from the repository root
+TOKEN=$(python3 -c "import json;print(json.load(open('$HOME/.local/share/com.vercel.cli/auth.json'))['token'])")
+PROJECT=$(python3 -c "import json;print(json.load(open('.vercel/project.json'))['projectId'])")
+TEAM=$(python3 -c "import json;print(json.load(open('.vercel/project.json'))['orgId'])")
+
+# pause
+curl -sS -X POST -H "Authorization: Bearer $TOKEN" "https://api.vercel.com/v1/projects/$PROJECT/pause?teamId=$TEAM"
+# resume
+curl -sS -X POST -H "Authorization: Bearer $TOKEN" "https://api.vercel.com/v1/projects/$PROJECT/unpause?teamId=$TEAM"
+
+# verify: 503 while paused, 200 after resume
+curl -sS -o /dev/null -w '%{http_code}\n' https://celeblife.vercel.app
+```
+
+Cron routes are served from the same domain, so while paused the scheduled jobs above also stop doing work: token refresh, notification retry, and session cleanup. Instagram long-lived tokens expire 60 days after their last refresh, so a pause of a few days is safe, but a pause measured in weeks starts expiring tokens and forces each creator to log in again. Unpause, or move token refresh to another owner, before that window closes.
+
+### Pause log
+
+| Paused (UTC) | Resumed (UTC) | Reason |
+| --- | --- | --- |
+| 2026-11-02 01:26 | still paused | Requested by the project owner as a temporary stop. |
+
 ## Incident containment and rollback
 
 If authentication failures, persistence failures, authorization exposure, or token-consumer incompatibility increase:
